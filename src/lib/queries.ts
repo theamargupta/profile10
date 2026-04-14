@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { createStaticClient } from "@/lib/supabase/static";
 import type {
   Profile,
   Project,
@@ -115,7 +116,7 @@ export async function getBlogPostBySlug(
 }
 
 export async function getAllBlogSlugs(): Promise<string[]> {
-  const supabase = await createClient();
+  const supabase = createStaticClient();
   const { data } = await supabase
     .from("blog_posts")
     .select("slug")
@@ -130,7 +131,7 @@ export async function getBlogTags(): Promise<BlogTag[]> {
 }
 
 export async function getAllProjectSlugs(): Promise<string[]> {
-  const supabase = await createClient();
+  const supabase = createStaticClient();
   const { data } = await supabase.from("projects").select("id");
   return data?.map((p) => p.id) ?? [];
 }
