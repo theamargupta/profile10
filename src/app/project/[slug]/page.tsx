@@ -3,8 +3,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getProjectBySlug, getProjects } from "@/lib/queries";
-import { Button } from "@/components/ui/button";
-import { typeClasses } from "@/lib/type-classes";
 import { CaseStudyContent } from "@/components/dom/case-study-content";
 
 export async function generateMetadata({
@@ -43,43 +41,48 @@ export default async function ProjectCaseStudy({
 
   return (
     <>
-      <section className="pt-32 pb-[10vh]">
-        <div className="mx-auto max-w-5xl px-6">
+      <section className="pt-40 pb-20">
+        <div className="mx-auto max-w-5xl" style={{ padding: "0 var(--gutter)" }}>
           <Link
             href="/projects"
-            className="mb-8 inline-flex items-center text-sm text-muted-foreground hover:text-foreground transition-colors"
+            className="mb-8 inline-flex items-center font-mono text-xs uppercase tracking-[var(--tracking-wider)] text-[var(--color-fg-2)] hover:text-[var(--color-fg-0)] transition-colors"
           >
             &larr; All Projects
           </Link>
 
-          <h1 className={`${typeClasses.h1} mb-6`}>{project.title}</h1>
+          <h1
+            className="mb-6 font-display font-bold text-[var(--color-fg-0)]"
+            style={{ fontSize: "var(--text-4xl)", lineHeight: "var(--leading-tight)" }}
+          >
+            {project.title}
+          </h1>
 
           <div className="mb-8 flex flex-wrap gap-3">
             {project.live_url && (
-              <Button size="sm" asChild>
-                <a
-                  href={project.live_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  View Live
-                </a>
-              </Button>
+              <a
+                href={project.live_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                data-cursor="magnet"
+                className="inline-flex h-11 items-center rounded-full bg-[var(--color-accent-400)] px-5 text-sm font-medium text-[var(--color-surface-0)] transition-all duration-300 hover:bg-[var(--color-accent-300)]"
+              >
+                View Live
+              </a>
             )}
             {project.repo_url && (
-              <Button variant="glass" size="sm" asChild>
-                <a
-                  href={project.repo_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Source Code
-                </a>
-              </Button>
+              <a
+                href={project.repo_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                data-cursor="magnet"
+                className="inline-flex h-11 items-center rounded-full border border-[var(--color-surface-4)] px-5 text-sm font-medium text-[var(--color-fg-0)] transition-all duration-300 hover:border-[var(--color-accent-400)]/60 hover:bg-[var(--color-surface-2)]"
+              >
+                Source Code
+              </a>
             )}
           </div>
 
-          <div className="glass-panel glow-border mb-16 overflow-hidden rounded-2xl">
+          <div className="mb-16 overflow-hidden rounded-3xl border border-[var(--color-surface-3)] bg-[var(--color-surface-1)]/60 backdrop-blur-xl">
             {project.demo_img ? (
               <Image
                 src={project.demo_img}
@@ -90,8 +93,11 @@ export default async function ProjectCaseStudy({
                 priority
               />
             ) : (
-              <div className="flex aspect-video items-center justify-center bg-gradient-to-br from-primary/20 to-purple-500/10">
-                <span className="font-display text-4xl font-bold text-foreground/20">
+              <div
+                className="flex aspect-video items-center justify-center"
+                style={{ background: "radial-gradient(70% 60% at 50% 40%, rgba(61,75,255,0.25) 0%, rgba(5,5,7,0) 60%)" }}
+              >
+                <span className="font-display text-4xl font-bold text-[var(--color-fg-3)]">
                   {project.title}
                 </span>
               </div>
@@ -102,16 +108,19 @@ export default async function ProjectCaseStudy({
 
       <CaseStudyContent project={project} />
 
-      <section className="py-[10vh]">
-        <div className="mx-auto max-w-5xl px-6 text-center">
-          <p className={`${typeClasses.micro} mb-4 text-primary`}>
+      <section className="py-28 md:py-40">
+        <div className="mx-auto max-w-5xl text-center" style={{ padding: "0 var(--gutter)" }}>
+          <p className="mb-4 font-mono text-xs uppercase tracking-[var(--tracking-widest)] text-[var(--color-accent-400)]">
             Next Project
           </p>
           <Link
             href={`/project/${nextProject.id}`}
             className="group inline-block"
           >
-            <h2 className="font-display text-3xl font-semibold transition-colors group-hover:text-primary md:text-4xl">
+            <h2
+              className="font-display font-semibold text-[var(--color-fg-0)] transition-colors group-hover:text-[var(--color-accent-400)]"
+              style={{ fontSize: "var(--text-3xl)" }}
+            >
               {nextProject.title}
             </h2>
           </Link>

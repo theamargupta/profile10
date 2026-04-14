@@ -3,7 +3,6 @@
 import { useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { SectionHeading } from "@/components/ui/section-heading";
 import type { Project } from "@/lib/types";
 import { iconMap } from "@/lib/icons";
@@ -35,8 +34,8 @@ export function FeaturedProjects({ projects }: { projects: Project[] }) {
   );
 
   return (
-    <section ref={ref} className="py-[15vh]">
-      <div className="mx-auto max-w-7xl px-6">
+    <section ref={ref} className="py-28 md:py-40">
+      <div className="mx-auto" style={{ maxWidth: "var(--container-max)", padding: "0 var(--gutter)" }}>
         <SectionHeading label="Selected Work" title="Projects" />
         <div className="space-y-32">
           {projects.slice(0, 3).map((project, index) => (
@@ -48,9 +47,13 @@ export function FeaturedProjects({ projects }: { projects: Project[] }) {
           ))}
         </div>
         <div className="mt-20 text-center">
-          <Button variant="secondary" size="lg" asChild>
-            <Link href="/projects">See All Projects</Link>
-          </Button>
+          <Link
+            href="/projects"
+            data-cursor="magnet"
+            className="inline-flex h-14 items-center rounded-full border border-[var(--color-surface-4)] px-8 font-medium text-[var(--color-fg-0)] transition-all duration-300 hover:border-[var(--color-accent-400)]/60 hover:bg-[var(--color-surface-2)]"
+          >
+            See All Projects
+          </Link>
         </div>
       </div>
     </section>
@@ -70,7 +73,7 @@ function ProjectShowcase({
       className={`grid items-center gap-12 lg:grid-cols-2 ${reversed ? "lg:direction-rtl" : ""}`}
     >
       <div className={`${reversed ? "lg:order-2" : ""}`}>
-        <div className="glass-panel glow-border overflow-hidden rounded-2xl">
+        <div className="overflow-hidden rounded-3xl border border-[var(--color-surface-3)] bg-[var(--color-surface-1)]/60 backdrop-blur-xl transition-all duration-500 hover:border-[var(--color-accent-400)]/60">
           {project.demo_img ? (
             <Image
               src={project.demo_img}
@@ -80,8 +83,8 @@ function ProjectShowcase({
               className="w-full object-cover"
             />
           ) : (
-            <div className="flex aspect-video items-center justify-center bg-gradient-to-br from-primary/20 to-purple-500/10">
-              <span className="font-display text-2xl font-semibold text-foreground/60">
+            <div className="flex aspect-video items-center justify-center" style={{ background: "radial-gradient(70% 60% at 100% 0%, rgba(61,75,255,0.30) 0%, rgba(5,5,7,0) 60%)" }}>
+              <span className="font-display text-2xl font-semibold text-[var(--color-fg-2)]">
                 {project.title}
               </span>
             </div>
@@ -90,16 +93,22 @@ function ProjectShowcase({
       </div>
 
       <div className={`${reversed ? "lg:order-1" : ""}`}>
-        <h3 className="mb-4 font-display text-2xl font-semibold md:text-3xl">
+        <h3
+          className="mb-4 font-display font-semibold text-[var(--color-fg-0)]"
+          style={{ fontSize: "var(--text-3xl)", lineHeight: "var(--leading-tight)" }}
+        >
           {project.title}
         </h3>
-        <p className="mb-6 text-muted-foreground leading-relaxed">
+        <p
+          className="mb-6 text-[var(--color-fg-1)]"
+          style={{ fontSize: "var(--text-base)", lineHeight: "var(--leading-normal)" }}
+        >
           {project.description?.split("\n")[0]}
         </p>
 
         {project.project_tools.length > 0 && (
           <div className="mb-6">
-            <p className="mb-3 text-xs font-medium uppercase tracking-widest text-muted-foreground">
+            <p className="mb-3 font-mono text-xs uppercase tracking-[var(--tracking-widest)] text-[var(--color-fg-2)]">
               Tech Stack
             </p>
             <div className="flex flex-wrap gap-2">
@@ -108,7 +117,7 @@ function ProjectShowcase({
                 return (
                   <span
                     key={tool.id}
-                    className="inline-flex items-center gap-1.5 rounded-full bg-surface px-3 py-1 text-xs font-medium"
+                    className="inline-flex items-center gap-1.5 rounded-full border border-[var(--color-surface-4)] px-3 py-1 font-mono text-xs text-[var(--color-fg-2)]"
                   >
                     {Icon && (
                       <Icon
@@ -125,19 +134,23 @@ function ProjectShowcase({
         )}
 
         <div className="flex flex-wrap gap-3">
-          <Button size="sm" asChild>
-            <Link href={`/project/${project.id}`}>Case Study</Link>
-          </Button>
+          <Link
+            href={`/project/${project.id}`}
+            data-cursor="magnet"
+            className="inline-flex h-11 items-center rounded-full bg-[var(--color-accent-400)] px-5 text-sm font-medium text-[var(--color-surface-0)] transition-all duration-300 hover:bg-[var(--color-accent-300)]"
+          >
+            Case Study
+          </Link>
           {project.live_url && (
-            <Button variant="glass" size="sm" asChild>
-              <a
-                href={project.live_url}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                View Live
-              </a>
-            </Button>
+            <a
+              href={project.live_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-cursor="magnet"
+              className="inline-flex h-11 items-center rounded-full border border-[var(--color-surface-4)] px-5 text-sm font-medium text-[var(--color-fg-0)] transition-all duration-300 hover:border-[var(--color-accent-400)]/60 hover:bg-[var(--color-surface-2)]"
+            >
+              View Live
+            </a>
           )}
         </div>
       </div>

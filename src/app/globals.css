@@ -1,9 +1,147 @@
 @import "tailwindcss";
 
+/* =========================================================================
+   Profile10 — Design Tokens (matched to devfrend-agency aesthetic)
+   ========================================================================= */
+
+:root {
+  /* --- Brand Palette ---------------------------------------------------- */
+  --color-primary-50:  #eef1ff;
+  --color-primary-100: #dde3ff;
+  --color-primary-200: #b9c5ff;
+  --color-primary-300: #8fa3ff;
+  --color-primary-400: #6275ff;
+  --color-primary-500: #3d4bff;
+  --color-primary-600: #2a33e6;
+  --color-primary-700: #1f26b3;
+  --color-primary-800: #171c85;
+  --color-primary-900: #0f1359;
+
+  /* Accent: electric lime */
+  --color-accent-50:  #f5ffe0;
+  --color-accent-100: #e9ffb8;
+  --color-accent-200: #d6ff7a;
+  --color-accent-300: #c1ff3d;
+  --color-accent-400: #a8f500;
+  --color-accent-500: #8ad400;
+  --color-accent-600: #6aa700;
+  --color-accent-700: #4f7e00;
+
+  /* Secondary: warm coral */
+  --color-secondary-500: #ff7a5c;
+  --color-secondary-600: #e85a3c;
+
+  /* Surface (dark-first) */
+  --color-surface-0:   #050507;
+  --color-surface-1:   #0b0c10;
+  --color-surface-2:   #121319;
+  --color-surface-3:   #1c1d27;
+  --color-surface-4:   #2a2b38;
+
+  /* Foreground scale */
+  --color-fg-0:  #f7f8fb;
+  --color-fg-1:  #c9ccd6;
+  --color-fg-2:  #8a8f9e;
+  --color-fg-3:  #5b5f6c;
+
+  /* Semantic */
+  --color-success: #26d07c;
+  --color-warning: #ffb020;
+  --color-danger:  #ff5264;
+
+  /* Legacy aliases for existing Tailwind classes */
+  --background: 228 24% 2%;
+  --foreground: 228 30% 97%;
+  --surface: 228 17% 5%;
+  --surface-foreground: 228 30% 97%;
+  --primary: 235 100% 69%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 228 17% 7%;
+  --secondary-foreground: 228 30% 97%;
+  --accent: 78 100% 48%;
+  --accent-foreground: 228 24% 2%;
+  --border: 232 18% 13%;
+  --ring: 235 100% 69%;
+  --muted: 228 17% 7%;
+  --muted-foreground: 228 10% 58%;
+  --shadow-color: 228deg 70% 3%;
+
+  /* --- Typography Scale ------------------------------------------------- */
+  --text-xs:   clamp(0.72rem, 0.70rem + 0.10vw, 0.80rem);
+  --text-sm:   clamp(0.84rem, 0.80rem + 0.15vw, 0.92rem);
+  --text-base: clamp(1.00rem, 0.96rem + 0.20vw, 1.06rem);
+  --text-lg:   clamp(1.18rem, 1.12rem + 0.30vw, 1.28rem);
+  --text-xl:   clamp(1.38rem, 1.28rem + 0.50vw, 1.55rem);
+  --text-2xl:  clamp(1.68rem, 1.52rem + 0.80vw, 1.95rem);
+  --text-3xl:  clamp(2.05rem, 1.78rem + 1.35vw, 2.55rem);
+  --text-4xl:  clamp(2.50rem, 2.08rem + 2.10vw, 3.30rem);
+  --text-5xl:  clamp(3.10rem, 2.40rem + 3.50vw, 4.50rem);
+  --text-6xl:  clamp(3.80rem, 2.70rem + 5.50vw, 6.00rem);
+  --text-display: clamp(4.50rem, 3.00rem + 7.50vw, 8.00rem);
+
+  /* Tracking */
+  --tracking-tighter: -0.04em;
+  --tracking-tight:   -0.02em;
+  --tracking-normal:   0em;
+  --tracking-wide:     0.04em;
+  --tracking-wider:    0.08em;
+  --tracking-widest:   0.14em;
+
+  /* Leading */
+  --leading-display: 0.95;
+  --leading-tight:   1.12;
+  --leading-snug:    1.32;
+  --leading-normal:  1.55;
+  --leading-loose:   1.8;
+
+  /* --- Motion ----------------------------------------------------------- */
+  --ease-out-expo:    cubic-bezier(0.16, 1, 0.30, 1);
+  --ease-in-out-cubic: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-spring:      cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  --dur-fast:  160ms;
+  --dur-base:  280ms;
+  --dur-slow:  520ms;
+  --dur-page:  780ms;
+
+  /* --- Layout ----------------------------------------------------------- */
+  --container-max: 1440px;
+  --gutter: clamp(1rem, 2.5vw, 2.5rem);
+
+  /* Legacy step scale (for components still using them) */
+  --step--1: clamp(0.875rem, 0.82rem + 0.28vw, 1rem);
+  --step-0: clamp(1rem, 0.92rem + 0.38vw, 1.125rem);
+  --step-1: clamp(1.25rem, 1.1rem + 0.7vw, 1.5rem);
+  --step-2: clamp(1.5rem, 1.22rem + 1.2vw, 2rem);
+  --step-3: clamp(2rem, 1.45rem + 2.4vw, 3rem);
+  --step-4: clamp(2.75rem, 1.95rem + 3.5vw, 4.5rem);
+  --step-5: clamp(3.5rem, 2.25rem + 5vw, 6rem);
+
+  --shadow-soft:
+    0.5px 1px 1px hsl(var(--shadow-color) / 0.12),
+    1px 2px 2px hsl(var(--shadow-color) / 0.1),
+    2px 4px 4px hsl(var(--shadow-color) / 0.08);
+  --shadow-elevated:
+    1px 2px 2px hsl(var(--shadow-color) / 0.2),
+    2px 4px 4px hsl(var(--shadow-color) / 0.18),
+    4px 8px 8px hsl(var(--shadow-color) / 0.15),
+    8px 16px 16px hsl(var(--shadow-color) / 0.12),
+    16px 32px 32px hsl(var(--shadow-color) / 0.1);
+  --shadow-premium:
+    1px 2px 2px hsl(var(--shadow-color) / 0.22),
+    2px 6px 6px hsl(var(--shadow-color) / 0.18),
+    6px 14px 14px hsl(var(--shadow-color) / 0.15),
+    14px 28px 28px hsl(var(--shadow-color) / 0.12),
+    28px 48px 48px hsl(var(--shadow-color) / 0.08);
+}
+
+/* =========================================================================
+   Tailwind @theme bridge
+   ========================================================================= */
 @theme {
-  --font-sans: var(--font-inter);
-  --font-display: var(--font-plus-jakarta);
-  --font-mono: var(--font-jetbrains-mono);
+  --font-sans: var(--font-body);
+  --font-display: var(--font-display);
+  --font-mono: var(--font-mono);
 
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
@@ -38,98 +176,59 @@
   }
 }
 
-@layer base {
-  :root {
-    --background: 240 33% 4%;
-    --foreground: 240 10% 93%;
-    --surface: 240 22% 9%;
-    --surface-foreground: 240 10% 93%;
-    --primary: 250 80% 67%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 240 20% 12%;
-    --secondary-foreground: 240 10% 93%;
-    --accent: 219 90% 66%;
-    --accent-foreground: 0 0% 100%;
-    --border: 240 15% 15%;
-    --ring: 250 80% 67%;
-    --muted: 240 20% 12%;
-    --muted-foreground: 240 10% 55%;
-    --shadow-color: 240deg 70% 3%;
-  }
-
-  .light {
-    --background: 0 0% 99%;
-    --foreground: 240 20% 8%;
-    --surface: 0 0% 100%;
-    --surface-foreground: 240 20% 8%;
-    --primary: 250 80% 58%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 240 20% 96%;
-    --secondary-foreground: 240 16% 16%;
-    --accent: 219 90% 56%;
-    --accent-foreground: 0 0% 100%;
-    --border: 240 20% 88%;
-    --ring: 250 80% 58%;
-    --muted: 240 20% 96%;
-    --muted-foreground: 240 10% 40%;
-    --shadow-color: 240deg 40% 15%;
-  }
-
-  :root {
-    --shadow-soft:
-      0.5px 1px 1px hsl(var(--shadow-color) / 0.12),
-      1px 2px 2px hsl(var(--shadow-color) / 0.1),
-      2px 4px 4px hsl(var(--shadow-color) / 0.08);
-    --shadow-elevated:
-      1px 2px 2px hsl(var(--shadow-color) / 0.2),
-      2px 4px 4px hsl(var(--shadow-color) / 0.18),
-      4px 8px 8px hsl(var(--shadow-color) / 0.15),
-      8px 16px 16px hsl(var(--shadow-color) / 0.12),
-      16px 32px 32px hsl(var(--shadow-color) / 0.1);
-    --shadow-premium:
-      1px 2px 2px hsl(var(--shadow-color) / 0.22),
-      2px 6px 6px hsl(var(--shadow-color) / 0.18),
-      6px 14px 14px hsl(var(--shadow-color) / 0.15),
-      14px 28px 28px hsl(var(--shadow-color) / 0.12),
-      28px 48px 48px hsl(var(--shadow-color) / 0.08);
-
-    --step--1: clamp(0.875rem, 0.82rem + 0.28vw, 1rem);
-    --step-0: clamp(1rem, 0.92rem + 0.38vw, 1.125rem);
-    --step-1: clamp(1.25rem, 1.1rem + 0.7vw, 1.5rem);
-    --step-2: clamp(1.5rem, 1.22rem + 1.2vw, 2rem);
-    --step-3: clamp(2rem, 1.45rem + 2.4vw, 3rem);
-    --step-4: clamp(2.75rem, 1.95rem + 3.5vw, 4.5rem);
-    --step-5: clamp(3.5rem, 2.25rem + 5vw, 6rem);
-  }
-}
-
+/* =========================================================================
+   Base styles
+   ========================================================================= */
 @layer base {
   * {
     border-color: hsl(var(--border));
   }
 
+  html,
   body {
-    background-color: hsl(var(--background));
-    color: hsl(var(--foreground));
-    font-family: var(--font-sans), system-ui, sans-serif;
+    background: var(--color-surface-0);
+    color: var(--color-fg-0);
+    font-family: var(--font-body), var(--font-sans), ui-sans-serif, system-ui, -apple-system, sans-serif;
+    font-feature-settings: "ss01", "ss02", "cv11";
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display), var(--font-body), sans-serif;
+    font-weight: 600;
+    letter-spacing: var(--tracking-tight);
+    line-height: var(--leading-tight);
+  }
+
+  code, pre, kbd, samp {
+    font-family: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
   }
 
   ::selection {
-    background-color: hsl(var(--primary) / 0.3);
-    color: hsl(var(--foreground));
+    background: var(--color-accent-400);
+    color: var(--color-surface-0);
   }
 }
 
+/* Hide native cursor once custom cursor mounts */
+html.has-custom-cursor,
+html.has-custom-cursor * {
+  cursor: none !important;
+}
+
+/* =========================================================================
+   Utilities
+   ========================================================================= */
 @layer utilities {
   .mesh-gradient {
-    background-color: hsl(240 33% 5%);
+    background-color: var(--color-surface-0);
     background-image:
-      radial-gradient(circle at 10% 20%, hsl(250 80% 60% / 0.25), transparent 32%),
-      radial-gradient(circle at 80% 10%, hsl(219 90% 66% / 0.2), transparent 28%),
-      radial-gradient(circle at 50% 80%, hsl(270 70% 60% / 0.15), transparent 24%),
-      radial-gradient(circle at 30% 60%, hsl(250 80% 67% / 0.08), transparent 28%);
+      radial-gradient(circle at 10% 20%, rgba(61, 75, 255, 0.25), transparent 32%),
+      radial-gradient(circle at 80% 10%, rgba(168, 245, 0, 0.15), transparent 28%),
+      radial-gradient(circle at 50% 80%, rgba(255, 122, 92, 0.12), transparent 24%),
+      radial-gradient(circle at 30% 60%, rgba(61, 75, 255, 0.08), transparent 28%);
   }
 
   .grain-surface {
@@ -141,9 +240,9 @@
     content: "";
     position: absolute;
     inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-    background-size: 256px 256px;
-    opacity: 0.4;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    background-size: 240px 240px;
+    opacity: 0.08;
     mix-blend-mode: overlay;
     pointer-events: none;
     z-index: 1;
@@ -152,12 +251,12 @@
   .glass-panel {
     background: linear-gradient(
       180deg,
-      hsl(0 0% 100% / 0.08),
-      hsl(0 0% 100% / 0.03)
+      rgba(255, 255, 255, 0.06),
+      rgba(255, 255, 255, 0.02)
     );
-    border: 1px solid hsl(0 0% 100% / 0.1);
-    backdrop-filter: blur(24px);
-    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid var(--color-surface-3);
+    backdrop-filter: blur(11px);
+    -webkit-backdrop-filter: blur(11px);
   }
 
   .glow-border {
@@ -172,9 +271,9 @@
     padding: 1px;
     background: linear-gradient(
       135deg,
-      hsl(var(--primary) / 0),
-      hsl(var(--primary) / 0),
-      hsl(var(--primary) / 0)
+      transparent,
+      transparent,
+      transparent
     );
     mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
     mask-composite: exclude;
@@ -186,14 +285,14 @@
   .glow-border:hover::before {
     background: linear-gradient(
       135deg,
-      hsl(var(--primary) / 0.6),
-      hsl(var(--primary) / 0.2),
-      hsl(var(--primary) / 0.6)
+      rgba(168, 245, 0, 0.5),
+      rgba(61, 75, 255, 0.3),
+      rgba(168, 245, 0, 0.5)
     );
   }
 
   .text-gradient {
-    background: linear-gradient(135deg, hsl(250 80% 67%), hsl(219 90% 66%), hsl(270 70% 72%));
+    background: linear-gradient(135deg, var(--color-accent-400), var(--color-primary-400), var(--color-accent-300));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -203,18 +302,28 @@
     position: fixed;
     top: 0;
     left: 0;
-    height: 2px;
-    background: hsl(var(--primary));
+    height: 1px;
+    background: var(--color-accent-400);
     z-index: 9999;
     transform-origin: left;
   }
 }
 
+/* Page transition veil */
+.page-transition-veil {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  background: var(--color-surface-0);
+  transform-origin: bottom;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, ::before, ::after {
-    animation-duration: 0.01ms !important;
+    animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+    transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
   }
 }

@@ -4,20 +4,20 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full text-sm font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50 cursor-pointer",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full font-medium transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-accent-400)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-surface-0)] disabled:pointer-events-none disabled:opacity-50 cursor-pointer",
   {
     variants: {
       variant: {
         primary:
-          "bg-gradient-to-r from-[hsl(250,80%,67%)] via-[hsl(219,90%,66%)] to-[hsl(270,70%,72%)] text-white shadow-[var(--shadow-elevated)] hover:translate-y-[-2px] hover:shadow-[0_8px_30px_hsl(250,80%,67%,0.3)]",
+          "bg-[var(--color-accent-400)] text-[var(--color-surface-0)] hover:bg-[var(--color-accent-300)] hover:translate-y-[-2px]",
         secondary:
-          "bg-transparent text-foreground border border-[rgba(255,255,255,0.06)] hover:border-[#7c6aef] hover:bg-[rgba(124,106,239,0.15)]",
+          "bg-transparent text-[var(--color-fg-0)] border border-[var(--color-surface-4)] hover:border-[var(--color-accent-400)]/60 hover:bg-[var(--color-surface-2)]",
         ghost:
-          "bg-transparent text-foreground hover:bg-surface",
+          "bg-transparent text-[var(--color-fg-0)] hover:bg-[var(--color-surface-2)]",
         glass:
-          "glass-panel text-foreground hover:bg-white/10",
+          "bg-[var(--color-surface-1)]/60 backdrop-blur-xl border border-[var(--color-surface-3)] text-[var(--color-fg-0)] hover:border-[var(--color-accent-400)]/60",
         outline:
-          "border border-primary/40 text-primary hover:bg-primary/10 hover:border-primary",
+          "border border-[var(--color-surface-4)] text-[var(--color-fg-0)] hover:border-[var(--color-accent-400)]/60 hover:bg-[var(--color-surface-2)]",
       },
       size: {
         sm: "h-9 px-4 text-xs",
@@ -44,6 +44,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     return (
       <Comp
         ref={ref}
+        data-cursor="magnet"
         className={cn(buttonVariants({ variant, size, className }))}
         {...props}
       />

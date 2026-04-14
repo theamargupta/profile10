@@ -14,8 +14,9 @@ export function FooterSocials({ socials }: { socials: Social[] }) {
             href={social.href}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-muted-foreground transition-colors duration-300 hover:text-primary"
+            className="text-[var(--color-fg-2)] transition-colors duration-300 hover:text-[var(--color-accent-400)]"
             aria-label={social.name}
+            data-cursor="magnet"
           >
             {Icon && <Icon size={18} />}
           </a>

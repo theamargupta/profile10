@@ -3,9 +3,8 @@
 import { useRef } from "react";
 import dynamic from "next/dynamic";
 import { Suspense } from "react";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import gsap from "gsap";
+import MagneticButton from "@/components/ui/magnetic-button";
 import { useGSAP } from "@gsap/react";
 
 gsap.registerPlugin();
@@ -13,7 +12,7 @@ gsap.registerPlugin();
 const HeroScene = dynamic(() => import("@/components/canvas/hero-scene"), {
   ssr: false,
   loading: () => (
-    <div className="absolute inset-0 bg-[#0a0a12] animate-pulse" />
+    <div className="absolute inset-0 bg-[var(--color-surface-0)] animate-pulse" />
   ),
 });
 
@@ -69,33 +68,43 @@ export function Hero({ headline, subtitle }: HeroProps) {
   return (
     <section
       ref={containerRef}
-      className="relative flex min-h-screen items-center overflow-hidden"
+      className="relative flex min-h-[100svh] items-center overflow-hidden"
     >
-      {/* Background glows */}
-      <div className="pointer-events-none absolute top-[10%] right-[15%] h-[600px] w-[600px] rounded-full bg-[#7c6aef] opacity-[0.3] blur-[120px] animate-float" />
-      <div className="pointer-events-none absolute bottom-[10%] left-[10%] h-[600px] w-[600px] rounded-full bg-[#5b8cf7] opacity-[0.3] blur-[120px]" style={{ animationDelay: '3s', animationDuration: '10s' }} />
+      {/* Background glows — devfrend-agency style: indigo + lime radials */}
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background: `
+            radial-gradient(circle at 15% 25%, rgba(61, 75, 255, 0.18), transparent 40%),
+            radial-gradient(circle at 75% 15%, rgba(168, 245, 0, 0.10), transparent 35%),
+            radial-gradient(circle at 50% 80%, rgba(255, 122, 92, 0.08), transparent 30%)
+          `,
+        }}
+      />
 
-      <div className="mesh-gradient grain-surface absolute inset-0 opacity-30" />
-
-      <div className="relative z-10 mx-auto grid max-w-7xl grid-cols-1 items-center gap-12 px-6 lg:grid-cols-2 lg:gap-16">
+      <div className="relative z-10 mx-auto grid w-full grid-cols-1 items-center gap-12 lg:grid-cols-2 lg:gap-16" style={{ maxWidth: "var(--container-max)", padding: "0 var(--gutter)" }}>
         {/* Left: Text Content */}
-        <div className="max-w-xl pt-20 lg:pt-0">
+        <div className="max-w-xl pt-40 pb-24 lg:pt-0 lg:pb-0">
           {/* Available badge */}
           <div
             data-hero-badge
-            className="mb-8 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-2 text-xs font-medium text-primary backdrop-blur-sm"
+            className="mb-8 inline-flex items-center gap-2 rounded-full border border-[var(--color-surface-4)] px-3 py-1 font-mono text-xs text-[var(--color-fg-2)]"
           >
-            <span className="h-1.5 w-1.5 rounded-full bg-green-400 animate-pulse" />
+            <span className="h-1.5 w-1.5 rounded-full bg-[var(--color-success)] animate-pulse" />
             Available for new projects
           </div>
 
           <h1
             data-hero-headline
-            className="font-display text-[clamp(2.75rem,5.5vw,4.5rem)] font-bold tracking-[-0.04em] leading-[1.05] [text-wrap:balance] mb-6"
+            className="font-display font-bold tracking-[var(--tracking-tighter)] mb-6 text-[var(--color-fg-0)]"
+            style={{
+              fontSize: "var(--text-5xl)",
+              lineHeight: "var(--leading-display)",
+            }}
           >
             {parts.map((part, i) =>
               part.toLowerCase() === "ai-powered" ? (
-                <span key={i} className="text-gradient">
+                <span key={i} className="text-[var(--color-accent-400)]">
                   {part}
                 </span>
               ) : (
@@ -106,7 +115,8 @@ export function Hero({ headline, subtitle }: HeroProps) {
 
           <p
             data-hero-subtitle
-            className="mb-6 text-base leading-relaxed text-muted-foreground max-w-md md:text-lg"
+            className="mb-6 max-w-md text-[var(--color-fg-1)]"
+            style={{ fontSize: "var(--text-lg)", lineHeight: "var(--leading-normal)" }}
           >
             Full-stack developer specializing in MCP servers, LLM integration,
             and workflow automation. Turning complex AI capabilities into
@@ -120,7 +130,7 @@ export function Hero({ headline, subtitle }: HeroProps) {
             {subtitle.split(/[·•,]/).map((tag) => (
               <span
                 key={tag.trim()}
-                className="rounded-full border border-border bg-surface/50 px-3 py-1.5 text-xs font-medium text-muted-foreground backdrop-blur-sm"
+                className="rounded-full border border-[var(--color-surface-4)] px-3 py-1 font-mono text-xs text-[var(--color-fg-2)]"
               >
                 {tag.trim()}
               </span>
@@ -128,17 +138,15 @@ export function Hero({ headline, subtitle }: HeroProps) {
           </div>
 
           <div data-hero-cta className="flex flex-wrap items-center gap-4">
-            <Button size="lg" asChild>
-              <Link href="/#contact">
-                Start a Project
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="ml-1">
-                  <path d="M3 8h10m0 0L9 4m4 4L9 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </Link>
-            </Button>
-            <Button variant="secondary" size="lg" asChild>
-              <Link href="/projects">View My Work</Link>
-            </Button>
+            <MagneticButton href="/#contact" variant="primary" size="md">
+              Start a Project
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="ml-1">
+                <path d="M3 8h10m0 0L9 4m4 4L9 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </MagneticButton>
+            <MagneticButton href="/projects" variant="ghost" size="md">
+              View My Work
+            </MagneticButton>
           </div>
         </div>
 
@@ -149,7 +157,7 @@ export function Hero({ headline, subtitle }: HeroProps) {
         >
           <Suspense
             fallback={
-              <div className="absolute inset-0 rounded-full bg-[#0a0a12] animate-pulse" />
+              <div className="absolute inset-0 rounded-full bg-[var(--color-surface-1)] animate-pulse" />
             }
           >
             <HeroScene />
@@ -159,8 +167,8 @@ export function Hero({ headline, subtitle }: HeroProps) {
 
       {/* Scroll indicator */}
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-        <div className="h-8 w-5 rounded-full border-2 border-foreground/20 p-1">
-          <div className="mx-auto h-2 w-1 rounded-full bg-primary/60 animate-pulse-glow" />
+        <div className="h-8 w-5 rounded-full border-2 border-[var(--color-fg-0)]/20 p-1">
+          <div className="mx-auto h-2 w-1 rounded-full bg-[var(--color-accent-400)]/60 animate-pulse-glow" />
         </div>
       </div>
     </section>

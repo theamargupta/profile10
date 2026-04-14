@@ -1,4 +1,7 @@
+"use client";
+
 import { cn } from "@/lib/utils";
+import MaskReveal from "@/components/ui/mask-reveal";
 
 interface SectionHeadingProps {
   label?: string;
@@ -14,12 +17,15 @@ export function SectionHeading({ label, title, className }: SectionHeadingProps)
           {label}
         </p>
       )}
-      <h2
+      <MaskReveal
+        as="h2"
         className="font-display font-semibold tracking-[var(--tracking-tight)] text-[var(--color-fg-0)]"
-        style={{ fontSize: "var(--text-4xl)", lineHeight: "var(--leading-tight)" }}
+        delay={100}
       >
-        {title}
-      </h2>
+        <span style={{ fontSize: "var(--text-4xl)", lineHeight: "var(--leading-tight)" }}>
+          {title}
+        </span>
+      </MaskReveal>
     </div>
   );
 }

@@ -12,6 +12,7 @@ import { AboutBrief } from "@/components/dom/about-brief";
 import { ExperienceTimeline } from "@/components/dom/experience-timeline";
 import { SkillsGrid } from "@/components/dom/skills-grid";
 import { ContactSection } from "@/components/dom/contact-section";
+import ScrollMarquee from "@/components/dom/scroll-marquee";
 
 export default async function Home() {
   const [profile, projects, services, experiences, skills] = await Promise.all([
@@ -31,6 +32,7 @@ export default async function Home() {
           "MCP Servers · LLM Integration · Workflow Automation"
         }
       />
+      <ScrollMarquee />
       <ServicesGrid services={services} />
       <FeaturedProjects projects={projects} />
       <AboutBrief

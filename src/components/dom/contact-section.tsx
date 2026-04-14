@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef, useState, type FormEvent } from "react";
-import { Button } from "@/components/ui/button";
 import { SectionHeading } from "@/components/ui/section-heading";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -60,38 +59,39 @@ export function ContactSection({ email }: { email: string }) {
     }
   }
 
+  const inputClasses =
+    "w-full rounded-xl border border-[var(--color-surface-3)] bg-[var(--color-surface-1)]/60 px-4 py-3 text-[var(--color-fg-0)] placeholder:text-[var(--color-fg-3)] focus:border-[var(--color-accent-400)] focus:outline-none transition-colors";
+
   return (
-    <section id="contact" ref={ref} className="py-[15vh]">
-      <div className="mx-auto max-w-7xl px-6">
+    <section id="contact" ref={ref} className="py-28 md:py-40">
+      <div className="mx-auto" style={{ maxWidth: "var(--container-max)", padding: "0 var(--gutter)" }}>
         <SectionHeading label="Get in Touch" title="Start a Project" />
         <div
           data-contact-form
-          className="mx-auto max-w-xl glass-panel rounded-2xl p-8 md:p-10"
+          className="mx-auto max-w-xl rounded-3xl border border-[var(--color-surface-3)] bg-[var(--color-surface-1)]/60 p-8 backdrop-blur-xl md:p-10"
         >
           {status === "sent" ? (
             <div className="text-center">
-              <p className="mb-2 font-display text-xl font-semibold text-primary">
+              <p className="mb-2 font-display text-xl font-semibold text-[var(--color-accent-400)]">
                 Message Sent!
               </p>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-[var(--color-fg-1)]" style={{ fontSize: "var(--text-sm)" }}>
                 Thank you for reaching out. I&apos;ll get back to you within 24
                 hours.
               </p>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="mt-4"
+              <button
+                className="mt-4 font-mono text-xs uppercase tracking-[var(--tracking-wider)] text-[var(--color-fg-2)] transition-colors hover:text-[var(--color-fg-0)]"
                 onClick={() => setStatus("idle")}
               >
                 Send Another
-              </Button>
+              </button>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
                 <label
                   htmlFor="name"
-                  className="mb-2 block text-sm font-medium text-foreground/80"
+                  className="mb-2 block font-mono text-xs uppercase tracking-[var(--tracking-wider)] text-[var(--color-fg-2)]"
                 >
                   Name
                 </label>
@@ -100,14 +100,14 @@ export function ContactSection({ email }: { email: string }) {
                   name="name"
                   type="text"
                   required
-                  className="w-full rounded-lg border border-border bg-background/50 px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors"
+                  className={inputClasses}
                   placeholder="Your name"
                 />
               </div>
               <div>
                 <label
                   htmlFor="email"
-                  className="mb-2 block text-sm font-medium text-foreground/80"
+                  className="mb-2 block font-mono text-xs uppercase tracking-[var(--tracking-wider)] text-[var(--color-fg-2)]"
                 >
                   Email
                 </label>
@@ -116,14 +116,14 @@ export function ContactSection({ email }: { email: string }) {
                   name="email"
                   type="email"
                   required
-                  className="w-full rounded-lg border border-border bg-background/50 px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors"
+                  className={inputClasses}
                   placeholder="you@company.com"
                 />
               </div>
               <div>
                 <label
                   htmlFor="message"
-                  className="mb-2 block text-sm font-medium text-foreground/80"
+                  className="mb-2 block font-mono text-xs uppercase tracking-[var(--tracking-wider)] text-[var(--color-fg-2)]"
                 >
                   Message
                 </label>
@@ -132,13 +132,13 @@ export function ContactSection({ email }: { email: string }) {
                   name="message"
                   required
                   rows={5}
-                  className="w-full rounded-lg border border-border bg-background/50 px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground/50 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary transition-colors resize-none"
+                  className={`${inputClasses} resize-none`}
                   placeholder="Tell me about your project..."
                 />
               </div>
 
               {status === "error" && (
-                <p className="text-sm text-red-400">
+                <p aria-live="polite" className="text-sm text-[var(--color-danger)]">
                   Something went wrong. Try emailing me directly at{" "}
                   <a href={`mailto:${email}`} className="underline">
                     {email}
@@ -147,14 +147,14 @@ export function ContactSection({ email }: { email: string }) {
                 </p>
               )}
 
-              <Button
+              <button
                 type="submit"
-                size="lg"
-                className="w-full"
+                data-cursor="magnet"
                 disabled={status === "sending"}
+                className="flex h-14 w-full items-center justify-center rounded-full bg-[var(--color-accent-400)] font-medium text-[var(--color-surface-0)] transition-all duration-300 hover:bg-[var(--color-accent-300)] disabled:opacity-50 disabled:pointer-events-none"
               >
                 {status === "sending" ? "Sending..." : "Send Message"}
-              </Button>
+              </button>
             </form>
           )}
         </div>

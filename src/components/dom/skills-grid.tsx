@@ -34,20 +34,20 @@ export function SkillsGrid({
   );
 
   return (
-    <section ref={ref} className="py-[15vh]">
-      <div className="mx-auto max-w-7xl px-6">
+    <section ref={ref} className="py-28 md:py-40">
+      <div className="mx-auto" style={{ maxWidth: "var(--container-max)", padding: "0 var(--gutter)" }}>
         <SectionHeading label="Expertise" title="Technical Skills" />
         <div className="mx-auto max-w-3xl space-y-4">
           {categories.map((cat) => (
             <div
               key={cat.id}
               data-skill-row
-              className="glass-panel flex flex-col gap-2 rounded-xl px-6 py-4 sm:flex-row sm:items-start sm:gap-6"
+              className="flex flex-col gap-2 rounded-2xl border border-[var(--color-surface-3)] bg-[var(--color-surface-1)]/60 px-6 py-4 backdrop-blur-xl sm:flex-row sm:items-start sm:gap-6"
             >
-              <span className="shrink-0 font-mono text-xs font-medium uppercase tracking-widest text-primary sm:w-32 sm:pt-0.5">
+              <span className="shrink-0 font-mono text-xs font-medium uppercase tracking-[var(--tracking-widest)] text-[var(--color-accent-400)] sm:w-32 sm:pt-0.5">
                 {cat.category}
               </span>
-              <p className="text-sm text-muted-foreground leading-relaxed">
+              <p className="text-[var(--color-fg-1)]" style={{ fontSize: "var(--text-sm)", lineHeight: "var(--leading-normal)" }}>
                 {cat.skills}
               </p>
             </div>

@@ -1,27 +1,33 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans, Inter, JetBrains_Mono } from "next/font/google";
+import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import SmoothScrollProvider from "@/components/providers/smooth-scroll";
-import { ThemeProvider } from "@/components/providers/theme-provider";
+import CustomCursor from "@/components/providers/custom-cursor";
+import GrainOverlay from "@/components/providers/grain-overlay";
+import Preloader from "@/components/providers/preloader";
 import { Navbar } from "@/components/dom/navbar";
 import { Footer } from "@/components/dom/footer";
 import { ScrollProgress } from "@/components/dom/scroll-progress";
+import FloatingCta from "@/components/dom/floating-cta";
 
-const plusJakarta = Plus_Jakarta_Sans({
+const spaceGrotesk = Space_Grotesk({
+  variable: "--font-display",
   subsets: ["latin"],
-  variable: "--font-plus-jakarta",
+  weight: ["400", "500", "600", "700"],
   display: "swap",
 });
 
 const inter = Inter({
+  variable: "--font-body",
   subsets: ["latin"],
-  variable: "--font-inter",
+  weight: ["400", "500", "600", "700"],
   display: "swap",
 });
 
 const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-mono",
   subsets: ["latin"],
-  variable: "--font-jetbrains-mono",
+  weight: ["400", "500"],
   display: "swap",
 });
 
@@ -62,17 +68,25 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${plusJakarta.variable} ${inter.variable} ${jetbrainsMono.variable}`}
+      className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <body className="min-h-screen bg-background text-foreground antialiased">
+      <body className="min-h-full flex flex-col bg-[var(--color-surface-0)] text-[var(--color-fg-0)]">
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-[var(--color-accent-400)] focus:px-4 focus:py-2 focus:font-mono focus:text-xs focus:uppercase focus:tracking-[var(--tracking-wider)] focus:text-[var(--color-surface-0)]"
+        >
+          Skip to content
+        </a>
         <SmoothScrollProvider>
-          <ThemeProvider>
-            <ScrollProgress />
-            <Navbar />
-            <main>{children}</main>
-            <Footer />
-          </ThemeProvider>
+          <CustomCursor />
+          <GrainOverlay />
+          <Preloader />
+          <ScrollProgress />
+          <Navbar />
+          <main id="main">{children}</main>
+          <FloatingCta />
+          <Footer />
         </SmoothScrollProvider>
       </body>
     </html>

@@ -13,8 +13,8 @@ export function GlowCard({ children, className, hover = true }: GlowCardProps) {
   return (
     <div
       className={cn(
-        "glass-panel rounded-2xl p-6 transition-all duration-500",
-        hover && "glow-border hover:translate-y-[-4px] hover:shadow-[0_0_40px_hsl(var(--primary)/0.1)]",
+        "rounded-3xl border border-[var(--color-surface-3)] bg-[var(--color-surface-1)]/60 p-8 backdrop-blur-xl transition-all duration-500",
+        hover && "hover:border-[var(--color-accent-400)]/60 hover:translate-y-[-4px]",
         className
       )}
     >

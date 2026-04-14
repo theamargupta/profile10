@@ -34,21 +34,31 @@ export function AboutBrief({ bioShort, howIWork }: AboutBriefProps) {
   );
 
   return (
-    <section ref={ref} className="py-[15vh]">
-      <div className="mx-auto max-w-7xl px-6">
+    <section ref={ref} className="py-28 md:py-40">
+      <div className="mx-auto" style={{ maxWidth: "var(--container-max)", padding: "0 var(--gutter)" }}>
         <SectionHeading label="About" title="Get to Know Me" />
         <div className="mx-auto grid max-w-5xl gap-16 lg:grid-cols-2">
-          <div data-about-text>
-            <h3 className="mb-4 font-display text-xl font-semibold">
+          <div data-about-text className="rounded-3xl border border-[var(--color-surface-3)] bg-[var(--color-surface-1)]/60 p-8 backdrop-blur-xl md:p-10">
+            <h3
+              className="mb-4 font-display font-semibold text-[var(--color-fg-0)]"
+              style={{ fontSize: "var(--text-xl)" }}
+            >
               Background
             </h3>
-            <p className="text-muted-foreground leading-relaxed">{bioShort}</p>
+            <p className="text-[var(--color-fg-1)]" style={{ fontSize: "var(--text-base)", lineHeight: "var(--leading-normal)" }}>
+              {bioShort}
+            </p>
           </div>
-          <div data-about-text>
-            <h3 className="mb-4 font-display text-xl font-semibold">
+          <div data-about-text className="rounded-3xl border border-[var(--color-surface-3)] bg-[var(--color-surface-1)]/60 p-8 backdrop-blur-xl md:p-10">
+            <h3
+              className="mb-4 font-display font-semibold text-[var(--color-fg-0)]"
+              style={{ fontSize: "var(--text-xl)" }}
+            >
               How I Work
             </h3>
-            <p className="text-muted-foreground leading-relaxed">{howIWork}</p>
+            <p className="text-[var(--color-fg-1)]" style={{ fontSize: "var(--text-base)", lineHeight: "var(--leading-normal)" }}>
+              {howIWork}
+            </p>
           </div>
         </div>
       </div>
