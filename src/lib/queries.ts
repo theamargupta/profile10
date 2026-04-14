@@ -99,6 +99,28 @@ export async function getBlogPosts(): Promise<BlogPost[]> {
   return data ?? [];
 }
 
+export async function getBlogPostBySlug(
+  slug: string
+): Promise<BlogPost | null> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("blog_posts")
+    .select("*, blog_post_tags(blog_tags(*))")
+    .eq("slug", slug)
+    .eq("published", true)
+    .single();
+  return data;
+}
+
+export async function getAllBlogSlugs(): Promise<string[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("blog_posts")
+    .select("slug")
+    .eq("published", true);
+  return data?.map((p) => p.slug) ?? [];
+}
+
 export async function getBlogTags(): Promise<BlogTag[]> {
   const supabase = await createClient();
   const { data } = await supabase.from("blog_tags").select("*").order("name");

@@ -97,6 +97,34 @@ async function requireUser() {
   return supabase;
 }
 
+export async function createProjectAction(formData: FormData) {
+  const supabase = await requireUser();
+
+  const title = toText(formData.get("title")) ?? "New Project";
+  const id =
+    toText(formData.get("id")) ??
+    title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "");
+
+  const { error } = await supabase.from("projects").insert({
+    id,
+    title,
+    description: toText(formData.get("description")),
+    live_url: toText(formData.get("live_url")),
+    repo_url: toText(formData.get("repo_url")),
+    featured: toBoolean(formData.get("featured")),
+    sort_order: toNumber(formData.get("sort_order"), 0),
+  });
+  if (error) redirect(`/admin?error=${encodeURIComponent(error.message)}`);
+
+  revalidatePath("/");
+  revalidatePath("/projects");
+  revalidatePath("/admin");
+  redirect("/admin?success=Project%20created");
+}
+
 export async function updateProjectAction(formData: FormData) {
   const supabase = await requireUser();
   const id = toText(formData.get("id"));
@@ -152,6 +180,22 @@ export async function updateProjectAction(formData: FormData) {
   redirect("/admin?success=Project%20updated");
 }
 
+export async function createServiceAction(formData: FormData) {
+  const supabase = await requireUser();
+
+  const { error } = await supabase.from("services").insert({
+    title: toText(formData.get("title")) ?? "New Service",
+    description: toText(formData.get("description")) ?? "",
+    icon: toText(formData.get("icon")),
+    sort_order: toNumber(formData.get("sort_order"), 0),
+  });
+  if (error) redirect(`/admin?error=${encodeURIComponent(error.message)}`);
+
+  revalidatePath("/");
+  revalidatePath("/admin");
+  redirect("/admin?success=Service%20created");
+}
+
 export async function updateServiceAction(formData: FormData) {
   const supabase = await requireUser();
   const id = toText(formData.get("id"));
@@ -170,6 +214,26 @@ export async function updateServiceAction(formData: FormData) {
   revalidatePath("/");
   revalidatePath("/admin");
   redirect("/admin?success=Service%20updated");
+}
+
+export async function createExperienceAction(formData: FormData) {
+  const supabase = await requireUser();
+
+  const { error } = await supabase.from("experiences").insert({
+    company: toText(formData.get("company")) ?? "Company",
+    job_title: toText(formData.get("job_title")) ?? "Role",
+    location: toText(formData.get("location")),
+    description: toText(formData.get("description")),
+    start_date: toText(formData.get("start_date")) ?? new Date().toISOString().slice(0, 10),
+    end_date: toText(formData.get("end_date")),
+    sort_order: toNumber(formData.get("sort_order"), 0),
+  });
+  if (error) redirect(`/admin?error=${encodeURIComponent(error.message)}`);
+
+  revalidatePath("/");
+  revalidatePath("/about");
+  revalidatePath("/admin");
+  redirect("/admin?success=Experience%20created");
 }
 
 export async function updateExperienceAction(formData: FormData) {
@@ -192,6 +256,22 @@ export async function updateExperienceAction(formData: FormData) {
   revalidatePath("/about");
   revalidatePath("/admin");
   redirect("/admin?success=Experience%20updated");
+}
+
+export async function createSkillCategoryAction(formData: FormData) {
+  const supabase = await requireUser();
+
+  const { error } = await supabase.from("skill_categories").insert({
+    category: toText(formData.get("category")) ?? "New Category",
+    skills: toText(formData.get("skills")) ?? "",
+    sort_order: toNumber(formData.get("sort_order"), 0),
+  });
+  if (error) redirect(`/admin?error=${encodeURIComponent(error.message)}`);
+
+  revalidatePath("/");
+  revalidatePath("/about");
+  revalidatePath("/admin");
+  redirect("/admin?success=Skill%20category%20created");
 }
 
 export async function updateSkillCategoryAction(formData: FormData) {
@@ -217,6 +297,24 @@ export async function updateSkillCategoryAction(formData: FormData) {
   redirect("/admin?success=Skill%20category%20updated");
 }
 
+export async function createSocialAction(formData: FormData) {
+  const supabase = await requireUser();
+
+  const { error } = await supabase.from("socials").insert({
+    name: toText(formData.get("name")) ?? "Social",
+    href: toText(formData.get("href")) ?? "",
+    icon: toText(formData.get("icon")) ?? "",
+    color: toText(formData.get("color")),
+    sort_order: toNumber(formData.get("sort_order"), 0),
+  });
+  if (error) redirect(`/admin?error=${encodeURIComponent(error.message)}`);
+
+  revalidatePath("/");
+  revalidatePath("/about");
+  revalidatePath("/admin");
+  redirect("/admin?success=Social%20created");
+}
+
 export async function updateSocialAction(formData: FormData) {
   const supabase = await requireUser();
   const id = toText(formData.get("id"));
@@ -237,4 +335,101 @@ export async function updateSocialAction(formData: FormData) {
   revalidatePath("/about");
   revalidatePath("/admin");
   redirect("/admin?success=Social%20updated");
+}
+
+export async function updateBlogPostAction(formData: FormData) {
+  const supabase = await requireUser();
+  const id = toText(formData.get("id"));
+  if (!id) redirect("/admin?error=Blog%20post%20id%20missing");
+
+  const slug = toText(formData.get("slug")) ?? "";
+  const published = toBoolean(formData.get("published"));
+
+  const payload = {
+    title: toText(formData.get("title")) ?? "Untitled",
+    slug,
+    excerpt: toText(formData.get("excerpt")),
+    content: toText(formData.get("content")),
+    cover_image: toText(formData.get("cover_image")),
+    reading_time_minutes: toNumber(formData.get("reading_time_minutes"), 1),
+    published,
+    published_at: published ? new Date().toISOString() : null,
+  };
+
+  const { error } = await supabase.from("blog_posts").update(payload).eq("id", id);
+  if (error) redirect(`/admin?error=${encodeURIComponent(error.message)}`);
+
+  revalidatePath("/blog");
+  revalidatePath(`/blog/${slug}`);
+  revalidatePath("/admin");
+  redirect("/admin?success=Blog%20post%20updated");
+}
+
+export async function createBlogPostAction(formData: FormData) {
+  const supabase = await requireUser();
+
+  const title = toText(formData.get("title")) ?? "Untitled Post";
+  const slug =
+    toText(formData.get("slug")) ??
+    title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "");
+
+  const payload = {
+    title,
+    slug,
+    excerpt: toText(formData.get("excerpt")),
+    content: toText(formData.get("content")),
+    cover_image: toText(formData.get("cover_image")),
+    reading_time_minutes: toNumber(formData.get("reading_time_minutes"), 5),
+    published: toBoolean(formData.get("published")),
+    published_at: toBoolean(formData.get("published"))
+      ? new Date().toISOString()
+      : null,
+  };
+
+  const { error } = await supabase.from("blog_posts").insert(payload);
+  if (error) redirect(`/admin?error=${encodeURIComponent(error.message)}`);
+
+  revalidatePath("/blog");
+  revalidatePath("/admin");
+  redirect("/admin?success=Blog%20post%20created");
+}
+
+export async function updateBlogTagAction(formData: FormData) {
+  const supabase = await requireUser();
+  const id = toText(formData.get("id"));
+  if (!id) redirect("/admin?error=Blog%20tag%20id%20missing");
+
+  const payload = {
+    name: toText(formData.get("name")) ?? "Tag",
+    slug: toText(formData.get("slug")) ?? "",
+  };
+
+  const { error } = await supabase.from("blog_tags").update(payload).eq("id", id);
+  if (error) redirect(`/admin?error=${encodeURIComponent(error.message)}`);
+
+  revalidatePath("/blog");
+  revalidatePath("/admin");
+  redirect("/admin?success=Blog%20tag%20updated");
+}
+
+export async function createBlogTagAction(formData: FormData) {
+  const supabase = await requireUser();
+
+  const name = toText(formData.get("name")) ?? "New Tag";
+  const slug =
+    toText(formData.get("slug")) ??
+    name
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "");
+
+  const { error } = await supabase.from("blog_tags").insert({ name, slug });
+  if (error) redirect(`/admin?error=${encodeURIComponent(error.message)}`);
+
+  revalidatePath("/blog");
+  revalidatePath("/admin");
+  redirect("/admin?success=Blog%20tag%20created");
 }

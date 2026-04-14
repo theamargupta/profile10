@@ -9,6 +9,15 @@ import {
 } from "@/lib/queries";
 import {
   loginAction,
+  createBlogPostAction,
+  createBlogTagAction,
+  createExperienceAction,
+  createProjectAction,
+  createServiceAction,
+  createSkillCategoryAction,
+  createSocialAction,
+  updateBlogPostAction,
+  updateBlogTagAction,
   signOutAction,
   updateExperienceAction,
   updateProfileAction,
@@ -18,6 +27,7 @@ import {
   updateSocialAction,
 } from "@/app/admin/actions";
 import { AdminTabs } from "@/app/admin/admin-tabs";
+import { CopyAllButton } from "@/app/admin/copy-all-button";
 import { Button } from "@/components/ui/button";
 
 type AdminPageProps = {
@@ -106,6 +116,10 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
       getSkillCategories(),
       getSocials(),
     ]);
+  const [{ data: blogPosts }, { data: blogTags }] = await Promise.all([
+    supabase.from("blog_posts").select("*").order("created_at", { ascending: false }),
+    supabase.from("blog_tags").select("*").order("name"),
+  ]);
 
   if (!profile) {
     return (
@@ -141,11 +155,25 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                 Clean editing flow for all portfolio sections.
               </p>
             </div>
-            <form action={signOutAction}>
-              <Button type="submit" variant="secondary" size="sm">
-                Sign Out
-              </Button>
-            </form>
+            <div className="flex items-center gap-2">
+              <CopyAllButton
+                data={{
+                  profile,
+                  projects,
+                  services,
+                  experiences,
+                  skills,
+                  socials,
+                  blogPosts: blogPosts ?? [],
+                  blogTags: blogTags ?? [],
+                }}
+              />
+              <form action={signOutAction}>
+                <Button type="submit" variant="secondary" size="sm">
+                  Sign Out
+                </Button>
+              </form>
+            </div>
           </div>
           <div className="mt-3 flex flex-wrap gap-2 text-xs text-foreground/70">
             <span className="rounded-full border border-white/15 px-3 py-1">
@@ -162,6 +190,9 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
             </span>
             <span className="rounded-full border border-white/15 px-3 py-1">
               {socials.length} socials
+            </span>
+            <span className="rounded-full border border-white/15 px-3 py-1">
+              {(blogPosts ?? []).length} blog posts
             </span>
           </div>
         </div>
@@ -285,6 +316,32 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
               content: (
                 <section className={cardClass}>
                   <h2 className="text-lg font-semibold text-foreground">Projects</h2>
+
+                  <details className="mt-4 rounded-xl border border-dashed border-primary/30 bg-primary/5 p-4">
+                    <summary className="cursor-pointer list-none text-sm font-medium text-primary">
+                      + Create New Project
+                    </summary>
+                    <form action={createProjectAction} className="mt-4 space-y-3">
+                      <div className="grid gap-3 md:grid-cols-2">
+                        <input name="title" placeholder="Project title" required className={inputClass} />
+                        <input name="id" placeholder="slug-id (auto from title if empty)" className={inputClass} />
+                      </div>
+                      <textarea name="description" rows={3} placeholder="Description" className={inputClass} />
+                      <div className="grid gap-3 md:grid-cols-2">
+                        <input name="live_url" placeholder="Live URL" className={inputClass} />
+                        <input name="repo_url" placeholder="Repo URL" className={inputClass} />
+                      </div>
+                      <div className="flex flex-wrap items-center gap-4">
+                        <label className="flex items-center gap-2 text-sm">
+                          <input type="checkbox" name="featured" />
+                          Featured
+                        </label>
+                        <input type="number" name="sort_order" defaultValue={0} placeholder="Sort" className="w-24 rounded-lg border border-white/15 bg-black/20 px-3 py-2 text-sm" />
+                        <Button type="submit" size="sm">Create Project</Button>
+                      </div>
+                    </form>
+                  </details>
+
             <div className="mt-4 grid gap-4">
               {projects.map((project) => (
                 <form key={project.id} action={updateProjectAction} className="space-y-3 rounded-xl border border-white/10 bg-black/20 p-4">
@@ -353,6 +410,24 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
               content: (
                 <section className={cardClass}>
                   <h2 className="text-lg font-semibold text-foreground">Services</h2>
+
+                  <details className="mt-4 rounded-xl border border-dashed border-primary/30 bg-primary/5 p-4">
+                    <summary className="cursor-pointer list-none text-sm font-medium text-primary">
+                      + Create New Service
+                    </summary>
+                    <form action={createServiceAction} className="mt-4 space-y-3">
+                      <input name="title" placeholder="Service title" required className={inputClass} />
+                      <textarea name="description" rows={3} placeholder="Description" required className={inputClass} />
+                      <div className="grid gap-3 md:grid-cols-2">
+                        <input name="icon" placeholder="Icon name" className={inputClass} />
+                        <input type="number" name="sort_order" defaultValue={0} className={inputClass} />
+                      </div>
+                      <div className="flex justify-end">
+                        <Button type="submit" size="sm">Create Service</Button>
+                      </div>
+                    </form>
+                  </details>
+
             <div className="mt-4 grid gap-4">
               {services.map((service) => (
                 <form key={service.id} action={updateServiceAction} className="space-y-3 rounded-xl border border-white/10 bg-black/20 p-4">
@@ -379,6 +454,29 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
               content: (
                 <section className={cardClass}>
                   <h2 className="text-lg font-semibold text-foreground">Experience</h2>
+
+                  <details className="mt-4 rounded-xl border border-dashed border-primary/30 bg-primary/5 p-4">
+                    <summary className="cursor-pointer list-none text-sm font-medium text-primary">
+                      + Create New Experience
+                    </summary>
+                    <form action={createExperienceAction} className="mt-4 space-y-3">
+                      <div className="grid gap-3 md:grid-cols-2">
+                        <input name="company" placeholder="Company" required className={inputClass} />
+                        <input name="job_title" placeholder="Job title" required className={inputClass} />
+                      </div>
+                      <div className="grid gap-3 md:grid-cols-2">
+                        <input name="start_date" type="date" required className={inputClass} />
+                        <input name="end_date" type="date" placeholder="End date (empty = present)" className={inputClass} />
+                      </div>
+                      <input name="location" placeholder="Location" className={inputClass} />
+                      <textarea name="description" rows={3} placeholder="Description" className={inputClass} />
+                      <div className="flex items-center gap-4">
+                        <input type="number" name="sort_order" defaultValue={0} className="w-24 rounded-lg border border-white/15 bg-black/20 px-3 py-2 text-sm" />
+                        <Button type="submit" size="sm">Create Experience</Button>
+                      </div>
+                    </form>
+                  </details>
+
             <div className="mt-4 grid gap-4">
               {experiences.map((experience) => (
                 <form key={experience.id} action={updateExperienceAction} className="space-y-3 rounded-xl border border-white/10 bg-black/20 p-4">
@@ -408,6 +506,21 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
               content: (
                 <section className={cardClass}>
                   <h2 className="text-lg font-semibold text-foreground">Skill Categories</h2>
+
+                  <details className="mt-4 rounded-xl border border-dashed border-primary/30 bg-primary/5 p-4">
+                    <summary className="cursor-pointer list-none text-sm font-medium text-primary">
+                      + Create New Skill Category
+                    </summary>
+                    <form action={createSkillCategoryAction} className="mt-4 space-y-3">
+                      <input name="category" placeholder="Category name" required className={inputClass} />
+                      <textarea name="skills" rows={3} placeholder="Skills (comma-separated)" required className={inputClass} />
+                      <div className="flex items-center gap-4">
+                        <input type="number" name="sort_order" defaultValue={0} className="w-24 rounded-lg border border-white/15 bg-black/20 px-3 py-2 text-sm" />
+                        <Button type="submit" size="sm">Create Category</Button>
+                      </div>
+                    </form>
+                  </details>
+
             <div className="mt-4 grid gap-4">
               {skills.map((skill) => (
                 <form key={skill.id} action={updateSkillCategoryAction} className="space-y-3 rounded-xl border border-white/10 bg-black/20 p-4">
@@ -433,6 +546,27 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
               content: (
                 <section className={cardClass}>
                   <h2 className="text-lg font-semibold text-foreground">Social Links</h2>
+
+                  <details className="mt-4 rounded-xl border border-dashed border-primary/30 bg-primary/5 p-4">
+                    <summary className="cursor-pointer list-none text-sm font-medium text-primary">
+                      + Create New Social
+                    </summary>
+                    <form action={createSocialAction} className="mt-4 space-y-3">
+                      <div className="grid gap-3 md:grid-cols-2">
+                        <input name="name" placeholder="Name (e.g. GitHub)" required className={inputClass} />
+                        <input name="icon" placeholder="Icon name" required className={inputClass} />
+                      </div>
+                      <input name="href" placeholder="URL" required className={inputClass} />
+                      <div className="grid gap-3 md:grid-cols-2">
+                        <input name="color" placeholder="Color (optional)" className={inputClass} />
+                        <input type="number" name="sort_order" defaultValue={0} className={inputClass} />
+                      </div>
+                      <div className="flex justify-end">
+                        <Button type="submit" size="sm">Create Social</Button>
+                      </div>
+                    </form>
+                  </details>
+
             <div className="mt-4 grid gap-4">
               {socials.map((social) => (
                 <form key={social.id} action={updateSocialAction} className="space-y-3 rounded-xl border border-white/10 bg-black/20 p-4">
@@ -453,6 +587,131 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
               ))}
             </div>
           </section>
+              ),
+            },
+            {
+              id: "blog",
+              label: "Blog",
+              count: (blogPosts ?? []).length,
+              content: (
+                <section className={cardClass}>
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-lg font-semibold text-foreground">Blog Posts</h2>
+                  </div>
+
+                  <details className="mt-4 rounded-xl border border-dashed border-primary/30 bg-primary/5 p-4">
+                    <summary className="cursor-pointer list-none text-sm font-medium text-primary">
+                      + Create New Post
+                    </summary>
+                    <form action={createBlogPostAction} className="mt-4 space-y-3">
+                      <input name="title" placeholder="Post title" required className={inputClass} />
+                      <input name="slug" placeholder="url-slug (auto-generated if empty)" className={inputClass} />
+                      <textarea name="excerpt" rows={2} placeholder="Short excerpt" className={inputClass} />
+                      <textarea name="content" rows={8} placeholder="Post content (HTML supported)" className={inputClass} />
+                      <div className="grid gap-3 md:grid-cols-[1fr_auto_auto]">
+                        <input name="cover_image" placeholder="Cover image URL" className={inputClass} />
+                        <input name="reading_time_minutes" type="number" min={1} defaultValue={5} placeholder="Min" className="w-24 rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-sm" />
+                        <label className="flex items-center gap-2 rounded-xl border border-white/10 px-3 py-2 text-sm">
+                          <input type="checkbox" name="published" />
+                          Publish now
+                        </label>
+                      </div>
+                      <div className="flex justify-end">
+                        <Button type="submit" size="sm">Create Post</Button>
+                      </div>
+                    </form>
+                  </details>
+
+                  <div className="mt-4 grid gap-4">
+                    {(blogPosts ?? []).map((post) => (
+                      <form
+                        key={post.id}
+                        action={updateBlogPostAction}
+                        className="space-y-3 rounded-xl border border-white/10 bg-black/20 p-4"
+                      >
+                        <input type="hidden" name="id" value={post.id} />
+                        <div className="grid gap-3 md:grid-cols-[1fr_auto]">
+                          <input name="title" defaultValue={post.title} className={inputClass} />
+                          <label className="flex items-center gap-2 rounded-xl border border-white/10 px-3 py-2 text-sm">
+                            <input type="checkbox" name="published" defaultChecked={post.published} />
+                            Published
+                          </label>
+                        </div>
+                        <input name="slug" defaultValue={post.slug} className={inputClass} />
+                        <textarea
+                          name="excerpt"
+                          rows={2}
+                          placeholder="Excerpt"
+                          defaultValue={post.excerpt ?? ""}
+                          className={inputClass}
+                        />
+                        <textarea
+                          name="content"
+                          rows={10}
+                          placeholder="Post content (HTML supported)"
+                          defaultValue={post.content ?? ""}
+                          className={inputClass}
+                        />
+                        <div className="grid gap-3 md:grid-cols-[1fr_auto]">
+                          <input
+                            name="cover_image"
+                            defaultValue={post.cover_image ?? ""}
+                            placeholder="Cover image URL"
+                            className={inputClass}
+                          />
+                          <input
+                            name="reading_time_minutes"
+                            type="number"
+                            min={1}
+                            defaultValue={post.reading_time_minutes ?? 5}
+                            className="w-28 rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-sm"
+                          />
+                        </div>
+                        <div className="flex justify-end">
+                          <Button type="submit" size="sm">
+                            Save Post
+                          </Button>
+                        </div>
+                      </form>
+                    ))}
+                  </div>
+
+                  <h3 className="mt-8 text-base font-semibold text-foreground">Blog Tags</h3>
+
+                  <details className="mt-3 rounded-xl border border-dashed border-primary/30 bg-primary/5 p-4">
+                    <summary className="cursor-pointer list-none text-sm font-medium text-primary">
+                      + Create New Tag
+                    </summary>
+                    <form action={createBlogTagAction} className="mt-4 space-y-3">
+                      <div className="grid gap-3 md:grid-cols-2">
+                        <input name="name" placeholder="Tag name" required className={inputClass} />
+                        <input name="slug" placeholder="tag-slug (auto-generated if empty)" className={inputClass} />
+                      </div>
+                      <div className="flex justify-end">
+                        <Button type="submit" size="sm">Create Tag</Button>
+                      </div>
+                    </form>
+                  </details>
+
+                  <div className="mt-3 grid gap-3 md:grid-cols-2">
+                    {(blogTags ?? []).map((tag) => (
+                      <form
+                        key={tag.id}
+                        action={updateBlogTagAction}
+                        className="space-y-3 rounded-xl border border-white/10 bg-black/20 p-4"
+                      >
+                        <input type="hidden" name="id" value={tag.id} />
+                        <input name="name" defaultValue={tag.name} className={inputClass} />
+                        <input name="slug" defaultValue={tag.slug} className={inputClass} />
+                        <div className="flex justify-end">
+                          <Button type="submit" size="sm">
+                            Save Tag
+                          </Button>
+                        </div>
+                      </form>
+                    ))}
+                  </div>
+                </section>
               ),
             },
           ]}
