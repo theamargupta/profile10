@@ -116,3 +116,12 @@ export interface BlogPost {
   created_at: string;
   blog_post_tags: { blog_tags: BlogTag }[];
 }
+
+export interface ContactSubmission {
+  id: string;
+  name: string;
+  email: string;
+  message: string;
+  read: boolean;
+  created_at: string;
+}

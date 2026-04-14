@@ -2,12 +2,14 @@ import { createClient } from "@/lib/supabase/server";
 import type {
   Profile,
   Project,
+  Tool,
   Experience,
   SkillCategory,
   Service,
   Social,
   BlogPost,
   BlogTag,
+  ContactSubmission,
 } from "@/lib/types";
 
 export async function getProfile(): Promise<Profile | null> {
@@ -131,4 +133,19 @@ export async function getAllProjectSlugs(): Promise<string[]> {
   const supabase = await createClient();
   const { data } = await supabase.from("projects").select("id");
   return data?.map((p) => p.id) ?? [];
+}
+
+export async function getTools(): Promise<Tool[]> {
+  const supabase = await createClient();
+  const { data } = await supabase.from("tools").select("*").order("name");
+  return data ?? [];
+}
+
+export async function getContactSubmissions(): Promise<ContactSubmission[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("contact_submissions")
+    .select("*")
+    .order("created_at", { ascending: false });
+  return data ?? [];
 }
