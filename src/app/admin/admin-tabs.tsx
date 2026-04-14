@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 type TabItem = {
@@ -16,16 +17,27 @@ type AdminTabsProps = {
 };
 
 export function AdminTabs({ items, defaultTabId }: AdminTabsProps) {
-  const initialTab = useMemo(() => {
-    if (defaultTabId && items.some((item) => item.id === defaultTabId)) {
-      return defaultTabId;
-    }
-    return items[0]?.id ?? "";
-  }, [defaultTabId, items]);
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
-  const [activeTab, setActiveTab] = useState(initialTab);
+  const tabFromUrl = searchParams.get("tab");
+  const activeTab =
+    tabFromUrl && items.some((item) => item.id === tabFromUrl)
+      ? tabFromUrl
+      : defaultTabId && items.some((item) => item.id === defaultTabId)
+        ? defaultTabId
+        : items[0]?.id ?? "";
 
   const current = items.find((item) => item.id === activeTab) ?? items[0];
+
+  const setTab = useCallback(
+    (id: string) => {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set("tab", id);
+      router.replace(`/admin?${params.toString()}`, { scroll: false });
+    },
+    [router, searchParams]
+  );
 
   return (
     <div className="mt-6">
@@ -36,7 +48,7 @@ export function AdminTabs({ items, defaultTabId }: AdminTabsProps) {
             <button
               key={item.id}
               type="button"
-              onClick={() => setActiveTab(item.id)}
+              onClick={() => setTab(item.id)}
               className={cn(
                 "rounded-full border px-4 py-2 text-sm transition",
                 isActive

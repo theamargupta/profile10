@@ -11,6 +11,40 @@ function toText(value: FormDataEntryValue | null) {
   return trimmed.length > 0 ? trimmed : null;
 }
 
+function toNumber(value: FormDataEntryValue | null, fallback = 0) {
+  if (typeof value !== "string") return fallback;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
+
+function toBoolean(value: FormDataEntryValue | null) {
+  return value === "on" || value === "true";
+}
+
+/** Build /admin redirect URL preserving the active tab. */
+function adminUrl(params: { success?: string; error?: string; tab?: string }) {
+  const s = new URLSearchParams();
+  if (params.tab) s.set("tab", params.tab);
+  if (params.success) s.set("success", params.success);
+  if (params.error) s.set("error", params.error);
+  return `/admin?${s.toString()}`;
+}
+
+async function requireUser() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    redirect("/admin?error=Please%20log%20in%20first");
+  }
+
+  return supabase;
+}
+
+/* ───────── Auth ───────── */
+
 export async function loginAction(formData: FormData) {
   const email = toText(formData.get("email"));
   const password = toText(formData.get("password"));
@@ -23,17 +57,19 @@ export async function loginAction(formData: FormData) {
   const { error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
-    redirect(`/admin?error=${encodeURIComponent(error.message)}`);
+    redirect(adminUrl({ error: error.message }));
   }
 
-  redirect("/admin?success=Logged%20in");
+  redirect(adminUrl({ success: "Logged in" }));
 }
 
 export async function signOutAction() {
   const supabase = await createClient();
   await supabase.auth.signOut();
-  redirect("/admin?success=Signed%20out");
+  redirect(adminUrl({ success: "Signed out" }));
 }
+
+/* ───────── Profile ───────── */
 
 export async function updateProfileAction(formData: FormData) {
   const supabase = await createClient();
@@ -41,14 +77,10 @@ export async function updateProfileAction(formData: FormData) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) {
-    redirect("/admin?error=Please%20log%20in%20first");
-  }
+  if (!user) redirect(adminUrl({ error: "Please log in first" }));
 
   const profileId = toText(formData.get("id"));
-  if (!profileId) {
-    redirect("/admin?error=Profile%20record%20is%20missing");
-  }
+  if (!profileId) redirect(adminUrl({ tab: "profile", error: "Profile record is missing" }));
 
   const payload = {
     name: toText(formData.get("name")) ?? "Your Name",
@@ -69,43 +101,16 @@ export async function updateProfileAction(formData: FormData) {
     rate_range: toText(formData.get("rate_range")),
   };
 
-  const { error } = await supabase
-    .from("profiles")
-    .update(payload)
-    .eq("id", profileId);
-
-  if (error) {
-    redirect(`/admin?error=${encodeURIComponent(error.message)}`);
-  }
+  const { error } = await supabase.from("profiles").update(payload).eq("id", profileId);
+  if (error) redirect(adminUrl({ tab: "profile", error: error.message }));
 
   revalidatePath("/");
   revalidatePath("/about");
   revalidatePath("/admin");
-  redirect("/admin?success=Profile%20updated");
+  redirect(adminUrl({ tab: "profile", success: "Profile updated" }));
 }
 
-function toNumber(value: FormDataEntryValue | null, fallback = 0) {
-  if (typeof value !== "string") return fallback;
-  const parsed = Number(value);
-  return Number.isFinite(parsed) ? parsed : fallback;
-}
-
-function toBoolean(value: FormDataEntryValue | null) {
-  return value === "on" || value === "true";
-}
-
-async function requireUser() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    redirect("/admin?error=Please%20log%20in%20first");
-  }
-
-  return supabase;
-}
+/* ───────── Projects ───────── */
 
 export async function createProjectAction(formData: FormData) {
   const supabase = await requireUser();
@@ -113,14 +118,10 @@ export async function createProjectAction(formData: FormData) {
   const title = toText(formData.get("title")) ?? "New Project";
   const id =
     toText(formData.get("id")) ??
-    title
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)/g, "");
+    title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
   const { error } = await supabase.from("projects").insert({
-    id,
-    title,
+    id, title,
     description: toText(formData.get("description")),
     live_url: toText(formData.get("live_url")),
     repo_url: toText(formData.get("repo_url")),
@@ -128,21 +129,19 @@ export async function createProjectAction(formData: FormData) {
     featured: toBoolean(formData.get("featured")),
     sort_order: toNumber(formData.get("sort_order"), 0),
   });
-  if (error) redirect(`/admin?error=${encodeURIComponent(error.message)}`);
+  if (error) redirect(adminUrl({ tab: "projects", error: error.message }));
 
   revalidatePath("/");
   revalidatePath("/projects");
   revalidatePath("/admin");
-  redirect("/admin?success=Project%20created");
+  redirect(adminUrl({ tab: "projects", success: "Project created" }));
 }
 
 export async function createProjectFromJsonAction(formData: FormData) {
   const supabase = await requireUser();
   const raw = toText(formData.get("json"));
 
-  if (!raw) {
-    redirect("/admin?error=JSON%20field%20is%20empty");
-  }
+  if (!raw) redirect(adminUrl({ tab: "projects", error: "JSON field is empty" }));
 
   const result = validateProjectJson(raw);
 
@@ -151,12 +150,11 @@ export async function createProjectFromJsonAction(formData: FormData) {
       .filter((e) => !e.message.startsWith("Unknown"))
       .map((e) => `${e.field}: ${e.message}`)
       .join("; ");
-    redirect(`/admin?error=${encodeURIComponent(msg)}`);
+    redirect(adminUrl({ tab: "projects", error: msg }));
   }
 
-  // Fetch all existing tools once so we can resolve names → ids
   const { data: allTools } = await supabase.from("tools").select("id, name");
-  const toolMap = new Map<string, string>(); // lowercase lookup → actual id
+  const toolMap = new Map<string, string>();
   for (const t of allTools ?? []) {
     toolMap.set(t.id.toLowerCase(), t.id);
     toolMap.set(t.name.toLowerCase(), t.id);
@@ -166,77 +164,47 @@ export async function createProjectFromJsonAction(formData: FormData) {
 
   for (const project of result.projects) {
     const { error } = await supabase.from("projects").insert({
-      id: project.id,
-      title: project.title,
-      description: project.description,
-      demo_img: project.demo_img,
-      live_url: project.live_url,
-      repo_url: project.repo_url,
+      id: project.id, title: project.title,
+      description: project.description, demo_img: project.demo_img,
+      live_url: project.live_url, repo_url: project.repo_url,
       architecture: project.architecture,
-      featured: project.featured ?? false,
-      sort_order: project.sort_order ?? 0,
+      featured: project.featured ?? false, sort_order: project.sort_order ?? 0,
     });
+    if (error) redirect(adminUrl({ tab: "projects", error: `Project "${project.title}": ${error.message}` }));
 
-    if (error) {
-      redirect(`/admin?error=${encodeURIComponent(`Project "${project.title}": ${error.message}`)}`);
-    }
-
-    // Insert project_tools — resolve names/ids case-insensitively
     if (project.tools && project.tools.length > 0) {
-      const unresolved: string[] = [];
       const toolRows: { project_id: string; tool_id: string; sort_order: number }[] = [];
-
       for (let i = 0; i < project.tools.length; i++) {
         const input = project.tools[i];
-        const resolved = toolMap.get(input.toLowerCase());
-        if (resolved) {
-          toolRows.push({ project_id: project.id!, tool_id: resolved, sort_order: i });
-        } else {
-          unresolved.push(input);
+        let resolved = toolMap.get(input.toLowerCase());
+        if (!resolved) {
+          const newId = input.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+          const { error: createErr } = await supabase.from("tools").insert({
+            id: newId, name: input, icon: "SiHashnode", color: null,
+          });
+          if (createErr) redirect(adminUrl({ tab: "projects", error: `Auto-create tool "${input}": ${createErr.message}` }));
+          toolMap.set(input.toLowerCase(), newId);
+          toolMap.set(newId, newId);
+          resolved = newId;
         }
+        toolRows.push({ project_id: project.id!, tool_id: resolved, sort_order: i });
       }
-
-      if (unresolved.length > 0) {
-        redirect(
-          `/admin?error=${encodeURIComponent(
-            `Tools not found for "${project.title}": ${unresolved.join(", ")}. Use tool IDs or exact names from the Tools tab.`
-          )}`
-        );
-      }
-
       if (toolRows.length > 0) {
         const { error: toolError } = await supabase.from("project_tools").insert(toolRows);
-        if (toolError) {
-          redirect(`/admin?error=${encodeURIComponent(`Tools for "${project.title}": ${toolError.message}`)}`);
-        }
+        if (toolError) redirect(adminUrl({ tab: "projects", error: `Tools for "${project.title}": ${toolError.message}` }));
       }
     }
 
-    // Insert project_features
     if (project.features && project.features.length > 0) {
-      const featureRows = project.features.map((feature, i) => ({
-        project_id: project.id!,
-        feature,
-        sort_order: i,
-      }));
+      const featureRows = project.features.map((feature, i) => ({ project_id: project.id!, feature, sort_order: i }));
       const { error: featError } = await supabase.from("project_features").insert(featureRows);
-      if (featError) {
-        redirect(`/admin?error=${encodeURIComponent(`Features for "${project.title}": ${featError.message}`)}`);
-      }
+      if (featError) redirect(adminUrl({ tab: "projects", error: `Features for "${project.title}": ${featError.message}` }));
     }
 
-    // Insert project_challenges
     if (project.challenges && project.challenges.length > 0) {
-      const challengeRows = project.challenges.map((c, i) => ({
-        project_id: project.id!,
-        title: c.title,
-        solution: c.solution,
-        sort_order: i,
-      }));
+      const challengeRows = project.challenges.map((c, i) => ({ project_id: project.id!, title: c.title, solution: c.solution, sort_order: i }));
       const { error: chalError } = await supabase.from("project_challenges").insert(challengeRows);
-      if (chalError) {
-        redirect(`/admin?error=${encodeURIComponent(`Challenges for "${project.title}": ${chalError.message}`)}`);
-      }
+      if (chalError) redirect(adminUrl({ tab: "projects", error: `Challenges for "${project.title}": ${chalError.message}` }));
     }
 
     created.push(project.title);
@@ -246,45 +214,30 @@ export async function createProjectFromJsonAction(formData: FormData) {
   revalidatePath("/");
   revalidatePath("/projects");
   revalidatePath("/admin");
-
-  const msg = created.length === 1
-    ? `Project "${created[0]}" created from JSON`
-    : `${created.length} projects created from JSON`;
-  redirect(`/admin?success=${encodeURIComponent(msg)}`);
+  const msg = created.length === 1 ? `Project "${created[0]}" created from JSON` : `${created.length} projects created from JSON`;
+  redirect(adminUrl({ tab: "projects", success: msg }));
 }
 
 export async function updateProjectAction(formData: FormData) {
   const supabase = await requireUser();
   const id = toText(formData.get("id"));
-
-  if (!id) redirect("/admin?error=Project%20id%20missing");
+  if (!id) redirect(adminUrl({ tab: "projects", error: "Project id missing" }));
 
   const imageFile = formData.get("demo_img_file");
   let demoImageUrl = toText(formData.get("demo_img"));
 
   if (imageFile instanceof File && imageFile.size > 0) {
-    const extension = imageFile.name.includes(".")
-      ? imageFile.name.split(".").pop()
-      : "jpg";
+    const extension = imageFile.name.includes(".") ? imageFile.name.split(".").pop() : "jpg";
     const safeExtension = (extension ?? "jpg").toLowerCase();
     const filePath = `${id}/${Date.now()}-${Math.random().toString(36).slice(2)}.${safeExtension}`;
 
     const bytes = await imageFile.arrayBuffer();
     const { error: uploadError } = await supabase.storage
       .from("project-images")
-      .upload(filePath, bytes, {
-        contentType: imageFile.type || "image/jpeg",
-        upsert: false,
-      });
+      .upload(filePath, bytes, { contentType: imageFile.type || "image/jpeg", upsert: false });
+    if (uploadError) redirect(adminUrl({ tab: "projects", error: uploadError.message }));
 
-    if (uploadError) {
-      redirect(`/admin?error=${encodeURIComponent(uploadError.message)}`);
-    }
-
-    const { data: publicUrlData } = supabase.storage
-      .from("project-images")
-      .getPublicUrl(filePath);
-
+    const { data: publicUrlData } = supabase.storage.from("project-images").getPublicUrl(filePath);
     demoImageUrl = publicUrlData.publicUrl;
   }
 
@@ -300,14 +253,126 @@ export async function updateProjectAction(formData: FormData) {
   };
 
   const { error } = await supabase.from("projects").update(payload).eq("id", id);
-  if (error) redirect(`/admin?error=${encodeURIComponent(error.message)}`);
+  if (error) redirect(adminUrl({ tab: "projects", error: error.message }));
 
   revalidatePath("/");
   revalidatePath("/projects");
   revalidatePath(`/project/${id}`);
   revalidatePath("/admin");
-  redirect("/admin?success=Project%20updated");
+  redirect(adminUrl({ tab: "projects", success: "Project updated" }));
 }
+
+export async function deleteProjectAction(formData: FormData) {
+  const supabase = await requireUser();
+  const id = toText(formData.get("id"));
+  if (!id) redirect(adminUrl({ tab: "projects", error: "Project id missing" }));
+
+  const { error } = await supabase.from("projects").delete().eq("id", id);
+  if (error) redirect(adminUrl({ tab: "projects", error: error.message }));
+
+  revalidatePath("/");
+  revalidatePath("/projects");
+  revalidatePath("/admin");
+  redirect(adminUrl({ tab: "projects", success: "Project deleted" }));
+}
+
+/* ───────── Project Features ───────── */
+
+export async function createProjectFeatureAction(formData: FormData) {
+  const supabase = await requireUser();
+  const projectId = toText(formData.get("project_id"));
+  if (!projectId) redirect(adminUrl({ tab: "projects", error: "Project id missing" }));
+
+  const { error } = await supabase.from("project_features").insert({
+    project_id: projectId,
+    feature: toText(formData.get("feature")) ?? "",
+    sort_order: toNumber(formData.get("sort_order"), 0),
+  });
+  if (error) redirect(adminUrl({ tab: "projects", error: error.message }));
+
+  revalidatePath(`/project/${projectId}`);
+  revalidatePath("/admin");
+  redirect(adminUrl({ tab: "projects", success: "Feature added" }));
+}
+
+export async function deleteProjectFeatureAction(formData: FormData) {
+  const supabase = await requireUser();
+  const id = toText(formData.get("id"));
+  if (!id) redirect(adminUrl({ tab: "projects", error: "Feature id missing" }));
+
+  const { error } = await supabase.from("project_features").delete().eq("id", id);
+  if (error) redirect(adminUrl({ tab: "projects", error: error.message }));
+
+  revalidatePath("/admin");
+  redirect(adminUrl({ tab: "projects", success: "Feature removed" }));
+}
+
+/* ───────── Project Challenges ───────── */
+
+export async function createProjectChallengeAction(formData: FormData) {
+  const supabase = await requireUser();
+  const projectId = toText(formData.get("project_id"));
+  if (!projectId) redirect(adminUrl({ tab: "projects", error: "Project id missing" }));
+
+  const { error } = await supabase.from("project_challenges").insert({
+    project_id: projectId,
+    title: toText(formData.get("title")) ?? "",
+    solution: toText(formData.get("solution")) ?? "",
+    sort_order: toNumber(formData.get("sort_order"), 0),
+  });
+  if (error) redirect(adminUrl({ tab: "projects", error: error.message }));
+
+  revalidatePath(`/project/${projectId}`);
+  revalidatePath("/admin");
+  redirect(adminUrl({ tab: "projects", success: "Challenge added" }));
+}
+
+export async function deleteProjectChallengeAction(formData: FormData) {
+  const supabase = await requireUser();
+  const id = toText(formData.get("id"));
+  if (!id) redirect(adminUrl({ tab: "projects", error: "Challenge id missing" }));
+
+  const { error } = await supabase.from("project_challenges").delete().eq("id", id);
+  if (error) redirect(adminUrl({ tab: "projects", error: error.message }));
+
+  revalidatePath("/admin");
+  redirect(adminUrl({ tab: "projects", success: "Challenge removed" }));
+}
+
+/* ───────── Project Tools (junction) ───────── */
+
+export async function addProjectToolAction(formData: FormData) {
+  const supabase = await requireUser();
+  const projectId = toText(formData.get("project_id"));
+  const toolId = toText(formData.get("tool_id"));
+  if (!projectId || !toolId) redirect(adminUrl({ tab: "projects", error: "Project or tool id missing" }));
+
+  const { error } = await supabase.from("project_tools").insert({
+    project_id: projectId, tool_id: toolId,
+    sort_order: toNumber(formData.get("sort_order"), 0),
+  });
+  if (error) redirect(adminUrl({ tab: "projects", error: error.message }));
+
+  revalidatePath(`/project/${projectId}`);
+  revalidatePath("/admin");
+  redirect(adminUrl({ tab: "projects", success: "Tool linked" }));
+}
+
+export async function removeProjectToolAction(formData: FormData) {
+  const supabase = await requireUser();
+  const projectId = toText(formData.get("project_id"));
+  const toolId = toText(formData.get("tool_id"));
+  if (!projectId || !toolId) redirect(adminUrl({ tab: "projects", error: "Missing ids" }));
+
+  const { error } = await supabase.from("project_tools").delete().eq("project_id", projectId).eq("tool_id", toolId);
+  if (error) redirect(adminUrl({ tab: "projects", error: error.message }));
+
+  revalidatePath(`/project/${projectId}`);
+  revalidatePath("/admin");
+  redirect(adminUrl({ tab: "projects", success: "Tool unlinked" }));
+}
+
+/* ───────── Services ───────── */
 
 export async function createServiceAction(formData: FormData) {
   const supabase = await requireUser();
@@ -318,32 +383,45 @@ export async function createServiceAction(formData: FormData) {
     icon: toText(formData.get("icon")),
     sort_order: toNumber(formData.get("sort_order"), 0),
   });
-  if (error) redirect(`/admin?error=${encodeURIComponent(error.message)}`);
+  if (error) redirect(adminUrl({ tab: "services", error: error.message }));
 
   revalidatePath("/");
   revalidatePath("/admin");
-  redirect("/admin?success=Service%20created");
+  redirect(adminUrl({ tab: "services", success: "Service created" }));
 }
 
 export async function updateServiceAction(formData: FormData) {
   const supabase = await requireUser();
   const id = toText(formData.get("id"));
-  if (!id) redirect("/admin?error=Service%20id%20missing");
+  if (!id) redirect(adminUrl({ tab: "services", error: "Service id missing" }));
 
-  const payload = {
+  const { error } = await supabase.from("services").update({
     title: toText(formData.get("title")) ?? "Service",
     description: toText(formData.get("description")) ?? "",
     icon: toText(formData.get("icon")),
     sort_order: toNumber(formData.get("sort_order"), 0),
-  };
-
-  const { error } = await supabase.from("services").update(payload).eq("id", id);
-  if (error) redirect(`/admin?error=${encodeURIComponent(error.message)}`);
+  }).eq("id", id);
+  if (error) redirect(adminUrl({ tab: "services", error: error.message }));
 
   revalidatePath("/");
   revalidatePath("/admin");
-  redirect("/admin?success=Service%20updated");
+  redirect(adminUrl({ tab: "services", success: "Service updated" }));
 }
+
+export async function deleteServiceAction(formData: FormData) {
+  const supabase = await requireUser();
+  const id = toText(formData.get("id"));
+  if (!id) redirect(adminUrl({ tab: "services", error: "Service id missing" }));
+
+  const { error } = await supabase.from("services").delete().eq("id", id);
+  if (error) redirect(adminUrl({ tab: "services", error: error.message }));
+
+  revalidatePath("/");
+  revalidatePath("/admin");
+  redirect(adminUrl({ tab: "services", success: "Service deleted" }));
+}
+
+/* ───────── Experience ───────── */
 
 export async function createExperienceAction(formData: FormData) {
   const supabase = await requireUser();
@@ -358,20 +436,20 @@ export async function createExperienceAction(formData: FormData) {
     end_date: toText(formData.get("end_date")),
     sort_order: toNumber(formData.get("sort_order"), 0),
   });
-  if (error) redirect(`/admin?error=${encodeURIComponent(error.message)}`);
+  if (error) redirect(adminUrl({ tab: "experience", error: error.message }));
 
   revalidatePath("/");
   revalidatePath("/about");
   revalidatePath("/admin");
-  redirect("/admin?success=Experience%20created");
+  redirect(adminUrl({ tab: "experience", success: "Experience created" }));
 }
 
 export async function updateExperienceAction(formData: FormData) {
   const supabase = await requireUser();
   const id = toText(formData.get("id"));
-  if (!id) redirect("/admin?error=Experience%20id%20missing");
+  if (!id) redirect(adminUrl({ tab: "experience", error: "Experience id missing" }));
 
-  const payload = {
+  const { error } = await supabase.from("experiences").update({
     company: toText(formData.get("company")) ?? "Company",
     job_title: toText(formData.get("job_title")) ?? "Role",
     employment_type: toText(formData.get("employment_type")),
@@ -380,16 +458,30 @@ export async function updateExperienceAction(formData: FormData) {
     start_date: toText(formData.get("start_date")) ?? new Date().toISOString().slice(0, 10),
     end_date: toText(formData.get("end_date")),
     sort_order: toNumber(formData.get("sort_order"), 0),
-  };
-
-  const { error } = await supabase.from("experiences").update(payload).eq("id", id);
-  if (error) redirect(`/admin?error=${encodeURIComponent(error.message)}`);
+  }).eq("id", id);
+  if (error) redirect(adminUrl({ tab: "experience", error: error.message }));
 
   revalidatePath("/");
   revalidatePath("/about");
   revalidatePath("/admin");
-  redirect("/admin?success=Experience%20updated");
+  redirect(adminUrl({ tab: "experience", success: "Experience updated" }));
 }
+
+export async function deleteExperienceAction(formData: FormData) {
+  const supabase = await requireUser();
+  const id = toText(formData.get("id"));
+  if (!id) redirect(adminUrl({ tab: "experience", error: "Experience id missing" }));
+
+  const { error } = await supabase.from("experiences").delete().eq("id", id);
+  if (error) redirect(adminUrl({ tab: "experience", error: error.message }));
+
+  revalidatePath("/");
+  revalidatePath("/about");
+  revalidatePath("/admin");
+  redirect(adminUrl({ tab: "experience", success: "Experience deleted" }));
+}
+
+/* ───────── Skill Categories ───────── */
 
 export async function createSkillCategoryAction(formData: FormData) {
   const supabase = await requireUser();
@@ -399,36 +491,47 @@ export async function createSkillCategoryAction(formData: FormData) {
     skills: toText(formData.get("skills")) ?? "",
     sort_order: toNumber(formData.get("sort_order"), 0),
   });
-  if (error) redirect(`/admin?error=${encodeURIComponent(error.message)}`);
+  if (error) redirect(adminUrl({ tab: "skills", error: error.message }));
 
   revalidatePath("/");
   revalidatePath("/about");
   revalidatePath("/admin");
-  redirect("/admin?success=Skill%20category%20created");
+  redirect(adminUrl({ tab: "skills", success: "Skill category created" }));
 }
 
 export async function updateSkillCategoryAction(formData: FormData) {
   const supabase = await requireUser();
   const id = toText(formData.get("id"));
-  if (!id) redirect("/admin?error=Skill%20category%20id%20missing");
+  if (!id) redirect(adminUrl({ tab: "skills", error: "Skill category id missing" }));
 
-  const payload = {
+  const { error } = await supabase.from("skill_categories").update({
     category: toText(formData.get("category")) ?? "Category",
     skills: toText(formData.get("skills")) ?? "",
     sort_order: toNumber(formData.get("sort_order"), 0),
-  };
-
-  const { error } = await supabase
-    .from("skill_categories")
-    .update(payload)
-    .eq("id", id);
-  if (error) redirect(`/admin?error=${encodeURIComponent(error.message)}`);
+  }).eq("id", id);
+  if (error) redirect(adminUrl({ tab: "skills", error: error.message }));
 
   revalidatePath("/");
   revalidatePath("/about");
   revalidatePath("/admin");
-  redirect("/admin?success=Skill%20category%20updated");
+  redirect(adminUrl({ tab: "skills", success: "Skill category updated" }));
 }
+
+export async function deleteSkillCategoryAction(formData: FormData) {
+  const supabase = await requireUser();
+  const id = toText(formData.get("id"));
+  if (!id) redirect(adminUrl({ tab: "skills", error: "Skill category id missing" }));
+
+  const { error } = await supabase.from("skill_categories").delete().eq("id", id);
+  if (error) redirect(adminUrl({ tab: "skills", error: error.message }));
+
+  revalidatePath("/");
+  revalidatePath("/about");
+  revalidatePath("/admin");
+  redirect(adminUrl({ tab: "skills", success: "Skill category deleted" }));
+}
+
+/* ───────── Socials ───────── */
 
 export async function createSocialAction(formData: FormData) {
   const supabase = await requireUser();
@@ -440,63 +543,49 @@ export async function createSocialAction(formData: FormData) {
     color: toText(formData.get("color")),
     sort_order: toNumber(formData.get("sort_order"), 0),
   });
-  if (error) redirect(`/admin?error=${encodeURIComponent(error.message)}`);
+  if (error) redirect(adminUrl({ tab: "socials", error: error.message }));
 
   revalidatePath("/");
   revalidatePath("/about");
   revalidatePath("/admin");
-  redirect("/admin?success=Social%20created");
+  redirect(adminUrl({ tab: "socials", success: "Social created" }));
 }
 
 export async function updateSocialAction(formData: FormData) {
   const supabase = await requireUser();
   const id = toText(formData.get("id"));
-  if (!id) redirect("/admin?error=Social%20id%20missing");
+  if (!id) redirect(adminUrl({ tab: "socials", error: "Social id missing" }));
 
-  const payload = {
+  const { error } = await supabase.from("socials").update({
     name: toText(formData.get("name")) ?? "Social",
     href: toText(formData.get("href")) ?? "",
     icon: toText(formData.get("icon")) ?? "",
     color: toText(formData.get("color")),
     sort_order: toNumber(formData.get("sort_order"), 0),
-  };
-
-  const { error } = await supabase.from("socials").update(payload).eq("id", id);
-  if (error) redirect(`/admin?error=${encodeURIComponent(error.message)}`);
+  }).eq("id", id);
+  if (error) redirect(adminUrl({ tab: "socials", error: error.message }));
 
   revalidatePath("/");
   revalidatePath("/about");
   revalidatePath("/admin");
-  redirect("/admin?success=Social%20updated");
+  redirect(adminUrl({ tab: "socials", success: "Social updated" }));
 }
 
-export async function updateBlogPostAction(formData: FormData) {
+export async function deleteSocialAction(formData: FormData) {
   const supabase = await requireUser();
   const id = toText(formData.get("id"));
-  if (!id) redirect("/admin?error=Blog%20post%20id%20missing");
+  if (!id) redirect(adminUrl({ tab: "socials", error: "Social id missing" }));
 
-  const slug = toText(formData.get("slug")) ?? "";
-  const published = toBoolean(formData.get("published"));
+  const { error } = await supabase.from("socials").delete().eq("id", id);
+  if (error) redirect(adminUrl({ tab: "socials", error: error.message }));
 
-  const payload = {
-    title: toText(formData.get("title")) ?? "Untitled",
-    slug,
-    excerpt: toText(formData.get("excerpt")),
-    content: toText(formData.get("content")),
-    cover_image: toText(formData.get("cover_image")),
-    reading_time_minutes: toNumber(formData.get("reading_time_minutes"), 1),
-    published,
-    published_at: published ? new Date().toISOString() : null,
-  };
-
-  const { error } = await supabase.from("blog_posts").update(payload).eq("id", id);
-  if (error) redirect(`/admin?error=${encodeURIComponent(error.message)}`);
-
-  revalidatePath("/blog");
-  revalidatePath(`/blog/${slug}`);
+  revalidatePath("/");
+  revalidatePath("/about");
   revalidatePath("/admin");
-  redirect("/admin?success=Blog%20post%20updated");
+  redirect(adminUrl({ tab: "socials", success: "Social deleted" }));
 }
+
+/* ───────── Blog ───────── */
 
 export async function createBlogPostAction(formData: FormData) {
   const supabase = await requireUser();
@@ -504,48 +593,60 @@ export async function createBlogPostAction(formData: FormData) {
   const title = toText(formData.get("title")) ?? "Untitled Post";
   const slug =
     toText(formData.get("slug")) ??
-    title
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)/g, "");
+    title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
-  const payload = {
-    title,
-    slug,
+  const { error } = await supabase.from("blog_posts").insert({
+    title, slug,
     excerpt: toText(formData.get("excerpt")),
     content: toText(formData.get("content")),
     cover_image: toText(formData.get("cover_image")),
     reading_time_minutes: toNumber(formData.get("reading_time_minutes"), 5),
     published: toBoolean(formData.get("published")),
-    published_at: toBoolean(formData.get("published"))
-      ? new Date().toISOString()
-      : null,
-  };
-
-  const { error } = await supabase.from("blog_posts").insert(payload);
-  if (error) redirect(`/admin?error=${encodeURIComponent(error.message)}`);
+    published_at: toBoolean(formData.get("published")) ? new Date().toISOString() : null,
+  });
+  if (error) redirect(adminUrl({ tab: "blog", error: error.message }));
 
   revalidatePath("/blog");
   revalidatePath("/admin");
-  redirect("/admin?success=Blog%20post%20created");
+  redirect(adminUrl({ tab: "blog", success: "Blog post created" }));
 }
 
-export async function updateBlogTagAction(formData: FormData) {
+export async function updateBlogPostAction(formData: FormData) {
   const supabase = await requireUser();
   const id = toText(formData.get("id"));
-  if (!id) redirect("/admin?error=Blog%20tag%20id%20missing");
+  if (!id) redirect(adminUrl({ tab: "blog", error: "Blog post id missing" }));
 
-  const payload = {
-    name: toText(formData.get("name")) ?? "Tag",
-    slug: toText(formData.get("slug")) ?? "",
-  };
+  const slug = toText(formData.get("slug")) ?? "";
+  const published = toBoolean(formData.get("published"));
 
-  const { error } = await supabase.from("blog_tags").update(payload).eq("id", id);
-  if (error) redirect(`/admin?error=${encodeURIComponent(error.message)}`);
+  const { error } = await supabase.from("blog_posts").update({
+    title: toText(formData.get("title")) ?? "Untitled",
+    slug, excerpt: toText(formData.get("excerpt")),
+    content: toText(formData.get("content")),
+    cover_image: toText(formData.get("cover_image")),
+    reading_time_minutes: toNumber(formData.get("reading_time_minutes"), 1),
+    published,
+    published_at: published ? new Date().toISOString() : null,
+  }).eq("id", id);
+  if (error) redirect(adminUrl({ tab: "blog", error: error.message }));
+
+  revalidatePath("/blog");
+  revalidatePath(`/blog/${slug}`);
+  revalidatePath("/admin");
+  redirect(adminUrl({ tab: "blog", success: "Blog post updated" }));
+}
+
+export async function deleteBlogPostAction(formData: FormData) {
+  const supabase = await requireUser();
+  const id = toText(formData.get("id"));
+  if (!id) redirect(adminUrl({ tab: "blog", error: "Blog post id missing" }));
+
+  const { error } = await supabase.from("blog_posts").delete().eq("id", id);
+  if (error) redirect(adminUrl({ tab: "blog", error: error.message }));
 
   revalidatePath("/blog");
   revalidatePath("/admin");
-  redirect("/admin?success=Blog%20tag%20updated");
+  redirect(adminUrl({ tab: "blog", success: "Blog post deleted" }));
 }
 
 export async function createBlogTagAction(formData: FormData) {
@@ -554,177 +655,43 @@ export async function createBlogTagAction(formData: FormData) {
   const name = toText(formData.get("name")) ?? "New Tag";
   const slug =
     toText(formData.get("slug")) ??
-    name
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)/g, "");
+    name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
   const { error } = await supabase.from("blog_tags").insert({ name, slug });
-  if (error) redirect(`/admin?error=${encodeURIComponent(error.message)}`);
+  if (error) redirect(adminUrl({ tab: "blog", error: error.message }));
 
   revalidatePath("/blog");
   revalidatePath("/admin");
-  redirect("/admin?success=Blog%20tag%20created");
+  redirect(adminUrl({ tab: "blog", success: "Blog tag created" }));
 }
 
-/* ───────── Tools CRUD ───────── */
-
-export async function createToolAction(formData: FormData) {
-  const supabase = await requireUser();
-
-  const name = toText(formData.get("name")) ?? "New Tool";
-  const id =
-    toText(formData.get("id")) ??
-    name
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)/g, "");
-
-  const { error } = await supabase.from("tools").insert({
-    id,
-    name,
-    icon: toText(formData.get("icon")) ?? "",
-    color: toText(formData.get("color")),
-  });
-  if (error) redirect(`/admin?error=${encodeURIComponent(error.message)}`);
-
-  revalidatePath("/");
-  revalidatePath("/admin");
-  redirect("/admin?success=Tool%20created");
-}
-
-export async function updateToolAction(formData: FormData) {
+export async function updateBlogTagAction(formData: FormData) {
   const supabase = await requireUser();
   const id = toText(formData.get("id"));
-  if (!id) redirect("/admin?error=Tool%20id%20missing");
+  if (!id) redirect(adminUrl({ tab: "blog", error: "Blog tag id missing" }));
 
-  const { error } = await supabase
-    .from("tools")
-    .update({
-      name: toText(formData.get("name")) ?? "Tool",
-      icon: toText(formData.get("icon")) ?? "",
-      color: toText(formData.get("color")),
-    })
-    .eq("id", id);
-  if (error) redirect(`/admin?error=${encodeURIComponent(error.message)}`);
+  const { error } = await supabase.from("blog_tags").update({
+    name: toText(formData.get("name")) ?? "Tag",
+    slug: toText(formData.get("slug")) ?? "",
+  }).eq("id", id);
+  if (error) redirect(adminUrl({ tab: "blog", error: error.message }));
 
-  revalidatePath("/");
+  revalidatePath("/blog");
   revalidatePath("/admin");
-  redirect("/admin?success=Tool%20updated");
+  redirect(adminUrl({ tab: "blog", success: "Blog tag updated" }));
 }
 
-export async function deleteToolAction(formData: FormData) {
+export async function deleteBlogTagAction(formData: FormData) {
   const supabase = await requireUser();
   const id = toText(formData.get("id"));
-  if (!id) redirect("/admin?error=Tool%20id%20missing");
+  if (!id) redirect(adminUrl({ tab: "blog", error: "Blog tag id missing" }));
 
-  const { error } = await supabase.from("tools").delete().eq("id", id);
-  if (error) redirect(`/admin?error=${encodeURIComponent(error.message)}`);
+  const { error } = await supabase.from("blog_tags").delete().eq("id", id);
+  if (error) redirect(adminUrl({ tab: "blog", error: error.message }));
 
-  revalidatePath("/");
+  revalidatePath("/blog");
   revalidatePath("/admin");
-  redirect("/admin?success=Tool%20deleted");
-}
-
-/* ───────── Project Features CRUD ───────── */
-
-export async function createProjectFeatureAction(formData: FormData) {
-  const supabase = await requireUser();
-  const projectId = toText(formData.get("project_id"));
-  if (!projectId) redirect("/admin?error=Project%20id%20missing");
-
-  const { error } = await supabase.from("project_features").insert({
-    project_id: projectId,
-    feature: toText(formData.get("feature")) ?? "",
-    sort_order: toNumber(formData.get("sort_order"), 0),
-  });
-  if (error) redirect(`/admin?error=${encodeURIComponent(error.message)}`);
-
-  revalidatePath(`/project/${projectId}`);
-  revalidatePath("/admin");
-  redirect("/admin?success=Feature%20added");
-}
-
-export async function deleteProjectFeatureAction(formData: FormData) {
-  const supabase = await requireUser();
-  const id = toText(formData.get("id"));
-  if (!id) redirect("/admin?error=Feature%20id%20missing");
-
-  const { error } = await supabase.from("project_features").delete().eq("id", id);
-  if (error) redirect(`/admin?error=${encodeURIComponent(error.message)}`);
-
-  revalidatePath("/admin");
-  redirect("/admin?success=Feature%20removed");
-}
-
-/* ───────── Project Challenges CRUD ───────── */
-
-export async function createProjectChallengeAction(formData: FormData) {
-  const supabase = await requireUser();
-  const projectId = toText(formData.get("project_id"));
-  if (!projectId) redirect("/admin?error=Project%20id%20missing");
-
-  const { error } = await supabase.from("project_challenges").insert({
-    project_id: projectId,
-    title: toText(formData.get("title")) ?? "",
-    solution: toText(formData.get("solution")) ?? "",
-    sort_order: toNumber(formData.get("sort_order"), 0),
-  });
-  if (error) redirect(`/admin?error=${encodeURIComponent(error.message)}`);
-
-  revalidatePath(`/project/${projectId}`);
-  revalidatePath("/admin");
-  redirect("/admin?success=Challenge%20added");
-}
-
-export async function deleteProjectChallengeAction(formData: FormData) {
-  const supabase = await requireUser();
-  const id = toText(formData.get("id"));
-  if (!id) redirect("/admin?error=Challenge%20id%20missing");
-
-  const { error } = await supabase.from("project_challenges").delete().eq("id", id);
-  if (error) redirect(`/admin?error=${encodeURIComponent(error.message)}`);
-
-  revalidatePath("/admin");
-  redirect("/admin?success=Challenge%20removed");
-}
-
-/* ───────── Project Tools (junction) ───────── */
-
-export async function addProjectToolAction(formData: FormData) {
-  const supabase = await requireUser();
-  const projectId = toText(formData.get("project_id"));
-  const toolId = toText(formData.get("tool_id"));
-  if (!projectId || !toolId) redirect("/admin?error=Project%20or%20tool%20id%20missing");
-
-  const { error } = await supabase.from("project_tools").insert({
-    project_id: projectId,
-    tool_id: toolId,
-    sort_order: toNumber(formData.get("sort_order"), 0),
-  });
-  if (error) redirect(`/admin?error=${encodeURIComponent(error.message)}`);
-
-  revalidatePath(`/project/${projectId}`);
-  revalidatePath("/admin");
-  redirect("/admin?success=Tool%20linked");
-}
-
-export async function removeProjectToolAction(formData: FormData) {
-  const supabase = await requireUser();
-  const projectId = toText(formData.get("project_id"));
-  const toolId = toText(formData.get("tool_id"));
-  if (!projectId || !toolId) redirect("/admin?error=Missing%20ids");
-
-  const { error } = await supabase
-    .from("project_tools")
-    .delete()
-    .eq("project_id", projectId)
-    .eq("tool_id", toolId);
-  if (error) redirect(`/admin?error=${encodeURIComponent(error.message)}`);
-
-  revalidatePath(`/project/${projectId}`);
-  revalidatePath("/admin");
-  redirect("/admin?success=Tool%20unlinked");
+  redirect(adminUrl({ tab: "blog", success: "Blog tag deleted" }));
 }
 
 /* ───────── Blog Post Tags (junction) ───────── */
@@ -733,35 +700,80 @@ export async function addBlogPostTagAction(formData: FormData) {
   const supabase = await requireUser();
   const postId = toText(formData.get("post_id"));
   const tagId = toText(formData.get("tag_id"));
-  if (!postId || !tagId) redirect("/admin?error=Post%20or%20tag%20id%20missing");
+  if (!postId || !tagId) redirect(adminUrl({ tab: "blog", error: "Post or tag id missing" }));
 
-  const { error } = await supabase.from("blog_post_tags").insert({
-    post_id: postId,
-    tag_id: tagId,
-  });
-  if (error) redirect(`/admin?error=${encodeURIComponent(error.message)}`);
+  const { error } = await supabase.from("blog_post_tags").insert({ post_id: postId, tag_id: tagId });
+  if (error) redirect(adminUrl({ tab: "blog", error: error.message }));
 
   revalidatePath("/blog");
   revalidatePath("/admin");
-  redirect("/admin?success=Tag%20assigned");
+  redirect(adminUrl({ tab: "blog", success: "Tag assigned" }));
 }
 
 export async function removeBlogPostTagAction(formData: FormData) {
   const supabase = await requireUser();
   const postId = toText(formData.get("post_id"));
   const tagId = toText(formData.get("tag_id"));
-  if (!postId || !tagId) redirect("/admin?error=Missing%20ids");
+  if (!postId || !tagId) redirect(adminUrl({ tab: "blog", error: "Missing ids" }));
 
-  const { error } = await supabase
-    .from("blog_post_tags")
-    .delete()
-    .eq("post_id", postId)
-    .eq("tag_id", tagId);
-  if (error) redirect(`/admin?error=${encodeURIComponent(error.message)}`);
+  const { error } = await supabase.from("blog_post_tags").delete().eq("post_id", postId).eq("tag_id", tagId);
+  if (error) redirect(adminUrl({ tab: "blog", error: error.message }));
 
   revalidatePath("/blog");
   revalidatePath("/admin");
-  redirect("/admin?success=Tag%20removed");
+  redirect(adminUrl({ tab: "blog", success: "Tag removed" }));
+}
+
+/* ───────── Tools ───────── */
+
+export async function createToolAction(formData: FormData) {
+  const supabase = await requireUser();
+
+  const name = toText(formData.get("name")) ?? "New Tool";
+  const id =
+    toText(formData.get("id")) ??
+    name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+
+  const { error } = await supabase.from("tools").insert({
+    id, name,
+    icon: toText(formData.get("icon")) ?? "",
+    color: toText(formData.get("color")),
+  });
+  if (error) redirect(adminUrl({ tab: "tools", error: error.message }));
+
+  revalidatePath("/");
+  revalidatePath("/admin");
+  redirect(adminUrl({ tab: "tools", success: "Tool created" }));
+}
+
+export async function updateToolAction(formData: FormData) {
+  const supabase = await requireUser();
+  const id = toText(formData.get("id"));
+  if (!id) redirect(adminUrl({ tab: "tools", error: "Tool id missing" }));
+
+  const { error } = await supabase.from("tools").update({
+    name: toText(formData.get("name")) ?? "Tool",
+    icon: toText(formData.get("icon")) ?? "",
+    color: toText(formData.get("color")),
+  }).eq("id", id);
+  if (error) redirect(adminUrl({ tab: "tools", error: error.message }));
+
+  revalidatePath("/");
+  revalidatePath("/admin");
+  redirect(adminUrl({ tab: "tools", success: "Tool updated" }));
+}
+
+export async function deleteToolAction(formData: FormData) {
+  const supabase = await requireUser();
+  const id = toText(formData.get("id"));
+  if (!id) redirect(adminUrl({ tab: "tools", error: "Tool id missing" }));
+
+  const { error } = await supabase.from("tools").delete().eq("id", id);
+  if (error) redirect(adminUrl({ tab: "tools", error: error.message }));
+
+  revalidatePath("/");
+  revalidatePath("/admin");
+  redirect(adminUrl({ tab: "tools", success: "Tool deleted" }));
 }
 
 /* ───────── Contact Submissions ───────── */
@@ -769,123 +781,23 @@ export async function removeBlogPostTagAction(formData: FormData) {
 export async function markContactReadAction(formData: FormData) {
   const supabase = await requireUser();
   const id = toText(formData.get("id"));
-  if (!id) redirect("/admin?error=Submission%20id%20missing");
+  if (!id) redirect(adminUrl({ tab: "contacts", error: "Submission id missing" }));
 
-  const { error } = await supabase
-    .from("contact_submissions")
-    .update({ read: true })
-    .eq("id", id);
-  if (error) redirect(`/admin?error=${encodeURIComponent(error.message)}`);
+  const { error } = await supabase.from("contact_submissions").update({ read: true }).eq("id", id);
+  if (error) redirect(adminUrl({ tab: "contacts", error: error.message }));
 
   revalidatePath("/admin");
-  redirect("/admin?success=Marked%20as%20read");
+  redirect(adminUrl({ tab: "contacts", success: "Marked as read" }));
 }
 
 export async function deleteContactSubmissionAction(formData: FormData) {
   const supabase = await requireUser();
   const id = toText(formData.get("id"));
-  if (!id) redirect("/admin?error=Submission%20id%20missing");
+  if (!id) redirect(adminUrl({ tab: "contacts", error: "Submission id missing" }));
 
   const { error } = await supabase.from("contact_submissions").delete().eq("id", id);
-  if (error) redirect(`/admin?error=${encodeURIComponent(error.message)}`);
+  if (error) redirect(adminUrl({ tab: "contacts", error: error.message }));
 
   revalidatePath("/admin");
-  redirect("/admin?success=Submission%20deleted");
-}
-
-/* ───────── Generic Delete Actions ───────── */
-
-export async function deleteProjectAction(formData: FormData) {
-  const supabase = await requireUser();
-  const id = toText(formData.get("id"));
-  if (!id) redirect("/admin?error=Project%20id%20missing");
-
-  const { error } = await supabase.from("projects").delete().eq("id", id);
-  if (error) redirect(`/admin?error=${encodeURIComponent(error.message)}`);
-
-  revalidatePath("/");
-  revalidatePath("/projects");
-  revalidatePath("/admin");
-  redirect("/admin?success=Project%20deleted");
-}
-
-export async function deleteServiceAction(formData: FormData) {
-  const supabase = await requireUser();
-  const id = toText(formData.get("id"));
-  if (!id) redirect("/admin?error=Service%20id%20missing");
-
-  const { error } = await supabase.from("services").delete().eq("id", id);
-  if (error) redirect(`/admin?error=${encodeURIComponent(error.message)}`);
-
-  revalidatePath("/");
-  revalidatePath("/admin");
-  redirect("/admin?success=Service%20deleted");
-}
-
-export async function deleteExperienceAction(formData: FormData) {
-  const supabase = await requireUser();
-  const id = toText(formData.get("id"));
-  if (!id) redirect("/admin?error=Experience%20id%20missing");
-
-  const { error } = await supabase.from("experiences").delete().eq("id", id);
-  if (error) redirect(`/admin?error=${encodeURIComponent(error.message)}`);
-
-  revalidatePath("/");
-  revalidatePath("/about");
-  revalidatePath("/admin");
-  redirect("/admin?success=Experience%20deleted");
-}
-
-export async function deleteSkillCategoryAction(formData: FormData) {
-  const supabase = await requireUser();
-  const id = toText(formData.get("id"));
-  if (!id) redirect("/admin?error=Skill%20category%20id%20missing");
-
-  const { error } = await supabase.from("skill_categories").delete().eq("id", id);
-  if (error) redirect(`/admin?error=${encodeURIComponent(error.message)}`);
-
-  revalidatePath("/");
-  revalidatePath("/about");
-  revalidatePath("/admin");
-  redirect("/admin?success=Skill%20category%20deleted");
-}
-
-export async function deleteSocialAction(formData: FormData) {
-  const supabase = await requireUser();
-  const id = toText(formData.get("id"));
-  if (!id) redirect("/admin?error=Social%20id%20missing");
-
-  const { error } = await supabase.from("socials").delete().eq("id", id);
-  if (error) redirect(`/admin?error=${encodeURIComponent(error.message)}`);
-
-  revalidatePath("/");
-  revalidatePath("/about");
-  revalidatePath("/admin");
-  redirect("/admin?success=Social%20deleted");
-}
-
-export async function deleteBlogPostAction(formData: FormData) {
-  const supabase = await requireUser();
-  const id = toText(formData.get("id"));
-  if (!id) redirect("/admin?error=Blog%20post%20id%20missing");
-
-  const { error } = await supabase.from("blog_posts").delete().eq("id", id);
-  if (error) redirect(`/admin?error=${encodeURIComponent(error.message)}`);
-
-  revalidatePath("/blog");
-  revalidatePath("/admin");
-  redirect("/admin?success=Blog%20post%20deleted");
-}
-
-export async function deleteBlogTagAction(formData: FormData) {
-  const supabase = await requireUser();
-  const id = toText(formData.get("id"));
-  if (!id) redirect("/admin?error=Blog%20tag%20id%20missing");
-
-  const { error } = await supabase.from("blog_tags").delete().eq("id", id);
-  if (error) redirect(`/admin?error=${encodeURIComponent(error.message)}`);
-
-  revalidatePath("/blog");
-  revalidatePath("/admin");
-  redirect("/admin?success=Blog%20tag%20deleted");
+  redirect(adminUrl({ tab: "contacts", success: "Submission deleted" }));
 }
