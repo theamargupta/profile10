@@ -1,0 +1,21 @@
+create table if not exists profiles (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  title text not null,
+  headline text,
+  subtitle text,
+  summary text,
+  bio_short text,
+  bio_long text,
+  how_i_work text,
+  email text,
+  phone text,
+  location text,
+  website text,
+  avatar_url text,
+  resume_url text,
+  available_for text,
+  rate_range text,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
+);
