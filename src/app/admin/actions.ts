@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { validateProjectJson } from "@/app/admin/project-json-schema";
 
 function toText(value: FormDataEntryValue | null) {
   if (typeof value !== "string") return null;
@@ -133,6 +134,123 @@ export async function createProjectAction(formData: FormData) {
   revalidatePath("/projects");
   revalidatePath("/admin");
   redirect("/admin?success=Project%20created");
+}
+
+export async function createProjectFromJsonAction(formData: FormData) {
+  const supabase = await requireUser();
+  const raw = toText(formData.get("json"));
+
+  if (!raw) {
+    redirect("/admin?error=JSON%20field%20is%20empty");
+  }
+
+  const result = validateProjectJson(raw);
+
+  if (!result.ok) {
+    const msg = result.errors
+      .filter((e) => !e.message.startsWith("Unknown"))
+      .map((e) => `${e.field}: ${e.message}`)
+      .join("; ");
+    redirect(`/admin?error=${encodeURIComponent(msg)}`);
+  }
+
+  // Fetch all existing tools once so we can resolve names → ids
+  const { data: allTools } = await supabase.from("tools").select("id, name");
+  const toolMap = new Map<string, string>(); // lowercase lookup → actual id
+  for (const t of allTools ?? []) {
+    toolMap.set(t.id.toLowerCase(), t.id);
+    toolMap.set(t.name.toLowerCase(), t.id);
+  }
+
+  const created: string[] = [];
+
+  for (const project of result.projects) {
+    const { error } = await supabase.from("projects").insert({
+      id: project.id,
+      title: project.title,
+      description: project.description,
+      demo_img: project.demo_img,
+      live_url: project.live_url,
+      repo_url: project.repo_url,
+      architecture: project.architecture,
+      featured: project.featured ?? false,
+      sort_order: project.sort_order ?? 0,
+    });
+
+    if (error) {
+      redirect(`/admin?error=${encodeURIComponent(`Project "${project.title}": ${error.message}`)}`);
+    }
+
+    // Insert project_tools — resolve names/ids case-insensitively
+    if (project.tools && project.tools.length > 0) {
+      const unresolved: string[] = [];
+      const toolRows: { project_id: string; tool_id: string; sort_order: number }[] = [];
+
+      for (let i = 0; i < project.tools.length; i++) {
+        const input = project.tools[i];
+        const resolved = toolMap.get(input.toLowerCase());
+        if (resolved) {
+          toolRows.push({ project_id: project.id!, tool_id: resolved, sort_order: i });
+        } else {
+          unresolved.push(input);
+        }
+      }
+
+      if (unresolved.length > 0) {
+        redirect(
+          `/admin?error=${encodeURIComponent(
+            `Tools not found for "${project.title}": ${unresolved.join(", ")}. Use tool IDs or exact names from the Tools tab.`
+          )}`
+        );
+      }
+
+      if (toolRows.length > 0) {
+        const { error: toolError } = await supabase.from("project_tools").insert(toolRows);
+        if (toolError) {
+          redirect(`/admin?error=${encodeURIComponent(`Tools for "${project.title}": ${toolError.message}`)}`);
+        }
+      }
+    }
+
+    // Insert project_features
+    if (project.features && project.features.length > 0) {
+      const featureRows = project.features.map((feature, i) => ({
+        project_id: project.id!,
+        feature,
+        sort_order: i,
+      }));
+      const { error: featError } = await supabase.from("project_features").insert(featureRows);
+      if (featError) {
+        redirect(`/admin?error=${encodeURIComponent(`Features for "${project.title}": ${featError.message}`)}`);
+      }
+    }
+
+    // Insert project_challenges
+    if (project.challenges && project.challenges.length > 0) {
+      const challengeRows = project.challenges.map((c, i) => ({
+        project_id: project.id!,
+        title: c.title,
+        solution: c.solution,
+        sort_order: i,
+      }));
+      const { error: chalError } = await supabase.from("project_challenges").insert(challengeRows);
+      if (chalError) {
+        redirect(`/admin?error=${encodeURIComponent(`Challenges for "${project.title}": ${chalError.message}`)}`);
+      }
+    }
+
+    created.push(project.title);
+    revalidatePath(`/project/${project.id}`);
+  }
+
+  revalidatePath("/");
+  revalidatePath("/projects");
+  revalidatePath("/admin");
+
+  const msg = created.length === 1
+    ? `Project "${created[0]}" created from JSON`
+    : `${created.length} projects created from JSON`;
+  redirect(`/admin?success=${encodeURIComponent(msg)}`);
 }
 
 export async function updateProjectAction(formData: FormData) {

@@ -50,6 +50,7 @@ import {
 } from "@/app/admin/actions";
 import { AdminTabs } from "@/app/admin/admin-tabs";
 import { CopyAllButton } from "@/app/admin/copy-all-button";
+import { ProjectJsonImport } from "@/app/admin/project-json-import";
 import { Button } from "@/components/ui/button";
 
 type AdminPageProps = {
@@ -408,6 +409,15 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                         <Button type="submit" size="sm">Create Project</Button>
                       </div>
                     </form>
+                  </details>
+
+                  <details className="mt-3 rounded-xl border border-dashed border-primary/30 bg-primary/5 p-4">
+                    <summary className="cursor-pointer list-none text-sm font-medium text-primary">
+                      + Import from JSON
+                    </summary>
+                    <div className="mt-4">
+                      <ProjectJsonImport />
+                    </div>
                   </details>
 
             <div className="mt-4 grid gap-4">
