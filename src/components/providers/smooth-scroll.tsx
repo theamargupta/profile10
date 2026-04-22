@@ -22,11 +22,13 @@ export default function SmoothScrollProvider({ children }: { children: ReactNode
 
     if (prefersReducedMotion) return;
     if (pathname === "/admin" || pathname?.startsWith("/admin/")) return;
+    if (pathname === "/blog" || pathname?.startsWith("/blog/")) return;
 
     const lenis = new Lenis({
-      duration: 1.2,
+      lerp: 0.1,
       smoothWheel: true,
       touchMultiplier: 2,
+      syncTouch: false,
     });
 
     lenisRef.current = lenis;

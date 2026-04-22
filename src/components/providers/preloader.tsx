@@ -5,30 +5,42 @@ import { useEffect, useRef, useState } from "react";
 const SESSION_KEY = "profile.preloader.seen";
 
 export default function Preloader() {
-  const [mounted, setMounted] = useState(false);
   const [active, setActive] = useState(false);
   const [count, setCount] = useState(0);
   const [phase, setPhase] = useState<"counting" | "revealing" | "leaving" | "done">(
     "counting",
   );
   const rafRef = useRef<number | null>(null);
+  const timeoutRefs = useRef<number[]>([]);
 
   useEffect(() => {
-    setMounted(true);
     if (typeof window === "undefined") return;
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const seen = window.sessionStorage.getItem(SESSION_KEY) === "1";
-    if (reduce || seen) {
-      setPhase("done");
-      return;
-    }
-    setActive(true);
+    const initTimeout = window.setTimeout(() => {
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const seen = window.sessionStorage.getItem(SESSION_KEY) === "1";
+      if (reduce || seen) {
+        setPhase("done");
+        return;
+      }
+      setActive(true);
+    }, 0);
+
+    timeoutRefs.current = [initTimeout];
+    return () => window.clearTimeout(initTimeout);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      timeoutRefs.current.forEach((timeout) => window.clearTimeout(timeout));
+      timeoutRefs.current = [];
+    };
   }, []);
 
   useEffect(() => {
     if (!active || phase !== "counting") return;
     const start = performance.now();
-    const duration = 900;
+    const duration = 450;
     const tick = (now: number) => {
       const t = Math.min(1, (now - start) / duration);
       const eased = 1 - Math.pow(1 - t, 3);
@@ -37,15 +49,16 @@ export default function Preloader() {
         rafRef.current = requestAnimationFrame(tick);
       } else {
         setPhase("revealing");
-        setTimeout(() => setPhase("leaving"), 320);
-        setTimeout(() => {
+        const leavingTimeout = window.setTimeout(() => setPhase("leaving"), 180);
+        const doneTimeout = window.setTimeout(() => {
           setPhase("done");
           try {
             window.sessionStorage.setItem(SESSION_KEY, "1");
           } catch {
             /* noop */
           }
-        }, 1280);
+        }, 700);
+        timeoutRefs.current = [leavingTimeout, doneTimeout];
       }
     };
     rafRef.current = requestAnimationFrame(tick);
@@ -63,7 +76,7 @@ export default function Preloader() {
     };
   }, [active, phase]);
 
-  if (!mounted || !active || phase === "done") return null;
+  if (!active || phase === "done") return null;
 
   const leaving = phase === "leaving";
   const maskShown = phase === "revealing" || phase === "leaving";
@@ -75,14 +88,14 @@ export default function Preloader() {
       style={{ contain: "strict" }}
     >
       <div
-        className="absolute inset-y-0 left-0 w-1/2 bg-[#050507] transition-transform duration-[900ms]"
+        className="absolute inset-y-0 left-0 w-1/2 bg-[#050507] transition-transform duration-[600ms]"
         style={{
           transform: leaving ? "translateY(-101%)" : "translateY(0)",
           transitionTimingFunction: "cubic-bezier(0.76, 0, 0.24, 1)",
         }}
       />
       <div
-        className="absolute inset-y-0 right-0 w-1/2 bg-[#050507] transition-transform duration-[900ms]"
+        className="absolute inset-y-0 right-0 w-1/2 bg-[#050507] transition-transform duration-[600ms]"
         style={{
           transform: leaving ? "translateY(101%)" : "translateY(0)",
           transitionTimingFunction: "cubic-bezier(0.76, 0, 0.24, 1)",

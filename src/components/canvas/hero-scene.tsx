@@ -10,10 +10,13 @@ export default function HeroScene() {
 
   useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setReducedMotion(mq.matches);
+    const syncInitial = window.setTimeout(() => setReducedMotion(mq.matches), 0);
     const handler = (e: MediaQueryListEvent) => setReducedMotion(e.matches);
     mq.addEventListener("change", handler);
-    return () => mq.removeEventListener("change", handler);
+    return () => {
+      window.clearTimeout(syncInitial);
+      mq.removeEventListener("change", handler);
+    };
   }, []);
 
   if (reducedMotion) {
@@ -32,16 +35,15 @@ export default function HeroScene() {
   return (
     <Canvas
       camera={{ position: [0, 0, 6], fov: 50 }}
-      dpr={[1, 1.75]}
-      gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
+      dpr={[1, 1.5]}
+      gl={{ antialias: false, alpha: true, powerPreference: "high-performance" }}
       style={{ width: "100%", height: "100%", background: "transparent" }}
     >
-      <fog attach="fog" args={["#050507", 8, 20]} />
       <ambientLight intensity={0.5} />
       <directionalLight position={[3, 4, 5]} intensity={0.8} />
       <pointLight position={[-2, 2, 3]} intensity={0.3} color="#a8f500" />
       <FloatingCodeEditor />
-      <ParticleField count={1200} radius={8} />
+      <ParticleField count={600} radius={8} />
     </Canvas>
   );
 }
