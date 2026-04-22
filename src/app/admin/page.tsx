@@ -11,14 +11,12 @@ import {
 } from "@/lib/queries";
 import {
   loginAction,
-  createBlogPostAction,
   createBlogTagAction,
   createExperienceAction,
   createProjectAction,
   createServiceAction,
   createSkillCategoryAction,
   createSocialAction,
-  updateBlogPostAction,
   updateBlogTagAction,
   signOutAction,
   updateExperienceAction,
@@ -49,6 +47,7 @@ import {
   deleteBlogTagAction,
 } from "@/app/admin/actions";
 import { AdminTabs } from "@/app/admin/admin-tabs";
+import { BlogPostEditor, type BlogPostEditorPost } from "@/components/admin/blog-post-editor";
 import { CopyAllButton } from "@/app/admin/copy-all-button";
 import { ProjectJsonImport } from "@/app/admin/project-json-import";
 import { Button } from "@/components/ui/button";
@@ -943,45 +942,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                     <summary className="cursor-pointer list-none text-sm font-medium text-primary">
                       + Create New Post
                     </summary>
-                    <form action={createBlogPostAction} className="mt-4 space-y-3">
-                      <label className="block space-y-2 text-sm">
-                        <span className="text-foreground/80">Title</span>
-                        <input name="title" placeholder="Post title" required className={inputClass} />
-                      </label>
-                      <label className="block space-y-2 text-sm">
-                        <span className="text-foreground/80">Slug</span>
-                        <input name="slug" placeholder="Auto-generated if empty" className={inputClass} />
-                      </label>
-                      <label className="block space-y-2 text-sm">
-                        <span className="text-foreground/80">Excerpt</span>
-                        <textarea name="excerpt" rows={2} placeholder="Short excerpt" className={inputClass} />
-                      </label>
-                      <label className="block space-y-2 text-sm">
-                        <span className="text-foreground/80">Content (HTML supported)</span>
-                        <textarea name="content" rows={8} placeholder="Post content..." className={inputClass} />
-                      </label>
-                      <label className="block space-y-2 text-sm">
-                        <span className="text-foreground/80">Tags (comma-separated, auto-created)</span>
-                        <input name="tags" placeholder="AI, MCP, Claude" className={inputClass} />
-                      </label>
-                      <div className="grid gap-3 md:grid-cols-[1fr_auto_auto]">
-                        <label className="block space-y-2 text-sm">
-                          <span className="text-foreground/80">Cover Image URL</span>
-                          <input name="cover_image" placeholder="https://..." className={inputClass} />
-                        </label>
-                        <label className="block space-y-2 text-sm">
-                          <span className="text-foreground/80">Read Time</span>
-                          <input name="reading_time_minutes" type="number" min={1} defaultValue={5} className="w-24 rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-sm" />
-                        </label>
-                        <label className="flex items-center gap-2 rounded-xl border border-white/10 px-3 py-2 text-sm">
-                          <input type="checkbox" name="published" />
-                          Publish now
-                        </label>
-                      </div>
-                      <div className="flex justify-end">
-                        <Button type="submit" size="sm">Create Post</Button>
-                      </div>
-                    </form>
+                    <BlogPostEditor mode="create" />
                   </details>
 
                   <div className="mt-4 grid gap-4">
@@ -989,53 +950,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                       const postTags = (post.blog_post_tags as { blog_tags: { id: string; name: string; slug: string } }[] | undefined) ?? [];
                       return (
                       <div key={post.id as string} className="space-y-3 rounded-xl border border-white/10 bg-black/20 p-4">
-                        <form action={updateBlogPostAction} className="space-y-3">
-                          <input type="hidden" name="id" value={post.id as string} />
-                          <div className="grid gap-3 md:grid-cols-[1fr_auto]">
-                            <label className="block space-y-2 text-sm">
-                              <span className="text-foreground/80">Title</span>
-                              <input name="title" defaultValue={post.title as string} className={inputClass} />
-                            </label>
-                            <label className="flex items-center gap-2 rounded-xl border border-white/10 px-3 py-2 text-sm">
-                              <input type="checkbox" name="published" defaultChecked={post.published as boolean} />
-                              Published
-                            </label>
-                          </div>
-                          <label className="block space-y-2 text-sm">
-                            <span className="text-foreground/80">Slug</span>
-                            <input name="slug" defaultValue={post.slug as string} className={inputClass} />
-                          </label>
-                          <label className="block space-y-2 text-sm">
-                            <span className="text-foreground/80">Excerpt</span>
-                            <textarea name="excerpt" rows={2} placeholder="Excerpt" defaultValue={(post.excerpt as string) ?? ""} className={inputClass} />
-                          </label>
-                          <label className="block space-y-2 text-sm">
-                            <span className="text-foreground/80">Content (HTML supported)</span>
-                            <textarea name="content" rows={10} placeholder="Post content..." defaultValue={(post.content as string) ?? ""} className={inputClass} />
-                          </label>
-                          <label className="block space-y-2 text-sm">
-                            <span className="text-foreground/80">Tags (comma-separated, auto-created)</span>
-                            <input
-                              name="tags"
-                              defaultValue={postTags.map((pt) => pt.blog_tags.name).join(", ")}
-                              placeholder="AI, MCP, Claude"
-                              className={inputClass}
-                            />
-                          </label>
-                          <div className="grid gap-3 md:grid-cols-[1fr_auto]">
-                            <label className="block space-y-2 text-sm">
-                              <span className="text-foreground/80">Cover Image URL</span>
-                              <input name="cover_image" defaultValue={(post.cover_image as string) ?? ""} placeholder="https://..." className={inputClass} />
-                            </label>
-                            <label className="block space-y-2 text-sm">
-                              <span className="text-foreground/80">Read Time</span>
-                              <input name="reading_time_minutes" type="number" min={1} defaultValue={(post.reading_time_minutes as number) ?? 5} className="w-28 rounded-xl border border-white/15 bg-black/20 px-3 py-2 text-sm" />
-                            </label>
-                          </div>
-                          <div className="flex justify-end">
-                            <Button type="submit" size="sm">Save Post</Button>
-                          </div>
-                        </form>
+                        <BlogPostEditor mode="edit" post={post as BlogPostEditorPost} />
 
                         {/* ── Post Tags ── */}
                         <details className="rounded-lg border border-white/10 p-3">

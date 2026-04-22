@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 /* =========================================================================
    Profile10 — Design Tokens (matched to devfrend-agency aesthetic)
