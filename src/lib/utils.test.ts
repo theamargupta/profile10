@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { truncate } from "./utils";
+import { capitalizeWords, truncate } from "./utils";
 
 describe("truncate", () => {
   it("returns the original string when length ≤ max", () => {
@@ -17,5 +17,36 @@ describe("truncate", () => {
 
   it('returns "" when max is negative', () => {
     expect(truncate("hello", -1)).toBe("");
+  });
+});
+
+describe("capitalizeWords", () => {
+  it("capitalizes a basic two-word string", () => {
+    expect(capitalizeWords("hello world")).toBe("Hello World");
+  });
+
+  it("capitalizes a single word", () => {
+    expect(capitalizeWords("hello")).toBe("Hello");
+  });
+
+  it('returns "" for empty string', () => {
+    expect(capitalizeWords("")).toBe("");
+  });
+
+  it("trims leading and trailing whitespace and collapses runs to single spaces", () => {
+    expect(capitalizeWords("  hi there  ")).toBe("Hi There");
+  });
+
+  it("collapses multiple spaces between words", () => {
+    expect(capitalizeWords("one    two")).toBe("One Two");
+  });
+
+  it("handles single-character words", () => {
+    expect(capitalizeWords("a b c")).toBe("A B C");
+  });
+
+  it("lowercases the rest of each word after the first letter", () => {
+    expect(capitalizeWords("iPhone is great")).toBe("Iphone Is Great");
+    expect(capitalizeWords("HELLO WORLD")).toBe("Hello World");
   });
 });

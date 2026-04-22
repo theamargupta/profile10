@@ -23,3 +23,13 @@ export function truncate(str: string, max: number): string {
   if (str.length <= max) return str;
   return `${str.slice(0, max - 1)}\u2026`;
 }
+
+export function capitalizeWords(str: string): string {
+  return str
+    .trim()
+    .split(/\s+/)
+    .map((word) =>
+      word.length === 0 ? "" : word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+    )
+    .join(" ");
+}
