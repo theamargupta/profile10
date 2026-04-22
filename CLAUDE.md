@@ -42,6 +42,12 @@ SUPABASE_SERVICE_ROLE_KEY=...
 - Images: `next/image`. Remote hosts already whitelisted in `next.config.ts` — add to that list if you add a new host.
 - Supabase Storage URLs use the public bucket pattern configured in `next.config.ts`.
 
+## Performance (landing-page rules learned the hard way)
+- Never animate SVG `<feTurbulence>` (no `<animate attributeName="seed">`). Browser re-rasterises fractal noise every frame — one of the worst perf hogs. Static turbulence only.
+- Hero `<Canvas>`: `antialias: false`, `dpr={[1, 1.5]}` cap, no `<fog>` unless the shader needs it.
+- Lenis: prefer `lerp: 0.1` over `duration: 1.2`. Skip Lenis on `/admin` and `/blog` routes.
+- Preloader gate target: ≤ 700ms total on first visit.
+
 ## Rules
 - No `tailwind.config.*` — Tailwind v4.
 - Service-role Supabase key stays server-only. Never import into a client component.
