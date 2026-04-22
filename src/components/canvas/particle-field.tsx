@@ -11,6 +11,20 @@ import * as THREE from "three";
 import { useFrame, useThree } from "@react-three/fiber";
 import { PALETTE } from "@/lib/palette";
 
+const RANDOM_SEED = 20260423;
+
+// Kept local to honor this task's five-file scope.
+function createSeededRandom(seed: number) {
+  let state = seed;
+  return () => {
+    state += 0x6d2b79f5;
+    let value = state;
+    value = Math.imul(value ^ (value >>> 15), value | 1);
+    value ^= value + Math.imul(value ^ (value >>> 7), value | 61);
+    return ((value ^ (value >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
 export default function ParticleField({
   count = 4000,
   radius = 6,
@@ -22,17 +36,18 @@ export default function ParticleField({
   const { mouse } = useThree();
 
   const { positions, colors } = useMemo(() => {
+    const random = createSeededRandom(RANDOM_SEED);
     const positions = new Float32Array(count * 3);
     const colors = new Float32Array(count * 3);
     const cPrimary = new THREE.Color(PALETTE.primary[500]);
     const cAccent = new THREE.Color(PALETTE.accent[400]);
     const cMix = new THREE.Color();
     for (let i = 0; i < count; i++) {
-      const u = Math.random();
-      const v = Math.random();
+      const u = random();
+      const v = random();
       const theta = 2 * Math.PI * u;
       const phi = Math.acos(2 * v - 1);
-      const r = radius * Math.cbrt(Math.random());
+      const r = radius * Math.cbrt(random());
       const x = r * Math.sin(phi) * Math.cos(theta);
       const y = r * Math.sin(phi) * Math.sin(theta);
       const z = r * Math.cos(phi);

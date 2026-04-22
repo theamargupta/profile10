@@ -6,27 +6,44 @@ import * as THREE from "three";
 
 const NODE_COUNT = 40;
 const CONNECTION_THRESHOLD = 2.8;
+const RANDOM_SEED = 1337;
+
+// Kept local to honor this task's five-file scope.
+function createSeededRandom(seed: number) {
+  let state = seed;
+  return () => {
+    state += 0x6d2b79f5;
+    let value = state;
+    value = Math.imul(value ^ (value >>> 15), value | 1);
+    value ^= value + Math.imul(value ^ (value >>> 7), value | 61);
+    return ((value ^ (value >>> 14)) >>> 0) / 4294967296;
+  };
+}
 
 export function NeuralNetwork() {
   const groupRef = useRef<THREE.Group>(null);
   const { pointer } = useThree();
 
   const nodes = useMemo(() => {
-    return Array.from({ length: NODE_COUNT }, () => ({
-      position: new THREE.Vector3(
-        THREE.MathUtils.randFloatSpread(5),
-        THREE.MathUtils.randFloatSpread(4),
-        THREE.MathUtils.randFloatSpread(3)
-      ),
-      basePosition: new THREE.Vector3(),
-      speed: THREE.MathUtils.randFloat(0.2, 0.6),
-      phase: Math.random() * Math.PI * 2,
-    }));
-  }, []);
+    const random = createSeededRandom(RANDOM_SEED);
+    const randFloatSpread = (range: number) => range * (0.5 - random());
+    const randFloat = (min: number, max: number) => min + random() * (max - min);
 
-  useMemo(() => {
-    nodes.forEach((n) => n.basePosition.copy(n.position));
-  }, [nodes]);
+    return Array.from({ length: NODE_COUNT }, () => {
+      const position = new THREE.Vector3(
+        randFloatSpread(5),
+        randFloatSpread(4),
+        randFloatSpread(3)
+      );
+
+      return {
+        position,
+        basePosition: position.clone(),
+        speed: randFloat(0.2, 0.6),
+        phase: random() * Math.PI * 2,
+      };
+    });
+  }, []);
 
   const connections = useMemo(() => {
     const lines: [number, number][] = [];

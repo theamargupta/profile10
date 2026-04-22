@@ -7,8 +7,8 @@
 
 import React, {
   useEffect,
-  useRef,
   useState,
+  useSyncExternalStore,
   type ElementType,
   type ReactNode,
 } from "react";
@@ -21,6 +21,27 @@ type Props = {
   duration?: number;
 };
 
+const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
+
+function subscribeToReducedMotion(onStoreChange: () => void) {
+  if (typeof window === "undefined") return () => {};
+
+  const mediaQuery = window.matchMedia(REDUCED_MOTION_QUERY);
+  mediaQuery.addEventListener("change", onStoreChange);
+  return () => mediaQuery.removeEventListener("change", onStoreChange);
+}
+
+function getReducedMotionSnapshot() {
+  return (
+    typeof window !== "undefined" &&
+    window.matchMedia(REDUCED_MOTION_QUERY).matches
+  );
+}
+
+function getReducedMotionServerSnapshot() {
+  return false;
+}
+
 export default function MaskReveal({
   children,
   as: Tag = "div",
@@ -28,27 +49,26 @@ export default function MaskReveal({
   delay = 0,
   duration = 1100,
 }: Props) {
-  const wrapperRef = useRef<HTMLDivElement | null>(null);
+  const [wrapperElement, setWrapperElement] = useState<HTMLElement | null>(null);
   const [visible, setVisible] = useState(false);
-  const [reduced, setReduced] = useState(false);
+  const reduced = useSyncExternalStore(
+    subscribeToReducedMotion,
+    getReducedMotionSnapshot,
+    getReducedMotionServerSnapshot,
+  );
+  const isVisible = reduced || visible;
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    setReduced(window.matchMedia("(prefers-reduced-motion: reduce)").matches);
-  }, []);
+    const el = wrapperElement;
+    if (!el || reduced) return;
 
-  useEffect(() => {
-    const el = wrapperRef.current;
-    if (!el) return;
-    if (reduced) {
-      setVisible(true);
-      return;
-    }
-    const r = el.getBoundingClientRect();
-    if (r.top < window.innerHeight * 0.9 && r.bottom > 0) {
-      setVisible(true);
-      return;
-    }
+    const frame = window.requestAnimationFrame(() => {
+      const r = el.getBoundingClientRect();
+      if (r.top < window.innerHeight * 0.9 && r.bottom > 0) {
+        setVisible(true);
+      }
+    });
+
     const io = new IntersectionObserver(
       (entries) => {
         for (const e of entries) {
@@ -62,13 +82,16 @@ export default function MaskReveal({
       { threshold: 0.15, rootMargin: "0px 0px -10% 0px" },
     );
     io.observe(el);
-    return () => io.disconnect();
-  }, [reduced]);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      io.disconnect();
+    };
+  }, [reduced, wrapperElement]);
 
   const innerStyle: React.CSSProperties = {
     display: "inline-block",
-    clipPath: visible ? "inset(0 0% 0 0)" : "inset(0 100% 0 0)",
-    WebkitClipPath: visible ? "inset(0 0% 0 0)" : "inset(0 100% 0 0)",
+    clipPath: isVisible ? "inset(0 0% 0 0)" : "inset(0 100% 0 0)",
+    WebkitClipPath: isVisible ? "inset(0 0% 0 0)" : "inset(0 100% 0 0)",
     transition: reduced
       ? "none"
       : `clip-path ${duration}ms cubic-bezier(0.76, 0, 0.24, 1) ${delay}ms, -webkit-clip-path ${duration}ms cubic-bezier(0.76, 0, 0.24, 1) ${delay}ms`,
@@ -77,7 +100,7 @@ export default function MaskReveal({
 
   return React.createElement(
     Tag,
-    { ref: wrapperRef, className },
+    { ref: setWrapperElement, className },
     <span style={innerStyle}>{children}</span>,
   );
 }
