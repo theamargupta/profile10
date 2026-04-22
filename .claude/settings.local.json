@@ -10,16 +10,43 @@
       "Bash(git status)",
       "Bash(git diff*)",
       "Bash(git log*)",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(echo 'CODEX_CMD_NAME=\"Codex: Create a new thread\"')",
+      "Bash(echo 'CODEX_EXT_ID=\"openai.chatgpt\"')",
+      "Bash(echo 'CODEX_SUBMIT_KEY=\"enter\"')"
     ]
   },
   "hooks": {
     "PreToolUse": [
-      { "matcher": "Bash", "hooks": [{ "type": "command", "command": "bash .claude/hooks/block-env-commit.sh" }] },
-      { "matcher": "Write", "hooks": [{ "type": "command", "command": "bash .claude/hooks/prevent-tailwind-config.sh" }] }
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/block-env-commit.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/prevent-tailwind-config.sh"
+          }
+        ]
+      }
     ],
     "PostToolUse": [
-      { "matcher": "Edit|Write", "hooks": [{ "type": "command", "command": "bash .claude/hooks/lint-on-write.sh" }] }
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash .claude/hooks/lint-on-write.sh"
+          }
+        ]
+      }
     ]
   }
 }
