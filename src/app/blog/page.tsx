@@ -3,6 +3,9 @@ import { getBlogPosts, getBlogTags } from "@/lib/queries";
 import Link from "next/link";
 import { HiOutlinePencilSquare } from "react-icons/hi2";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export const metadata: Metadata = {
   title: "Blog",
   description:

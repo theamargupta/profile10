@@ -960,6 +960,10 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                         <span className="text-foreground/80">Content (HTML supported)</span>
                         <textarea name="content" rows={8} placeholder="Post content..." className={inputClass} />
                       </label>
+                      <label className="block space-y-2 text-sm">
+                        <span className="text-foreground/80">Tags (comma-separated, auto-created)</span>
+                        <input name="tags" placeholder="AI, MCP, Claude" className={inputClass} />
+                      </label>
                       <div className="grid gap-3 md:grid-cols-[1fr_auto_auto]">
                         <label className="block space-y-2 text-sm">
                           <span className="text-foreground/80">Cover Image URL</span>
@@ -1008,6 +1012,15 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                           <label className="block space-y-2 text-sm">
                             <span className="text-foreground/80">Content (HTML supported)</span>
                             <textarea name="content" rows={10} placeholder="Post content..." defaultValue={(post.content as string) ?? ""} className={inputClass} />
+                          </label>
+                          <label className="block space-y-2 text-sm">
+                            <span className="text-foreground/80">Tags (comma-separated, auto-created)</span>
+                            <input
+                              name="tags"
+                              defaultValue={postTags.map((pt) => pt.blog_tags.name).join(", ")}
+                              placeholder="AI, MCP, Claude"
+                              className={inputClass}
+                            />
                           </label>
                           <div className="grid gap-3 md:grid-cols-[1fr_auto]">
                             <label className="block space-y-2 text-sm">

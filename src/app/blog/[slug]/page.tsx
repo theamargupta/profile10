@@ -1,17 +1,15 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { getBlogPostBySlug, getAllBlogSlugs } from "@/lib/queries";
+import { getBlogPostBySlug } from "@/lib/queries";
 import { IoArrowBack } from "react-icons/io5";
+
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
 type Props = {
   params: Promise<{ slug: string }>;
 };
-
-export async function generateStaticParams() {
-  const slugs = await getAllBlogSlugs();
-  return slugs.map((slug) => ({ slug }));
-}
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;

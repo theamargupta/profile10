@@ -21,6 +21,14 @@ function toBoolean(value: FormDataEntryValue | null) {
   return value === "on" || value === "true";
 }
 
+function parseTagList(value: FormDataEntryValue | null): string[] {
+  if (typeof value !== "string") return [];
+  return value
+    .split(",")
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0);
+}
+
 /** Build /admin redirect URL preserving the active tab. */
 function adminUrl(params: { success?: string; error?: string; tab?: string }) {
   const s = new URLSearchParams();
@@ -587,6 +595,90 @@ export async function deleteSocialAction(formData: FormData) {
 
 /* ───────── Blog ───────── */
 
+async function syncBlogPostTagsAction(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  postId: string,
+  tagNames: string[]
+) {
+  const tagIds = new Set<string>();
+  const seenNames = new Set<string>();
+
+  for (const rawName of tagNames) {
+    const name = rawName.trim();
+    const nameKey = name.toLowerCase();
+    if (!name || seenNames.has(nameKey)) continue;
+    seenNames.add(nameKey);
+
+    const { data: existingTag, error: findTagError } = await supabase
+      .from("blog_tags")
+      .select("id")
+      .ilike("name", name)
+      .limit(1)
+      .maybeSingle();
+
+    if (findTagError) {
+      return `Find blog tag "${name}": ${findTagError.message}`;
+    }
+
+    let tagId = existingTag?.id;
+
+    if (!tagId) {
+      const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+      const { data: createdTag, error: createTagError } = await supabase
+        .from("blog_tags")
+        .insert({ name, slug })
+        .select("id")
+        .single();
+
+      if (createTagError) {
+        return `Create blog tag "${name}": ${createTagError.message}`;
+      }
+
+      tagId = createdTag.id;
+    }
+
+    tagIds.add(tagId);
+  }
+
+  const { data: existingRows, error: readTagsError } = await supabase
+    .from("blog_post_tags")
+    .select("tag_id")
+    .eq("post_id", postId);
+
+  if (readTagsError) {
+    return `Read blog tags for post "${postId}": ${readTagsError.message}`;
+  }
+
+  const nextTagIds = Array.from(tagIds);
+  const existingTagIds = new Set((existingRows ?? []).map((row) => row.tag_id));
+  const toAdd = nextTagIds.filter((id) => !existingTagIds.has(id));
+  const toRemove = Array.from(existingTagIds).filter((id) => !tagIds.has(id));
+
+  if (toAdd.length > 0) {
+    const { error: addTagsError } = await supabase
+      .from("blog_post_tags")
+      .insert(toAdd.map((tagId) => ({ post_id: postId, tag_id: tagId })));
+
+    if (addTagsError) {
+      return `Assign blog tags to post "${postId}": ${addTagsError.message}`;
+    }
+  }
+
+  if (toRemove.length > 0) {
+    const { error: removeTagsError } = await supabase
+      .from("blog_post_tags")
+      .delete()
+      .eq("post_id", postId)
+      .in("tag_id", toRemove);
+
+    if (removeTagsError) {
+      return `Remove blog tags from post "${postId}": ${removeTagsError.message}`;
+    }
+  }
+
+  return null;
+}
+
 export async function createBlogPostAction(formData: FormData) {
   const supabase = await requireUser();
 
@@ -595,7 +687,7 @@ export async function createBlogPostAction(formData: FormData) {
     toText(formData.get("slug")) ??
     title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
-  const { error } = await supabase.from("blog_posts").insert({
+  const { data, error } = await supabase.from("blog_posts").insert({
     title, slug,
     excerpt: toText(formData.get("excerpt")),
     content: toText(formData.get("content")),
@@ -603,8 +695,14 @@ export async function createBlogPostAction(formData: FormData) {
     reading_time_minutes: toNumber(formData.get("reading_time_minutes"), 5),
     published: toBoolean(formData.get("published")),
     published_at: toBoolean(formData.get("published")) ? new Date().toISOString() : null,
-  });
-  if (error) redirect(adminUrl({ tab: "blog", error: error.message }));
+  }).select("id").single();
+  if (error) redirect(adminUrl({ tab: "blog", error: `Create blog post "${title}": ${error.message}` }));
+
+  const tagNames = parseTagList(formData.get("tags"));
+  if (tagNames.length > 0) {
+    const tagError = await syncBlogPostTagsAction(supabase, data.id, tagNames);
+    if (tagError) redirect(adminUrl({ tab: "blog", error: tagError }));
+  }
 
   revalidatePath("/blog");
   revalidatePath("/admin");
@@ -628,7 +726,10 @@ export async function updateBlogPostAction(formData: FormData) {
     published,
     published_at: published ? new Date().toISOString() : null,
   }).eq("id", id);
-  if (error) redirect(adminUrl({ tab: "blog", error: error.message }));
+  if (error) redirect(adminUrl({ tab: "blog", error: `Update blog post "${id}": ${error.message}` }));
+
+  const tagError = await syncBlogPostTagsAction(supabase, id, parseTagList(formData.get("tags")));
+  if (tagError) redirect(adminUrl({ tab: "blog", error: tagError }));
 
   revalidatePath("/blog");
   revalidatePath(`/blog/${slug}`);

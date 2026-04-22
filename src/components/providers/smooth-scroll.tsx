@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useRef, type ReactNode } from "react";
+import { usePathname } from "next/navigation";
 import Lenis from "lenis";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -12,6 +13,7 @@ export const useLenis = () => useContext(SmoothScrollContext);
 
 export default function SmoothScrollProvider({ children }: { children: ReactNode }) {
   const lenisRef = useRef<Lenis | null>(null);
+  const pathname = usePathname();
 
   useEffect(() => {
     const prefersReducedMotion = window.matchMedia(
@@ -19,6 +21,7 @@ export default function SmoothScrollProvider({ children }: { children: ReactNode
     ).matches;
 
     if (prefersReducedMotion) return;
+    if (pathname === "/admin" || pathname?.startsWith("/admin/")) return;
 
     const lenis = new Lenis({
       duration: 1.2,
@@ -39,10 +42,10 @@ export default function SmoothScrollProvider({ children }: { children: ReactNode
       lenis.destroy();
       lenisRef.current = null;
     };
-  }, []);
+  }, [pathname]);
 
   return (
-    <SmoothScrollContext.Provider value={lenisRef.current}>
+    <SmoothScrollContext.Provider value={null}>
       {children}
     </SmoothScrollContext.Provider>
   );

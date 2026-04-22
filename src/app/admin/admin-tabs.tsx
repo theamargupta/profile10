@@ -1,7 +1,7 @@
 "use client";
 
-import { useCallback } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 type TabItem = {
@@ -17,26 +17,27 @@ type AdminTabsProps = {
 };
 
 export function AdminTabs({ items, defaultTabId }: AdminTabsProps) {
-  const router = useRouter();
   const searchParams = useSearchParams();
 
-  const tabFromUrl = searchParams.get("tab");
-  const activeTab =
-    tabFromUrl && items.some((item) => item.id === tabFromUrl)
+  const [activeTab, setActiveTab] = useState(() => {
+    const tabFromUrl = searchParams.get("tab");
+    return tabFromUrl && items.some((item) => item.id === tabFromUrl)
       ? tabFromUrl
       : defaultTabId && items.some((item) => item.id === defaultTabId)
         ? defaultTabId
         : items[0]?.id ?? "";
+  });
 
   const current = items.find((item) => item.id === activeTab) ?? items[0];
 
   const setTab = useCallback(
     (id: string) => {
-      const params = new URLSearchParams(searchParams.toString());
+      setActiveTab(id);
+      const params = new URLSearchParams(window.location.search);
       params.set("tab", id);
-      router.replace(`/admin?${params.toString()}`, { scroll: false });
+      window.history.replaceState(null, "", `${window.location.pathname}?${params.toString()}`);
     },
-    [router, searchParams]
+    []
   );
 
   return (
