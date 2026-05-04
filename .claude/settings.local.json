@@ -13,7 +13,22 @@
       "Bash(git add *)",
       "Bash(echo 'CODEX_CMD_NAME=\"Codex: Create a new thread\"')",
       "Bash(echo 'CODEX_EXT_ID=\"openai.chatgpt\"')",
-      "Bash(echo 'CODEX_SUBMIT_KEY=\"enter\"')"
+      "Bash(echo 'CODEX_SUBMIT_KEY=\"enter\"')",
+      "Bash(node -e \"const s = require\\('/Volumes/maersk/amargupta/Documents/Latest Projects/Portfolio Project/claude-relay-mcp/node_modules/@modelcontextprotocol/sdk/dist/cjs/server/mcp.js'\\); console.log\\(Object.keys\\(s.McpServer.prototype\\).filter\\(k => !k.startsWith\\('_'\\)\\).slice\\(0,30\\)\\);\")",
+      "Bash(node *)",
+      "mcp__claude-relay__register_as_answerer",
+      "mcp__sathi__ask_claude",
+      "mcp__claude-relay__list_pending",
+      "mcp__sathi__register_as_answerer",
+      "mcp__sathi__list_pending",
+      "Bash(open -a Cursor '/Volumes/maersk/amargupta/Documents/Latest Projects/Portfolio Project/Sathi/Sathi Personal Assistant MCP and Web App')",
+      "Bash(osascript)",
+      "Bash(bash \"/Volumes/maersk/amargupta/Documents/Latest Projects/Portfolio Project/Sathi/Sathi Personal Assistant MCP and Web App/run-cursor/fix-relay-answerer-gate-20260423-064319/watch.sh\")",
+      "mcp__sathi__submit_answer",
+      "Bash(python3 -c \"import json, sys; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d.get\\('mcpServers', {}\\), indent=2\\)\\)\")",
+      "Bash(python3 -c \"import json, sys; d=json.load\\(sys.stdin\\); print\\(json.dumps\\({k:v for k,v in d.items\\(\\) if 'mcp' in k.lower\\(\\) or 'permissions' in k.lower\\(\\)}, indent=2\\)\\)\")",
+      "Bash(lsof -iTCP:7300 -sTCP:LISTEN)",
+      "Bash(curl -s -o /dev/null -w \"HTTP %{http_code}\\\\n\" -X POST http://127.0.0.1:7300/mcp -H \"Content-Type: application/json\" -H \"Accept: application/json, text/event-stream\" -d '{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"tools/list\"}')"
     ]
   },
   "hooks": {
