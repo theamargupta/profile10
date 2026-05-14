@@ -78,3 +78,20 @@ Source: `src/app/api/mcp/route.ts`, `src/lib/mcp/server.ts`, `src/lib/mcp/tools/
 - No `tailwind.config.*` — Tailwind v4.
 - Service-role Supabase key stays server-only. Never import into a client component.
 - Never commit `.env*` files.
+
+---
+
+## App URLs (devfrend.com family)
+
+| App | URL | Repo |
+|---|---|---|
+| amargupta.tech | https://amargupta.tech | `Profile10-amargupta.tech/` (this repo) |
+| Blog AI | https://blogai.devfrend.com | `auto-blog-nextjs/` |
+| Project Memory | https://pm.devfrend.com | `project-memory/` |
+| Sandesh | https://sandesh.devfrend.com | `sandesh-nextjs/` |
+| Sankalp | https://sankalp.devfrend.com | `sankalp/sankalp-nextjs/` |
+| Sathi | https://sathi.devfrend.com | `sathi-nextjs/` |
+| SEO AI | https://seoai.devfrend.com | `auto-seo-nextjs/` |
+| Setu | https://setu.devfrend.com | `setu-nextjs/` |
+| Sutra | https://sutra.devfrend.com | `sutra-main/` (Next.js marketing + Electron) |
+| Swayam | https://swayam.devfrend.com | `swayam-nextjs/` |
