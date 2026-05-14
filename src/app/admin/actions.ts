@@ -242,7 +242,11 @@ export async function updateProjectAction(formData: FormData) {
     const bytes = await imageFile.arrayBuffer();
     const { error: uploadError } = await supabase.storage
       .from("project-images")
-      .upload(filePath, bytes, { contentType: imageFile.type || "image/jpeg", upsert: false });
+      .upload(filePath, bytes, {
+        contentType: imageFile.type || "image/jpeg",
+        upsert: false,
+        cacheControl: '2592000',
+      });
     if (uploadError) redirect(adminUrl({ tab: "projects", error: uploadError.message }));
 
     const { data: publicUrlData } = supabase.storage.from("project-images").getPublicUrl(filePath);
