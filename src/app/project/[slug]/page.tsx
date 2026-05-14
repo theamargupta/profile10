@@ -50,8 +50,27 @@ export default async function ProjectCaseStudy({
   const nextProject =
     currentIndex < allProjects.length - 1 ? allProjects[currentIndex + 1] : allProjects[0];
 
+  const summary = project.description?.split("\n")[0] ?? undefined;
+  const articleJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: project.title,
+    description: summary,
+    image: project.demo_img ?? "https://amargupta.tech/opengraph-image",
+    author: { "@id": "https://amargupta.tech/#person" },
+    publisher: { "@id": "https://amargupta.tech/#person" },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": `https://amargupta.tech/project/${slug}`,
+    },
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      />
       <section className="pt-40 pb-20">
         <div className="mx-auto max-w-5xl" style={{ padding: "0 var(--gutter)" }}>
           <Link
