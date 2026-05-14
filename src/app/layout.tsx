@@ -69,6 +69,36 @@ export const metadata: Metadata = {
   },
 };
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://amargupta.tech/#website",
+      url: "https://amargupta.tech",
+      name: "Amar Gupta",
+      description:
+        "AI-Powered Full Stack Developer & Technical Consultant. MCP Server Development, LLM Integration, Workflow Automation.",
+      inLanguage: "en-US",
+      publisher: { "@id": "https://amargupta.tech/#person" },
+    },
+    {
+      "@type": "Person",
+      "@id": "https://amargupta.tech/#person",
+      name: "Amar Gupta",
+      url: "https://amargupta.tech",
+      jobTitle: "AI-Powered Full Stack Developer",
+      description:
+        "Building AI-powered web applications. MCP Servers, LLM Integration, Workflow Automation. 7+ years experience.",
+      image: "https://amargupta.tech/og.png",
+      sameAs: [
+        "https://github.com/theamargupta",
+        "https://www.linkedin.com/in/theamargupta",
+      ],
+    },
+  ],
+};
+
 export default function RootLayout({
   children,
 }: {
@@ -80,6 +110,12 @@ export default function RootLayout({
       className={`${spaceGrotesk.variable} ${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body className="min-h-full flex flex-col bg-[var(--color-surface-0)] text-[var(--color-fg-0)]">
         <a
           href="#main"
