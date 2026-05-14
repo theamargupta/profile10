@@ -1,3 +1,4 @@
+import dynamic from "next/dynamic";
 import {
   getProfile,
   getFeaturedProjects,
@@ -8,11 +9,27 @@ import {
 import { Hero } from "@/components/dom/hero";
 import { ServicesGrid } from "@/components/dom/services-grid";
 import { FeaturedProjects } from "@/components/dom/featured-projects";
-import { AboutBrief } from "@/components/dom/about-brief";
-import { ExperienceTimeline } from "@/components/dom/experience-timeline";
-import { SkillsGrid } from "@/components/dom/skills-grid";
-import { ContactSection } from "@/components/dom/contact-section";
-import ScrollMarquee from "@/components/dom/scroll-marquee";
+
+// Below-fold sections — dynamic-imported so their JS chunks (with GSAP
+// ScrollTrigger animations) don't compete with hero LCP. SSR HTML is still
+// produced for SEO; only the client-side JS is deferred.
+const ScrollMarquee = dynamic(() => import("@/components/dom/scroll-marquee"));
+const AboutBrief = dynamic(() =>
+  import("@/components/dom/about-brief").then((m) => ({ default: m.AboutBrief }))
+);
+const ExperienceTimeline = dynamic(() =>
+  import("@/components/dom/experience-timeline").then((m) => ({
+    default: m.ExperienceTimeline,
+  }))
+);
+const SkillsGrid = dynamic(() =>
+  import("@/components/dom/skills-grid").then((m) => ({ default: m.SkillsGrid }))
+);
+const ContactSection = dynamic(() =>
+  import("@/components/dom/contact-section").then((m) => ({
+    default: m.ContactSection,
+  }))
+);
 
 export default async function Home() {
   const [profile, projects, services, experiences, skills] = await Promise.all([

@@ -43,7 +43,7 @@ export default function HeroScene() {
       <directionalLight position={[3, 4, 5]} intensity={0.8} />
       <pointLight position={[-2, 2, 3]} intensity={0.3} color="#a8f500" />
       <FloatingCodeEditor />
-      <ParticleField count={600} radius={8} />
+      <ParticleField count={300} radius={8} />
     </Canvas>
   );
 }
