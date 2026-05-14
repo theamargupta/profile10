@@ -47,21 +47,12 @@ export const metadata: Metadata = {
     siteName: "Amar Gupta",
     locale: "en_US",
     type: "website",
-    images: [
-      {
-        url: "/og.png",
-        width: 1200,
-        height: 630,
-        alt: "Amar Gupta — AI-Powered Full Stack Developer",
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Amar Gupta — AI-Powered Full Stack Developer",
     description:
       "Building AI-powered web applications. MCP Servers, LLM Integration, Workflow Automation.",
-    images: ["/og.png"],
   },
   robots: {
     index: true,
