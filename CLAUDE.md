@@ -32,7 +32,36 @@ npm run lint
 NEXT_PUBLIC_SUPABASE_URL=...
 NEXT_PUBLIC_SUPABASE_ANON_KEY=...
 SUPABASE_SERVICE_ROLE_KEY=...
+AMARGUPTA_MCP_BEARER=...   # shared secret for /api/mcp; see MCP section
 ```
+
+## MCP
+This app exposes a Streamable HTTP MCP at `/api/mcp` (POST + optional SSE GET). Single-operator pattern — bearer-token auth via `AMARGUPTA_MCP_BEARER` env, service-role Supabase client server-side.
+
+Tools (7):
+- `blog_list_posts` — list drafts + published (filter by `published?`).
+- `blog_get_post` — fetch by slug or uuid id, returns body + joined tags.
+- `blog_create_post` — write a draft or publish-on-create. Slug derived from title; reading time estimated from body.
+- `blog_update_post` — patch any subset of title / slug / excerpt / content / cover_image. Recomputes reading time if content changes.
+- `blog_publish_post` — toggle `published` (stamps / clears `published_at`).
+- `blog_list_tags` — full tag catalog.
+- `blog_attach_tags_to_post` — link tags to a post by slug; creates missing tag rows on the fly.
+
+Distinct from Auto-Blog (Swayam-owned, writes `blog_published`) — these tools target the manual `blog_posts` table. The `/blog` and `/blog/[slug]` routes blend both via `getCombinedBlogPosts` / `getCombinedBlogPostBySlug`.
+
+Cursor / Claude Code config:
+```json
+{
+  "mcpServers": {
+    "amargupta-tech": {
+      "url": "https://amargupta.tech/api/mcp",
+      "headers": { "Authorization": "Bearer <AMARGUPTA_MCP_BEARER>" }
+    }
+  }
+}
+```
+
+Source: `src/app/api/mcp/route.ts`, `src/lib/mcp/server.ts`, `src/lib/mcp/tools/blog.ts`, `src/lib/supabase/service-role.ts`.
 
 ## Conventions
 - Server Components by default.
