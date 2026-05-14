@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { createStaticClient } from "@/lib/supabase/static";
+import { mdToHtml } from "@/lib/markdown";
 import type {
   Profile,
   Project,
@@ -92,6 +93,10 @@ export async function getSocials(): Promise<Social[]> {
   return data ?? [];
 }
 
+function renderManualPost<T extends { content: string | null }>(row: T): T {
+  return { ...row, content: mdToHtml(row.content) };
+}
+
 export async function getBlogPosts(): Promise<BlogPost[]> {
   const supabase = await createClient();
   const { data } = await supabase
@@ -99,7 +104,7 @@ export async function getBlogPosts(): Promise<BlogPost[]> {
     .select("*, blog_post_tags(blog_tags(*))")
     .eq("published", true)
     .order("published_at", { ascending: false });
-  return data ?? [];
+  return (data ?? []).map(renderManualPost);
 }
 
 export async function getBlogPostBySlug(
@@ -112,7 +117,7 @@ export async function getBlogPostBySlug(
     .eq("slug", slug)
     .eq("published", true)
     .single();
-  return data;
+  return data ? renderManualPost(data) : null;
 }
 
 export async function getAllBlogSlugs(): Promise<string[]> {
@@ -150,12 +155,16 @@ function autoBlogRowToPost(row: AutoBlogRow): BlogPost {
     .replace(/\s+/g, " ")
     .trim()
     .slice(0, 240);
+  // body_md is the canonical markdown source written by the Auto-Blog routine.
+  // body_html historically held either raw markdown or markdown wrapped in a
+  // thin <article> tag — neither rendered correctly. Render from body_md.
+  const renderSource = row.body_md ?? row.body_html ?? "";
   return {
     id: row.id,
     slug: row.slug,
     title: row.title,
     excerpt: excerpt || null,
-    content: row.body_html,
+    content: mdToHtml(renderSource),
     cover_image: row.og_image_url ?? null,
     published: true,
     published_at: row.published_at,
