@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import "lenis/dist/lenis.css";
 import SmoothScrollProvider from "@/components/providers/smooth-scroll";
 import CustomCursor from "@/components/providers/custom-cursor";
 import GrainOverlay from "@/components/providers/grain-overlay";
