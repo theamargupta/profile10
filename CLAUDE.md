@@ -36,7 +36,10 @@ AMARGUPTA_MCP_BEARER=...   # shared secret for /api/mcp; see MCP section
 ```
 
 ## MCP
-This app exposes a Streamable HTTP MCP at `/api/mcp` (POST + optional SSE GET). Single-operator pattern — bearer-token auth via `AMARGUPTA_MCP_BEARER` env, service-role Supabase client server-side.
+Streamable HTTP MCP at `/api/mcp` (POST + optional SSE GET). Two auth paths, either works:
+
+1. **OAuth 2.1 + DCR (RFC 7591)** — for Claude.ai / Cursor / ChatGPT connector flows. Discovery at `/.well-known/oauth-protected-resource/api/mcp`. `/oauth/{register,authorize,token,revoke}` mirror the setu-nextjs pattern. The `mcp_oauth_*` tables are SHARED with setu-nextjs in Supabase project `avcnoywxnkajfuobftmr` — `validateResource` enforces resource binding so tokens don't cross apps. Single-operator gate: `/oauth/authorize` only mints tokens for `AMARGUPTA_OPERATOR_EMAIL` (default `theamargupta.tech@gmail.com`) after Supabase sign-in via `/admin`.
+2. **Legacy static bearer** — `AMARGUPTA_MCP_BEARER` env var; paste the value into the client's `Authorization: Bearer …` header. Kept for back-compat with the original config below.
 
 Tools (7):
 - `blog_list_posts` — list drafts + published (filter by `published?`).
