@@ -121,7 +121,97 @@ export async function getAllBlogSlugs(): Promise<string[]> {
     .from("blog_posts")
     .select("slug")
     .eq("published", true);
+  const manual = data?.map((p) => p.slug) ?? [];
+  const auto = await getAllAutoBlogSlugs();
+  return [...manual, ...auto];
+}
+
+// ---- Auto-Blog (blog_published) — read-only mirror ----
+// Auto-Blog (Swayam-owned) writes published posts into the shared Supabase
+// project. We blend them into the manual /blog feed by normalizing to the
+// existing BlogPost shape. Source of truth for these rows lives in
+// swayam-nextjs; this file only reads.
+
+type AutoBlogRow = {
+  id: string;
+  slug: string;
+  title: string;
+  body_md: string | null;
+  body_html: string;
+  hero_image_id: string | null;
+  og_image_url: string | null;
+  published_at: string;
+  sources: unknown;
+};
+
+function autoBlogRowToPost(row: AutoBlogRow): BlogPost {
+  const excerpt = (row.body_md ?? row.body_html ?? "")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 240);
+  return {
+    id: row.id,
+    slug: row.slug,
+    title: row.title,
+    excerpt: excerpt || null,
+    content: row.body_html,
+    cover_image: row.og_image_url ?? null,
+    published: true,
+    published_at: row.published_at,
+    reading_time_minutes: row.body_md
+      ? Math.max(1, Math.round(row.body_md.split(/\s+/).length / 220))
+      : null,
+    created_at: row.published_at,
+    blog_post_tags: [],
+  };
+}
+
+export async function getAutoBlogPosts(): Promise<BlogPost[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("blog_published")
+    .select(
+      "id, slug, title, body_md, body_html, hero_image_id, og_image_url, published_at, sources",
+    )
+    .order("published_at", { ascending: false });
+  return ((data ?? []) as AutoBlogRow[]).map(autoBlogRowToPost);
+}
+
+export async function getAutoBlogPostBySlug(slug: string): Promise<BlogPost | null> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("blog_published")
+    .select(
+      "id, slug, title, body_md, body_html, hero_image_id, og_image_url, published_at, sources",
+    )
+    .eq("slug", slug)
+    .maybeSingle();
+  return data ? autoBlogRowToPost(data as AutoBlogRow) : null;
+}
+
+export async function getAllAutoBlogSlugs(): Promise<string[]> {
+  const supabase = createStaticClient();
+  const { data } = await supabase.from("blog_published").select("slug");
   return data?.map((p) => p.slug) ?? [];
+}
+
+// Combined feed — manual posts and Auto-Blog posts, sorted by published_at desc.
+export async function getCombinedBlogPosts(): Promise<BlogPost[]> {
+  const [manual, auto] = await Promise.all([getBlogPosts(), getAutoBlogPosts()]);
+  return [...manual, ...auto].sort((a, b) => {
+    const ad = a.published_at ?? a.created_at;
+    const bd = b.published_at ?? b.created_at;
+    if (!ad) return 1;
+    if (!bd) return -1;
+    return new Date(bd).getTime() - new Date(ad).getTime();
+  });
+}
+
+export async function getCombinedBlogPostBySlug(slug: string): Promise<BlogPost | null> {
+  const manual = await getBlogPostBySlug(slug);
+  if (manual) return manual;
+  return getAutoBlogPostBySlug(slug);
 }
 
 export async function getBlogTags(): Promise<BlogTag[]> {

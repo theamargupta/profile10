@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { HiOutlinePencilSquare } from "react-icons/hi2";
 import { BlogCard } from "@/components/dom/blog-card";
-import { getBlogPosts, getBlogTags } from "@/lib/queries";
+import { getCombinedBlogPosts, getBlogTags } from "@/lib/queries";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 };
 
 export default async function BlogPage() {
-  const [posts, tags] = await Promise.all([getBlogPosts(), getBlogTags()]);
+  const [posts, tags] = await Promise.all([getCombinedBlogPosts(), getBlogTags()]);
   const [featured, ...rest] = posts;
 
   return (

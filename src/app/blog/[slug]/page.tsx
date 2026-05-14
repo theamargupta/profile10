@@ -3,7 +3,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { IoArrowBack } from "react-icons/io5";
-import { getBlogPostBySlug } from "@/lib/queries";
+import { getCombinedBlogPostBySlug } from "@/lib/queries";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -14,7 +14,7 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const post = await getBlogPostBySlug(slug);
+  const post = await getCombinedBlogPostBySlug(slug);
 
   if (!post) return { title: "Post Not Found" };
 
@@ -55,7 +55,7 @@ const proseClassName = `prose prose-invert prose-lg max-w-none
 
 export default async function BlogPostPage({ params }: Props) {
   const { slug } = await params;
-  const post = await getBlogPostBySlug(slug);
+  const post = await getCombinedBlogPostBySlug(slug);
 
   if (!post) notFound();
 
