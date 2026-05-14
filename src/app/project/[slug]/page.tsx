@@ -14,13 +14,24 @@ export async function generateMetadata({
   const project = await getProjectBySlug(slug);
   if (!project) return { title: "Project Not Found" };
 
+  const summary = project.description?.split("\n")[0] ?? "";
+
   return {
     title: project.title,
-    description: project.description?.split("\n")[0] ?? "",
+    description: summary,
+    alternates: { canonical: `/project/${slug}` },
     openGraph: {
+      type: "article",
+      url: `https://amargupta.tech/project/${slug}`,
       title: project.title,
-      description: project.description?.split("\n")[0] ?? "",
+      description: summary,
       images: project.demo_img ? [project.demo_img] : [],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: project.title,
+      description: summary,
+      images: project.demo_img ? [project.demo_img] : undefined,
     },
   };
 }

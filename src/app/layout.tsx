@@ -53,6 +53,11 @@ export const metadata: Metadata = {
     title: "Amar Gupta — AI-Powered Full Stack Developer",
     description:
       "Building AI-powered web applications. MCP Servers, LLM Integration, Workflow Automation.",
+    creator: "@theamargupta",
+    images: ["/opengraph-image"],
+  },
+  alternates: {
+    canonical: "/",
   },
   robots: {
     index: true,

@@ -13,6 +13,7 @@ export const metadata: Metadata = {
   title: "About",
   description:
     "AI-Powered Full Stack Developer with 7+ years of experience. Specializing in MCP Servers, LLM Integration, System Design.",
+  alternates: { canonical: "/about" },
 };
 
 export default async function AboutPage() {

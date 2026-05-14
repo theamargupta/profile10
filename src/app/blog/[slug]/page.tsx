@@ -5,8 +5,7 @@ import Link from "next/link";
 import { IoArrowBack } from "react-icons/io5";
 import { getCombinedBlogPostBySlug } from "@/lib/queries";
 
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
+export const revalidate = 3600;
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -21,10 +20,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: post.title,
     description: post.excerpt ?? undefined,
+    alternates: { canonical: `/blog/${slug}` },
     openGraph: {
+      type: "article",
+      url: `https://amargupta.tech/blog/${slug}`,
       title: post.title,
       description: post.excerpt ?? undefined,
       images: post.cover_image ? [post.cover_image] : [],
+      publishedTime: post.published_at ?? undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: post.title,
+      description: post.excerpt ?? undefined,
+      images: post.cover_image ? [post.cover_image] : undefined,
     },
   };
 }
@@ -61,8 +70,30 @@ export default async function BlogPostPage({ params }: Props) {
 
   const tags = post.blog_post_tags.map((t) => t.blog_tags);
   const publishedDate = formatPublishedDate(post.published_at);
+
+  const articleJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: post.title,
+    description: post.excerpt ?? undefined,
+    image: post.cover_image ?? "https://amargupta.tech/opengraph-image",
+    datePublished: post.published_at ?? undefined,
+    dateModified: post.published_at ?? undefined,
+    author: { "@id": "https://amargupta.tech/#person" },
+    publisher: { "@id": "https://amargupta.tech/#person" },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": `https://amargupta.tech/blog/${slug}`,
+    },
+    keywords: tags.map((t) => t.name).join(", ") || undefined,
+  };
+
   return (
     <section className="pt-40 pb-28 md:pb-40">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      />
       <div className="mx-auto max-w-4xl" style={{ padding: "0 var(--gutter)" }}>
         <Link
           href="/blog"

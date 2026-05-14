@@ -6,6 +6,7 @@ export const metadata: Metadata = {
   title: "Projects",
   description:
     "Featured projects including MCP servers, SaaS platforms, eCommerce solutions, and AI-integrated applications.",
+  alternates: { canonical: "/projects" },
 };
 
 export default async function ProjectsPage() {

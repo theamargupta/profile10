@@ -4,13 +4,13 @@ import { HiOutlinePencilSquare } from "react-icons/hi2";
 import { BlogCard } from "@/components/dom/blog-card";
 import { getCombinedBlogPosts, getBlogTags } from "@/lib/queries";
 
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "Blog",
   description:
     "Thoughts on AI, MCP Servers, LLM Integration, System Design, and modern web development.",
+  alternates: { canonical: "/blog" },
 };
 
 export default async function BlogPage() {
