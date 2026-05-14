@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { Suspense } from "react";
 import gsap from "gsap";
@@ -12,7 +12,7 @@ gsap.registerPlugin();
 const HeroScene = dynamic(() => import("@/components/canvas/hero-scene"), {
   ssr: false,
   loading: () => (
-    <div className="absolute inset-0 bg-[var(--color-surface-0)] animate-pulse" />
+    <div className="absolute inset-0 bg-[var(--color-surface-0)]" />
   ),
 });
 
@@ -23,41 +23,48 @@ interface HeroProps {
 
 export function Hero({ headline, subtitle }: HeroProps) {
   const containerRef = useRef<HTMLElement>(null);
+  const [mountScene, setMountScene] = useState(false);
+
+  // Defer 3D scene mount until after first paint so it doesn't compete with
+  // hero text on the main thread (LCP optimization).
+  useEffect(() => {
+    const ric =
+      typeof window !== "undefined" &&
+      typeof (window as Window & { requestIdleCallback?: (cb: () => void) => number })
+        .requestIdleCallback === "function"
+        ? (window as Window & { requestIdleCallback: (cb: () => void) => number }).requestIdleCallback
+        : (cb: () => void) => window.setTimeout(cb, 200);
+    const id = ric(() => setMountScene(true));
+    return () => {
+      if (typeof window !== "undefined") {
+        const cancel = (window as Window & {
+          cancelIdleCallback?: (id: number) => void;
+        }).cancelIdleCallback;
+        if (cancel) cancel(id as number);
+        else window.clearTimeout(id as number);
+      }
+    };
+  }, []);
 
   useGSAP(
     () => {
+      // Respect prefers-reduced-motion — skip entrance entirely.
+      if (
+        typeof window !== "undefined" &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      ) {
+        return;
+      }
+      // Animate y-only (no opacity 0 → 1). Keeping content visible at first
+      // paint is critical for LCP — GSAP `from { opacity: 0 }` was hiding the
+      // LCP headline until hydration + timeline, costing ~2-3s.
       const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
-      tl.from("[data-hero-badge]", {
-        y: 20,
-        opacity: 0,
-        duration: 0.6,
-        delay: 0.2,
-      })
-        .from(
-          "[data-hero-headline]",
-          { y: 60, opacity: 0, duration: 1 },
-          "-=0.3"
-        )
-        .from(
-          "[data-hero-subtitle]",
-          { y: 40, opacity: 0, duration: 0.8 },
-          "-=0.5"
-        )
-        .from(
-          "[data-hero-tags]",
-          { y: 30, opacity: 0, duration: 0.6 },
-          "-=0.4"
-        )
-        .from(
-          "[data-hero-cta]",
-          { y: 30, opacity: 0, duration: 0.6 },
-          "-=0.3"
-        )
-        .from(
-          "[data-hero-3d]",
-          { opacity: 0, scale: 0.9, duration: 1.2 },
-          "-=1"
-        );
+      tl.from("[data-hero-badge]", { y: 12, duration: 0.5, delay: 0.1 })
+        .from("[data-hero-headline]", { y: 24, duration: 0.7 }, "-=0.3")
+        .from("[data-hero-subtitle]", { y: 18, duration: 0.6 }, "-=0.4")
+        .from("[data-hero-tags]", { y: 14, duration: 0.5 }, "-=0.3")
+        .from("[data-hero-cta]", { y: 14, duration: 0.5 }, "-=0.3")
+        .from("[data-hero-3d]", { scale: 0.96, duration: 0.9 }, "-=0.7");
     },
     { scope: containerRef }
   );
@@ -157,10 +164,17 @@ export function Hero({ headline, subtitle }: HeroProps) {
         >
           <Suspense
             fallback={
-              <div className="absolute inset-0 rounded-full bg-[var(--color-surface-1)] animate-pulse" />
+              <div className="absolute inset-0 rounded-full bg-[var(--color-surface-1)]" />
             }
           >
-            <HeroScene />
+            {mountScene ? (
+              <HeroScene />
+            ) : (
+              <div
+                aria-hidden
+                className="absolute inset-0 rounded-full bg-[var(--color-surface-1)]"
+              />
+            )}
           </Suspense>
         </div>
       </div>

@@ -43,6 +43,7 @@ export function FeaturedProjects({ projects }: { projects: Project[] }) {
               key={project.id}
               project={project}
               reversed={index % 2 !== 0}
+              eager={index === 0}
             />
           ))}
         </div>
@@ -63,9 +64,11 @@ export function FeaturedProjects({ projects }: { projects: Project[] }) {
 function ProjectShowcase({
   project,
   reversed,
+  eager = false,
 }: {
   project: Project;
   reversed: boolean;
+  eager?: boolean;
 }) {
   return (
     <div
@@ -81,6 +84,9 @@ function ProjectShowcase({
               width={700}
               height={400}
               className="w-full object-cover"
+              priority={eager}
+              fetchPriority={eager ? "high" : "auto"}
+              sizes="(min-width: 1024px) 700px, 100vw"
             />
           ) : (
             <div className="flex aspect-video items-center justify-center" style={{ background: "radial-gradient(70% 60% at 100% 0%, rgba(61,75,255,0.30) 0%, rgba(5,5,7,0) 60%)" }}>
