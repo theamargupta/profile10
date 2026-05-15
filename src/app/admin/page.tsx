@@ -92,7 +92,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
             </p>
           ) : null}
           {success ? (
-            <p className="mt-4 rounded-xl border border-emerald-400/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200">
+            <p className="mt-4 rounded-xl border px-4 py-3 text-sm border-[color:var(--color-success-border)] bg-[color:var(--color-success-soft)] text-[color:var(--color-success)]">
               {success}
             </p>
           ) : null}
@@ -225,7 +225,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
               {(blogPosts ?? []).length} blog posts
             </span>
             {unreadCount > 0 && (
-              <span className="rounded-full border border-amber-400/30 bg-amber-500/10 px-3 py-1 text-amber-200">
+              <span className="rounded-full border px-3 py-1 border-[color:var(--color-warning-border)] bg-[color:var(--color-warning-soft)] text-[color:var(--color-warning)]">
                 {unreadCount} unread messages
               </span>
             )}
@@ -246,7 +246,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
           </p>
         ) : null}
         {success ? (
-          <p className="mt-4 rounded-xl border border-emerald-400/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-200">
+          <p className="mt-4 rounded-xl border px-4 py-3 text-sm border-[color:var(--color-success-border)] bg-[color:var(--color-success-soft)] text-[color:var(--color-success)]">
             {success}
           </p>
         ) : null}
@@ -1128,7 +1128,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                   <h2 className="text-lg font-semibold text-foreground">
                     Contact Submissions
                     {unreadCount > 0 && (
-                      <span className="ml-2 rounded-full bg-amber-500/20 px-2 py-0.5 text-xs text-amber-200">
+                      <span className="ml-2 rounded-full px-2 py-0.5 text-xs bg-[color:var(--color-warning-soft)] text-[color:var(--color-warning)]">
                         {unreadCount} unread
                       </span>
                     )}
@@ -1144,7 +1144,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                           className={`rounded-xl border p-4 ${
                             sub.read
                               ? "border-white/10 bg-black/20"
-                              : "border-amber-400/20 bg-amber-500/5"
+                              : "border-[color:var(--color-warning-border)] bg-[color:var(--color-warning-soft)]"
                           }`}
                         >
                           <div className="flex items-start justify-between gap-3">
@@ -1152,7 +1152,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                               <div className="flex items-center gap-2">
                                 <p className="text-sm font-medium text-foreground">{sub.name}</p>
                                 {!sub.read && (
-                                  <span className="rounded-full bg-amber-500/20 px-2 py-0.5 text-[10px] text-amber-200">
+                                  <span className="rounded-full px-2 py-0.5 text-[10px] bg-[color:var(--color-warning-soft)] text-[color:var(--color-warning)]">
                                     New
                                   </span>
                                 )}

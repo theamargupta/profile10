@@ -113,12 +113,12 @@ export function ProjectJsonImport() {
       )}
 
       {warnings.length > 0 && (
-        <div className="rounded-xl border border-amber-400/20 bg-amber-500/5 p-3 text-xs text-amber-200">
+        <div className="rounded-xl border p-3 text-xs border-[color:var(--color-warning-border)] bg-[color:var(--color-warning-soft)] text-[color:var(--color-warning)]">
           <p className="font-medium">Warnings:</p>
           <ul className="mt-1 list-inside list-disc space-y-0.5">
             {warnings.map((e, i) => (
               <li key={i}>
-                <span className="font-mono text-amber-300">{e.field}</span>: {e.message}
+                <span className="font-mono text-[color:var(--color-warning-dot)]">{e.field}</span>: {e.message}
               </li>
             ))}
           </ul>
@@ -126,7 +126,7 @@ export function ProjectJsonImport() {
       )}
 
       {preview && (
-        <div className="rounded-xl border border-emerald-400/30 bg-emerald-500/10 p-3 text-xs text-emerald-200">
+        <div className="rounded-xl border p-3 text-xs border-[color:var(--color-success-border)] bg-[color:var(--color-success-soft)] text-[color:var(--color-success)]">
           {preview}
         </div>
       )}

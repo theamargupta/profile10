@@ -45,10 +45,32 @@
   --color-fg-2:  #8a8f9e;
   --color-fg-3:  #5b5f6c;
 
-  /* Semantic */
+  /* Semantic — base hues */
   --color-success: #26d07c;
   --color-warning: #ffb020;
   --color-danger:  #ff5264;
+
+  /* Semantic — soft / border / dot families.
+   * Tuned for the dark-first surface (surface-0 = #050507) so soft fills
+   * read as glows over deep slate rather than as washed-out light cards. */
+  --color-warning-soft:   rgba(255, 176, 32, 0.10);
+  --color-warning-border: rgba(255, 176, 32, 0.30);
+  --color-warning-dot:    #ffb020;
+
+  --color-success-soft:   rgba(38, 208, 124, 0.10);
+  --color-success-border: rgba(38, 208, 124, 0.30);
+
+  --color-danger-soft:    rgba(255, 82, 100, 0.10);
+  --color-danger-border:  rgba(255, 82, 100, 0.30);
+
+  --color-neutral:        #8a8f9e;
+  --color-neutral-soft:   rgba(138, 143, 158, 0.10);
+  --color-neutral-border: rgba(138, 143, 158, 0.25);
+  --color-neutral-dot:    #8a8f9e;
+
+  /* `on-accent` is the foreground for elements painted with the accent fill.
+   * Accent is electric lime (#a8f500) — pair with the deepest surface. */
+  --color-on-accent: var(--color-surface-0);
 
   /* Legacy aliases for existing Tailwind classes */
   --background: 228 24% 2%;
