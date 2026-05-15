@@ -100,7 +100,7 @@ export function Hero({ headline, subtitle }: HeroProps) {
       {/* Gradient veil so headline reads against the blob */}
       <div
         aria-hidden
-        className="absolute inset-0 z-[1] pointer-events-none"
+        className="absolute inset-0 z-[var(--z-hero-bg)] pointer-events-none"
         style={{
           background:
             "linear-gradient(90deg, rgba(5,5,7,0.85) 0%, rgba(5,5,7,0.55) 45%, rgba(5,5,7,0) 75%)",

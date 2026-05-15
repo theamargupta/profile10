@@ -5,7 +5,7 @@ export default function GrainOverlay() {
     <>
       <div
         aria-hidden
-        className="pointer-events-none fixed inset-0 z-[70]"
+        className="pointer-events-none fixed inset-0 z-[var(--z-grain)]"
         style={{
           backgroundRepeat: "repeat",
           backgroundSize: "240px 240px",
@@ -15,7 +15,7 @@ export default function GrainOverlay() {
       />
       <svg
         aria-hidden
-        className="pointer-events-none fixed inset-0 z-[71]"
+        className="pointer-events-none fixed inset-0 z-[var(--z-grain-top)]"
         style={{ width: "100%", height: "100%", opacity: 0.06, mixBlendMode: "overlay" }}
       >
         <filter id="grain-filter">

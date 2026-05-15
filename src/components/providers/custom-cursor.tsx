@@ -65,13 +65,13 @@ export default function CustomCursor() {
       <div
         ref={dotRef}
         aria-hidden
-        className="pointer-events-none fixed left-0 top-0 z-[9998] h-1.5 w-1.5 rounded-full bg-[var(--color-accent-400)] mix-blend-difference"
+        className="pointer-events-none fixed left-0 top-0 z-[var(--z-cursor-dot)] h-1.5 w-1.5 rounded-full bg-[var(--color-accent-400)] mix-blend-difference"
         style={{ transition: "opacity 180ms ease" }}
       />
       <div
         ref={ringRef}
         aria-hidden
-        className="pointer-events-none fixed left-0 top-0 z-[9997] h-9 w-9 rounded-full border border-[var(--color-fg-0)]/60 mix-blend-difference"
+        className="pointer-events-none fixed left-0 top-0 z-[var(--z-cursor-ring)] h-9 w-9 rounded-full border border-[var(--color-fg-0)]/60 mix-blend-difference"
         style={{ transition: "opacity 180ms ease" }}
       />
     </>

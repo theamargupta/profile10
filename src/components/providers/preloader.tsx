@@ -84,7 +84,7 @@ export default function Preloader() {
   return (
     <div
       aria-hidden
-      className="pointer-events-none fixed inset-0 z-[200]"
+      className="pointer-events-none fixed inset-0 z-[var(--z-preloader)]"
       style={{ contain: "strict" }}
     >
       <div

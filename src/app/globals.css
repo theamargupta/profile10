@@ -189,6 +189,26 @@
   --shadow-soft: var(--shadow-sm);
   --shadow-elevated: var(--shadow-md);
   --shadow-premium: var(--shadow-lg);
+
+  /* ── Z-index layering ─────────────────────────────────────────────
+   * Profile10 has more layers than other apps: hero decorative bg, grain
+   * overlays, preloader for first paint, custom cursor (must beat ALL).
+   * Edit values only here to globally re-tier the chrome stack. */
+  --z-base: 0;
+  --z-hero-bg: 1;          /* hero background canvas behind content */
+  --z-raised: 5;
+  --z-sticky: 20;
+  --z-dropdown: 30;
+  --z-fixed: 40;
+  --z-overlay: 50;
+  --z-modal: 60;
+  --z-grain: 70;           /* grain overlay above content, below grain-on-top */
+  --z-grain-top: 71;       /* second grain layer for mix-blend */
+  --z-toast: 80;
+  --z-skip-link: 100;      /* accessibility skip link beats focus rings */
+  --z-preloader: 200;      /* first-paint preloader */
+  --z-cursor-ring: 9997;   /* custom cursor outer ring */
+  --z-cursor-dot: 9998;    /* custom cursor inner dot — must beat everything */
 }
 
 /* =========================================================================
