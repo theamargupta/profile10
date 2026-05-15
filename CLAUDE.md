@@ -2,6 +2,8 @@
 
 # amargupta.tech — Personal Portfolio
 
+> 📚 **Cross-repo technical reference:** the dense `file_path:line` corpus for this whole Setu repo-of-repos lives at [`Setu/docs/README.md`](/Volumes/maersk/amargupta/Documents/LatestProjects/PortfolioProject/Setu/docs/README.md). Open that index whenever you need code-level detail beyond this file — every linked sub-doc is line-cited so you can jump straight to source.
+
 ## Overview
 Personal portfolio + writing site. Next.js 16 frontend, heavy 3D/motion, Supabase as a lightweight content store (projects, writing, assets via Supabase Storage).
 
