@@ -85,6 +85,7 @@ function ProjectShowcase({
               height={400}
               className="w-full object-cover"
               priority={eager}
+              loading={eager ? "eager" : "lazy"}
               fetchPriority={eager ? "high" : "auto"}
               sizes="(min-width: 1024px) 700px, 100vw"
             />
