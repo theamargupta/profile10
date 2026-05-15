@@ -88,14 +88,14 @@ export default function Preloader() {
       style={{ contain: "strict" }}
     >
       <div
-        className="absolute inset-y-0 left-0 w-1/2 bg-[#050507] transition-transform duration-[600ms]"
+        className="absolute inset-y-0 left-0 w-1/2 bg-[var(--color-surface-0)] transition-transform duration-[600ms]"
         style={{
           transform: leaving ? "translateY(-101%)" : "translateY(0)",
           transitionTimingFunction: "cubic-bezier(0.76, 0, 0.24, 1)",
         }}
       />
       <div
-        className="absolute inset-y-0 right-0 w-1/2 bg-[#050507] transition-transform duration-[600ms]"
+        className="absolute inset-y-0 right-0 w-1/2 bg-[var(--color-surface-0)] transition-transform duration-[600ms]"
         style={{
           transform: leaving ? "translateY(101%)" : "translateY(0)",
           transitionTimingFunction: "cubic-bezier(0.76, 0, 0.24, 1)",

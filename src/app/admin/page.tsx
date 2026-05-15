@@ -87,7 +87,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
             Sign in with your Supabase auth user to edit portfolio content.
           </p>
           {error ? (
-            <p className="mt-4 rounded-xl border border-red-400/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+            <p className="mt-4 rounded-xl border px-4 py-3 text-sm border-[color:var(--color-danger-border)] bg-[color:var(--color-danger-soft)] text-[color:var(--color-danger)]">
               {error}
             </p>
           ) : null}
@@ -241,7 +241,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
         </div>
 
         {error ? (
-          <p className="mt-4 rounded-xl border border-red-400/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+          <p className="mt-4 rounded-xl border px-4 py-3 text-sm border-[color:var(--color-danger-border)] bg-[color:var(--color-danger-soft)] text-[color:var(--color-danger)]">
             {error}
           </p>
         ) : null}
@@ -492,7 +492,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                           <input type="hidden" name="project_id" value={project.id} />
                           <input type="hidden" name="tool_id" value={pt.tool_id} />
                           <span>{pt.tools.name}</span>
-                          <button type="submit" className="ml-1 text-red-400 hover:text-red-300" title="Remove tool">&times;</button>
+                          <button type="submit" className="ml-1 text-[color:var(--color-danger)] hover:text-[color:var(--color-danger-strong)]" title="Remove tool">&times;</button>
                         </form>
                       ))}
                     </div>
@@ -526,7 +526,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                         <form key={f.id} action={deleteProjectFeatureAction} className="flex items-center justify-between rounded-lg border border-white/10 px-3 py-2 text-xs">
                           <input type="hidden" name="id" value={f.id} />
                           <span className="flex-1">{f.feature}</span>
-                          <button type="submit" className="ml-2 text-red-400 hover:text-red-300" title="Remove">&times;</button>
+                          <button type="submit" className="ml-2 text-[color:var(--color-danger)] hover:text-[color:var(--color-danger-strong)]" title="Remove">&times;</button>
                         </form>
                       ))}
                     </div>
@@ -557,7 +557,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                             <p className="font-medium">{c.title}</p>
                             <p className="text-foreground/60">{c.solution}</p>
                           </div>
-                          <button type="submit" className="ml-2 text-red-400 hover:text-red-300" title="Remove">&times;</button>
+                          <button type="submit" className="ml-2 text-[color:var(--color-danger)] hover:text-[color:var(--color-danger-strong)]" title="Remove">&times;</button>
                         </form>
                       ))}
                     </div>
@@ -584,7 +584,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                   {/* ── Delete Project ── */}
                   <form action={deleteProjectAction} className="flex justify-end">
                     <input type="hidden" name="id" value={project.id} />
-                    <button type="submit" className="text-xs text-red-400/70 hover:text-red-300">Delete project</button>
+                    <button type="submit" className="text-xs text-[color:var(--color-danger-muted)] hover:text-[color:var(--color-danger-strong)]">Delete project</button>
                   </form>
                 </div>
               ))}
@@ -658,7 +658,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                   </form>
                   <form action={deleteServiceAction} className="flex justify-end">
                     <input type="hidden" name="id" value={service.id} />
-                    <button type="submit" className="text-xs text-red-400/70 hover:text-red-300">Delete service</button>
+                    <button type="submit" className="text-xs text-[color:var(--color-danger-muted)] hover:text-[color:var(--color-danger-strong)]">Delete service</button>
                   </form>
                 </div>
               ))}
@@ -770,7 +770,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                   </form>
                   <form action={deleteExperienceAction} className="flex justify-end">
                     <input type="hidden" name="id" value={experience.id} />
-                    <button type="submit" className="text-xs text-red-400/70 hover:text-red-300">Delete experience</button>
+                    <button type="submit" className="text-xs text-[color:var(--color-danger-muted)] hover:text-[color:var(--color-danger-strong)]">Delete experience</button>
                   </form>
                 </div>
               ))}
@@ -834,7 +834,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                   </form>
                   <form action={deleteSkillCategoryAction} className="flex justify-end">
                     <input type="hidden" name="id" value={skill.id} />
-                    <button type="submit" className="text-xs text-red-400/70 hover:text-red-300">Delete category</button>
+                    <button type="submit" className="text-xs text-[color:var(--color-danger-muted)] hover:text-[color:var(--color-danger-strong)]">Delete category</button>
                   </form>
                 </div>
               ))}
@@ -920,7 +920,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                   </form>
                   <form action={deleteSocialAction} className="flex justify-end">
                     <input type="hidden" name="id" value={social.id} />
-                    <button type="submit" className="text-xs text-red-400/70 hover:text-red-300">Delete social</button>
+                    <button type="submit" className="text-xs text-[color:var(--color-danger-muted)] hover:text-[color:var(--color-danger-strong)]">Delete social</button>
                   </form>
                 </div>
               ))}
@@ -963,7 +963,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                                 <input type="hidden" name="post_id" value={post.id as string} />
                                 <input type="hidden" name="tag_id" value={pt.blog_tags.id} />
                                 <span>{pt.blog_tags.name}</span>
-                                <button type="submit" className="ml-1 text-red-400 hover:text-red-300">&times;</button>
+                                <button type="submit" className="ml-1 text-[color:var(--color-danger)] hover:text-[color:var(--color-danger-strong)]">&times;</button>
                               </form>
                             ))}
                           </div>
@@ -985,7 +985,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
 
                         <form action={deleteBlogPostAction} className="flex justify-end">
                           <input type="hidden" name="id" value={post.id as string} />
-                          <button type="submit" className="text-xs text-red-400/70 hover:text-red-300">Delete post</button>
+                          <button type="submit" className="text-xs text-[color:var(--color-danger-muted)] hover:text-[color:var(--color-danger-strong)]">Delete post</button>
                         </form>
                       </div>
                       );
@@ -1034,7 +1034,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                         </form>
                         <form action={deleteBlogTagAction} className="flex justify-end">
                           <input type="hidden" name="id" value={tag.id} />
-                          <button type="submit" className="text-xs text-red-400/70 hover:text-red-300">Delete tag</button>
+                          <button type="submit" className="text-xs text-[color:var(--color-danger-muted)] hover:text-[color:var(--color-danger-strong)]">Delete tag</button>
                         </form>
                       </div>
                     ))}
@@ -1111,7 +1111,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                         </form>
                         <form action={deleteToolAction} className="flex justify-end">
                           <input type="hidden" name="id" value={tool.id} />
-                          <button type="submit" className="text-xs text-red-400/70 hover:text-red-300">Delete tool</button>
+                          <button type="submit" className="text-xs text-[color:var(--color-danger-muted)] hover:text-[color:var(--color-danger-strong)]">Delete tool</button>
                         </form>
                       </div>
                     ))}
@@ -1174,7 +1174,7 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                               )}
                               <form action={deleteContactSubmissionAction}>
                                 <input type="hidden" name="id" value={sub.id} />
-                                <button type="submit" className="text-xs text-red-400/70 hover:text-red-300">Delete</button>
+                                <button type="submit" className="text-xs text-[color:var(--color-danger-muted)] hover:text-[color:var(--color-danger-strong)]">Delete</button>
                               </form>
                             </div>
                           </div>

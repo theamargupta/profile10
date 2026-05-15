@@ -62,15 +62,23 @@
 
   --color-danger-soft:    rgba(255, 82, 100, 0.10);
   --color-danger-border:  rgba(255, 82, 100, 0.30);
+  --color-danger-dot:     #ff5264;
+  --color-danger-strong:  #ff7a87;  /* lighter ramp — used for hover on danger text */
+  --color-danger-muted:   rgba(255, 82, 100, 0.70);  /* "/70" alpha pre-bake */
 
   --color-neutral:        #8a8f9e;
   --color-neutral-soft:   rgba(138, 143, 158, 0.10);
   --color-neutral-border: rgba(138, 143, 158, 0.25);
   --color-neutral-dot:    #8a8f9e;
 
-  /* `on-accent` is the foreground for elements painted with the accent fill.
-   * Accent is electric lime (#a8f500) — pair with the deepest surface. */
-  --color-on-accent: var(--color-surface-0);
+  /* `on-*` foregrounds — paired text colour for elements painted with the
+   * matching semantic fill. Centralised here so contrast partners flip
+   * deterministically when the theme changes. */
+  --color-on-accent:  var(--color-surface-0);
+  --color-on-danger:  #fff5f6;
+  --color-on-success: var(--color-surface-0);
+  --color-on-warning: var(--color-surface-0);
+  --color-on-neutral: var(--color-fg-0);
 
   /* Legacy aliases for existing Tailwind classes */
   --background: 228 24% 2%;

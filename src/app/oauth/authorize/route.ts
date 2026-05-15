@@ -5,6 +5,7 @@ import {
   getOAuthClient,
   validateAuthorizeRequest,
 } from "@/lib/mcp/core/oauth";
+import { THEME } from "@/lib/theme/colors";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -197,12 +198,19 @@ export async function GET(request: NextRequest) {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Authorize ${escapeHtml(clientName)} — amargupta.tech</title>
     <style>
-      :root { color-scheme: dark; }
+      :root {
+        color-scheme: dark;
+        --c-surface-deep: ${THEME.surface[2]};
+        --c-surface-base: ${THEME.surface[0]};
+        --c-fg: ${THEME.fg[0]};
+        --c-accent: ${THEME.accent[400]};
+        --c-on-accent: ${THEME.onAccent};
+      }
       body {
         margin: 0; min-height: 100vh; display: grid; place-items: center;
-        background: radial-gradient(circle at top, #18232e 0%, #0a0d10 55%);
+        background: radial-gradient(circle at top, var(--c-surface-deep) 0%, var(--c-surface-base) 55%);
         font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        color: #f5f7fa;
+        color: var(--c-fg);
       }
       .card {
         width: min(92vw, 520px); border: 1px solid rgba(255,255,255,0.08);
@@ -216,11 +224,11 @@ export async function GET(request: NextRequest) {
         background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06);
       }
       .meta strong { display: block; font-size: 12px; color: rgba(245,247,250,0.64); margin-bottom: 4px; }
-      .meta code { font-size: 12px; color: #9bd6ff; word-break: break-all; }
+      .meta code { font-size: 12px; color: var(--c-accent); word-break: break-all; }
       button {
         width: 100%; border: 0; border-radius: 12px; padding: 14px 18px;
         font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 12px;
-        background: linear-gradient(135deg, #4ab4d6 0%, #2f8cb6 100%); color: white;
+        background: var(--c-accent); color: var(--c-on-accent);
       }
     </style>
   </head>

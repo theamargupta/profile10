@@ -1,4 +1,5 @@
 import { ImageResponse } from 'next/og'
+import { THEME } from '@/lib/theme/colors'
 
 export const alt = 'Amar Gupta — AI-Powered Full Stack Developer'
 export const size = { width: 1200, height: 630 }
@@ -15,8 +16,8 @@ export default function OpengraphImage() {
           flexDirection: 'column',
           justifyContent: 'space-between',
           padding: '72px 80px',
-          backgroundColor: '#0B0F14',
-          color: '#FFFFFF',
+          backgroundColor: THEME.surface[0],
+          color: THEME.fg[0],
           fontFamily: 'system-ui, sans-serif',
         }}
       >
@@ -26,13 +27,13 @@ export default function OpengraphImage() {
               width: '12px',
               height: '12px',
               borderRadius: '9999px',
-              backgroundColor: '#E8A23B',
+              backgroundColor: THEME.accent[400],
             }}
           />
           <div
             style={{
               fontSize: '22px',
-              color: '#7A8590',
+              color: THEME.fg[2],
               letterSpacing: '0.18em',
               textTransform: 'uppercase',
             }}
@@ -55,7 +56,7 @@ export default function OpengraphImage() {
           <div
             style={{
               fontSize: '40px',
-              color: '#A6B0BA',
+              color: THEME.fg[1],
               marginTop: '24px',
               maxWidth: '960px',
               lineHeight: 1.2,
@@ -69,7 +70,7 @@ export default function OpengraphImage() {
           style={{
             display: 'flex',
             fontSize: '24px',
-            color: '#5A6675',
+            color: THEME.fg[3],
             letterSpacing: '0.05em',
           }}
         >

@@ -100,12 +100,12 @@ export function ProjectJsonImport() {
       </label>
 
       {realErrors.length > 0 && (
-        <div className="rounded-xl border border-red-400/30 bg-red-500/10 p-3 text-xs text-red-200">
+        <div className="rounded-xl border p-3 text-xs border-[color:var(--color-danger-border)] bg-[color:var(--color-danger-soft)] text-[color:var(--color-danger)]">
           <p className="font-medium">Validation errors:</p>
           <ul className="mt-1 list-inside list-disc space-y-0.5">
             {realErrors.map((e, i) => (
               <li key={i}>
-                <span className="font-mono text-red-300">{e.field}</span>: {e.message}
+                <span className="font-mono text-[color:var(--color-danger-dot)]">{e.field}</span>: {e.message}
               </li>
             ))}
           </ul>

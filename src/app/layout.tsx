@@ -1,5 +1,6 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
+import { THEME } from "@/lib/theme/colors";
 import "./globals.css";
 import "lenis/dist/lenis.css";
 import SmoothScrollProvider from "@/components/providers/smooth-scroll";
@@ -64,6 +65,10 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: THEME.meta.themeColor,
 };
 
 const jsonLd = {
