@@ -110,7 +110,7 @@ export default async function BlogPostPage({ params }: Props) {
             width={1600}
             height={700}
             priority
-            className="mb-10 aspect-[16/7] w-full rounded-3xl border border-[var(--color-surface-3)] object-cover shadow-[0_20px_60px_-20px_rgba(168,245,0,0.15)]"
+            className="mb-10 aspect-[16/7] w-full rounded-3xl border border-[var(--color-surface-3)] object-cover shadow-[var(--shadow-glow)]"
           />
         )}
 

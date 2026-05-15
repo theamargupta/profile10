@@ -42,7 +42,7 @@ export function ExperienceTimeline({
           <div className="relative border-l border-[var(--color-surface-3)] pl-8">
             {experiences.map((exp) => (
               <div key={exp.id} data-exp-item className="relative mb-12 last:mb-0">
-                <div className="absolute -left-[calc(2rem+5px)] top-1 h-2.5 w-2.5 rounded-full bg-[var(--color-accent-400)] shadow-[0_0_12px_rgba(168,245,0,0.5)]" />
+                <div className="absolute -left-[calc(2rem+5px)] top-1 h-2.5 w-2.5 rounded-full bg-[var(--color-accent-400)] shadow-[var(--shadow-glow-sm)]" />
                 <div className="mb-1 flex flex-wrap items-center gap-3">
                   <h3 className="font-display font-semibold text-[var(--color-fg-0)]" style={{ fontSize: "var(--text-lg)" }}>
                     {exp.job_title}

@@ -148,22 +148,47 @@
   --step-4: clamp(2.75rem, 1.95rem + 3.5vw, 4.5rem);
   --step-5: clamp(3.5rem, 2.25rem + 5vw, 6rem);
 
-  --shadow-soft:
+  /* ── Elevation shadows ─────────────────────────────────────────────
+   * Premium dark aesthetic = HSL multi-layer for soft, physical depth.
+   * --shadow-color is the HSL hue (228deg 70% 3%) all layers tint from.
+   * Semantic ladder: sm → md → lg → xl → 2xl. focus + glow are accent-tinted.
+   * --shadow-{soft,elevated,premium} aliases retained for back-compat. */
+  --shadow-sm:
     0.5px 1px 1px hsl(var(--shadow-color) / 0.12),
     1px 2px 2px hsl(var(--shadow-color) / 0.1),
     2px 4px 4px hsl(var(--shadow-color) / 0.08);
-  --shadow-elevated:
+  --shadow-md:
     1px 2px 2px hsl(var(--shadow-color) / 0.2),
     2px 4px 4px hsl(var(--shadow-color) / 0.18),
     4px 8px 8px hsl(var(--shadow-color) / 0.15),
     8px 16px 16px hsl(var(--shadow-color) / 0.12),
     16px 32px 32px hsl(var(--shadow-color) / 0.1);
-  --shadow-premium:
+  --shadow-lg:
     1px 2px 2px hsl(var(--shadow-color) / 0.22),
     2px 6px 6px hsl(var(--shadow-color) / 0.18),
     6px 14px 14px hsl(var(--shadow-color) / 0.15),
     14px 28px 28px hsl(var(--shadow-color) / 0.12),
     28px 48px 48px hsl(var(--shadow-color) / 0.08);
+  --shadow-xl:
+    2px 4px 4px hsl(var(--shadow-color) / 0.25),
+    4px 10px 10px hsl(var(--shadow-color) / 0.20),
+    10px 24px 24px hsl(var(--shadow-color) / 0.16),
+    24px 48px 48px hsl(var(--shadow-color) / 0.12),
+    48px 80px 80px hsl(var(--shadow-color) / 0.08);
+  --shadow-2xl:
+    4px 8px 8px hsl(var(--shadow-color) / 0.30),
+    8px 16px 16px hsl(var(--shadow-color) / 0.24),
+    20px 40px 40px hsl(var(--shadow-color) / 0.18),
+    40px 80px 80px hsl(var(--shadow-color) / 0.12),
+    80px 120px 120px hsl(var(--shadow-color) / 0.06);
+  --shadow-focus: 0 0 0 3px rgb(168 245 0 / 0.40);
+  --shadow-glow: 0 0 24px rgb(168 245 0 / 0.20), 0 0 56px rgb(168 245 0 / 0.10);
+  --shadow-glow-sm: 0 0 12px rgb(168 245 0 / 0.5);
+
+  /* Legacy aliases — keep for any external import; new code uses sm/md/lg. */
+  --shadow-soft: var(--shadow-sm);
+  --shadow-elevated: var(--shadow-md);
+  --shadow-premium: var(--shadow-lg);
 }
 
 /* =========================================================================
