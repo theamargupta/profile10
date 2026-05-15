@@ -91,7 +91,7 @@ export default function ShaderBlob() {
   });
 
   return (
-    <mesh position={[0, 0, 0]} scale={2.2}>
+    <mesh position={[4.8, 1.2, -1]} scale={1.9}>
       <icosahedronGeometry args={[1, 64]} />
       <shaderMaterial
         ref={matRef}

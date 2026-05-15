@@ -2,8 +2,8 @@
 
 import { Canvas } from "@react-three/fiber";
 import { useEffect, useState } from "react";
-import FloatingCodeEditor from "./floating-code-editor";
 import ParticleField from "./particle-field";
+import ShaderBlob from "./shader-blob";
 
 export default function HeroScene() {
   const [reducedMotion, setReducedMotion] = useState(false);
@@ -26,7 +26,7 @@ export default function HeroScene() {
         className="absolute inset-0 z-0"
         style={{
           background:
-            "radial-gradient(60% 50% at 50% 30%, rgba(61,75,255,0.35) 0%, rgba(5,5,7,0) 60%)",
+            "radial-gradient(50% 50% at 70% 35%, rgba(61,75,255,0.32) 0%, rgba(5,5,7,0) 60%), radial-gradient(40% 35% at 25% 70%, rgba(168,245,0,0.10) 0%, rgba(5,5,7,0) 70%)",
         }}
       />
     );
@@ -34,16 +34,17 @@ export default function HeroScene() {
 
   return (
     <Canvas
-      camera={{ position: [0, 0, 6], fov: 50 }}
-      dpr={[1, 1.5]}
-      gl={{ antialias: false, alpha: true, powerPreference: "high-performance" }}
+      camera={{ position: [0, 0, 8], fov: 60 }}
+      dpr={[1, 1.75]}
+      gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
       style={{ width: "100%", height: "100%", background: "transparent" }}
     >
-      <ambientLight intensity={0.5} />
-      <directionalLight position={[3, 4, 5]} intensity={0.8} />
-      <pointLight position={[-2, 2, 3]} intensity={0.3} color="#a8f500" />
-      <FloatingCodeEditor />
-      <ParticleField count={300} radius={8} />
+      <color attach="background" args={["#050507"]} />
+      <fog attach="fog" args={["#050507", 7, 18]} />
+      <ambientLight intensity={0.35} />
+      <directionalLight position={[3, 4, 5]} intensity={1.1} />
+      <ShaderBlob />
+      <ParticleField count={2400} radius={7} />
     </Canvas>
   );
 }
