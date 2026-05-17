@@ -43,3 +43,10 @@ run-codex/
 run-codex-v2/
 run-codex-v3/
 run-cursor/
+
+# playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/.playwright-mcp/
