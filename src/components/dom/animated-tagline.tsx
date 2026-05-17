@@ -98,7 +98,7 @@ export function AnimatedTagline({
         ))}
       </h1>
 
-      <div className="mt-5 h-8 overflow-hidden" aria-live="polite">
+      <div className="mt-5 min-h-8 overflow-hidden" aria-live="polite">
         <span
           ref={rotatingRef}
           key={rotatingIndex}
