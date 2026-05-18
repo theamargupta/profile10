@@ -3,6 +3,8 @@ import { getAllBlogSlugs, getAllProjectSlugs } from "@/lib/queries";
 
 const BASE = "https://amargupta.tech";
 
+export const revalidate = 300;
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [blogSlugs, projectSlugs] = await Promise.all([
     getAllBlogSlugs(),
