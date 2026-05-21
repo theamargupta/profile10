@@ -1,0 +1,47 @@
+# Amar Gupta
+
+> AI-Powered Full Stack Developer & Technical Consultant. Builds MCP servers, LLM chatbot integrations, workflow automation, and full-stack web apps. 7+ years experience. Based in Delhi, India. $40-80/hr, available for contract / project-based / consulting work.
+
+## Profile
+
+- [Site](https://amargupta.tech): portfolio + blog
+- [GitHub](https://github.com/theamargupta)
+- [LinkedIn](https://www.linkedin.com/in/amar-gupta-2684a1157/)
+- Email: theamargupta.tech@gmail.com
+
+## Services
+
+- **MCP Server Development** — Custom MCP servers connecting AI assistants to databases, APIs, and tools
+- **LLM Chatbot Integration** — Embed intelligent AI chatbots into web apps for support, sales, or internal use
+- **Workflow Automation** — Connect AI pipelines with business logic to eliminate manual processes
+- **System Design & Architecture** — Database schema to microservices, scalability patterns, event-driven systems
+- **Full Stack Web Development** — React 19, Next.js 16, Vue 3, Node.js, Supabase, TypeScript
+- **Technical Consulting** — AI integration strategy, code review, architecture audits
+
+## Stack
+
+- **AI & LLM:** MCP Server Development, LLM Integration (Claude, GPT), Prompt Engineering, RAG Pipelines, LangChain
+- **Frontend:** React 19, Next.js 16, Vue 3, Nuxt.js, Remix, TypeScript, Tailwind v4, Radix UI, ShadCN
+- **Backend:** Node.js, Express.js, Supabase, MongoDB, REST APIs, GraphQL, JWT Auth
+- **DevOps:** Vercel, Netlify, Docker, GitHub Actions
+
+## Notable projects
+
+- [Sathi](https://sathi.devfrend.com) — 70+ tool MCP server giving Claude persistent read/write access to personal data (finance, documents, memory).
+- [Setu](https://setu.devfrend.com) — bridge between operator and Claude Code. Browser/mobile/WhatsApp chat lands on the desktop CC via Supabase Realtime + local MCP at `127.0.0.1:9000`.
+- [Sandesh](https://sandesh.devfrend.com) — content publishing autopilot across LinkedIn, Threads, Instagram, YouTube. Text, carousel, HyperFrames video, or strategy outputs.
+- [Swayam](https://swayam.devfrend.com) — automation routines + Auto-SEO + Auto-Blog. Cron-fired Claude Code routines. Pushes SEO fixes direct to main gated on type-check + build.
+- [Sankalp](https://sankalp.devfrend.com) — job-application autopilot. Captures postings via Claude-in-Browser, drafts answers from profile + past-answer cache.
+- [Project Memory](https://pm.devfrend.com) — multi-tenant memory/task/code knowledge platform with remote MCP via pgvector.
+
+## Blog
+
+- [The "MTTR Is All You Need" Trap](https://amargupta.tech/blog/mttr-is-all-you-need-trap) — Why fix-first agent designs trap teams. From six months shipping production agents.
+- [Claude Code's Large-Codebase Guide Stops Where the Hard Part Starts](https://amargupta.tech/blog/claude-code-large-codebase-guide-stops-where-hard-part-starts) — Anthropic's best-practices guide stops at single-repo; the actually-hard problems begin at multi-repo.
+- [AI Isn't Making Me Dumb. The Skill Stack Rotated.](https://amargupta.tech/blog/ai-isnt-making-me-dumb-skill-stack-rotated) — A year of agent-driving 80% of own code: what atrophied, what got sharper, what the agent really does take away.
+- [What the $400k Claude Wallet Recovery Actually Proved](https://amargupta.tech/blog/claude-wallet-recovery-actually-proved) — The headline is "3.5 trillion passwords." The breakthrough was Claude finding a bug in the brute-force tool everyone else was already using.
+- [Building Sathi: How I Turned Claude Into a 70+ Tool Personal Operating System](https://amargupta.tech/blog/building-sathi-70-tool-mcp-server-claude-personal-os) — Behind-the-scenes of designing Sathi: four architecture decisions, 812 tests, one shipped product.
+
+## Contact
+
+For consulting, contract work, or technical questions: theamargupta.tech@gmail.com
