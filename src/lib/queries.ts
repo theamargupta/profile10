@@ -128,7 +128,49 @@ export async function getAllBlogSlugs(): Promise<string[]> {
     .eq("published", true);
   const manual = data?.map((p) => p.slug) ?? [];
   const auto = await getAllAutoBlogSlugs();
-  return [...manual, ...auto];
+  // Dedup: a post can exist in BOTH blog_posts (manual) and blog_published
+  // (auto). Without this the same slug appears twice (generateStaticParams +
+  // sitemap). See getAllBlogSlugsWithDates for the sitemap-specific variant.
+  return [...new Set([...manual, ...auto])];
+}
+
+// Sitemap source: deduped blog slugs paired with their REAL last-modified date.
+// Separate from getAllBlogSlugs for two reasons:
+//   1. Dedup by slug (same as above) — no duplicate <url> entries.
+//   2. Real per-post <lastmod>. Google only honors lastmod when it's
+//      "consistently and verifiably accurate" and ignores it otherwise. The old
+//      sitemap stamped every URL with the build timestamp (new Date()), so
+//      Google disregarded the signal entirely. We emit each post's true
+//      updated_at (manual) / published_at (auto).
+//      Ref: https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap
+// Manual blog_posts wins on slug conflict — it carries a precise updated_at.
+export async function getAllBlogSlugsWithDates(): Promise<
+  { slug: string; lastModified: string }[]
+> {
+  const supabase = createStaticClient();
+  const [manualRes, autoRes] = await Promise.all([
+    supabase
+      .from("blog_posts")
+      .select("slug, updated_at, published_at")
+      .eq("published", true),
+    supabase.from("blog_published").select("slug, published_at"),
+  ]);
+
+  const bySlug = new Map<string, string>();
+  for (const p of manualRes.data ?? []) {
+    const lastMod = p.updated_at ?? p.published_at;
+    if (p.slug && lastMod) bySlug.set(p.slug, lastMod);
+  }
+  for (const p of autoRes.data ?? []) {
+    // Don't overwrite a manual entry — blog_posts has the more precise date.
+    if (p.slug && p.published_at && !bySlug.has(p.slug)) {
+      bySlug.set(p.slug, p.published_at);
+    }
+  }
+  return [...bySlug.entries()].map(([slug, lastModified]) => ({
+    slug,
+    lastModified,
+  }));
 }
 
 // ---- Auto-Blog (blog_published) — read-only mirror ----
