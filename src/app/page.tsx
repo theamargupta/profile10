@@ -5,10 +5,12 @@ import {
   getServices,
   getExperiences,
   getSkillCategories,
+  getCombinedBlogPosts,
 } from "@/lib/queries";
 import { Hero } from "@/components/dom/hero";
 import { ServicesGrid } from "@/components/dom/services-grid";
 import { FeaturedProjects } from "@/components/dom/featured-projects";
+import { RecentWriting } from "@/components/dom/recent-writing";
 
 // Below-fold sections — dynamic-imported so their JS chunks (with GSAP
 // ScrollTrigger animations) don't compete with hero LCP. SSR HTML is still
@@ -32,13 +34,17 @@ const ContactSection = dynamic(() =>
 );
 
 export default async function Home() {
-  const [profile, projects, services, experiences, skills] = await Promise.all([
-    getProfile(),
-    getFeaturedProjects(),
-    getServices(),
-    getExperiences(),
-    getSkillCategories(),
-  ]);
+  const [profile, projects, services, experiences, skills, blogPosts] =
+    await Promise.all([
+      getProfile(),
+      getFeaturedProjects(),
+      getServices(),
+      getExperiences(),
+      getSkillCategories(),
+      getCombinedBlogPosts(),
+    ]);
+
+  const recentPosts = blogPosts.slice(0, 3);
 
   return (
     <>
@@ -58,6 +64,7 @@ export default async function Home() {
       />
       <ExperienceTimeline experiences={experiences} />
       <SkillsGrid categories={skills} />
+      <RecentWriting posts={recentPosts} />
       <ContactSection email={profile?.email ?? ""} />
     </>
   );

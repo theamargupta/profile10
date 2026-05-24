@@ -3,7 +3,11 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { IoArrowBack } from "react-icons/io5";
-import { getCombinedBlogPostBySlug } from "@/lib/queries";
+import {
+  getCombinedBlogPostBySlug,
+  getCombinedBlogPosts,
+} from "@/lib/queries";
+import { ReadNext } from "@/components/dom/read-next";
 
 export const revalidate = 3600;
 
@@ -64,10 +68,14 @@ const proseClassName = `prose prose-invert prose-lg max-w-none
 
 export default async function BlogPostPage({ params }: Props) {
   const { slug } = await params;
-  const post = await getCombinedBlogPostBySlug(slug);
+  const [post, allPosts] = await Promise.all([
+    getCombinedBlogPostBySlug(slug),
+    getCombinedBlogPosts(),
+  ]);
 
   if (!post) notFound();
 
+  const readNextPosts = allPosts.filter((p) => p.slug !== slug).slice(0, 3);
   const tags = post.blog_post_tags.map((t) => t.blog_tags);
   const publishedDate = formatPublishedDate(post.published_at);
 
@@ -194,6 +202,8 @@ export default async function BlogPostPage({ params }: Props) {
               </Link>
             </div>
           </footer>
+
+          <ReadNext posts={readNextPosts} />
         </div>
       </div>
     </section>
