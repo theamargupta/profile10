@@ -46,8 +46,16 @@ export function BlogCard({ post, variant = "default" }: BlogCardProps) {
           featured ? "grid md:grid-cols-[0.92fr_1fr]" : ""
         }`}
       >
-        <div className="overflow-hidden border-b border-[var(--color-surface-3)] md:border-b-0 md:border-r">
+        <div className="relative overflow-hidden border-b border-[var(--color-surface-3)] md:border-b-0 md:border-r">
           <CoverImage post={post} featured={featured} />
+          {post.video_url && (
+            <span className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-black/55 px-3 py-1 font-mono text-[11px] font-medium text-white backdrop-blur-sm">
+              <svg viewBox="0 0 24 24" className="h-3 w-3 fill-current" aria-hidden="true">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+              Video
+            </span>
+          )}
         </div>
 
         <div className={featured ? "flex flex-col justify-center p-8 md:p-10" : "p-7"}>

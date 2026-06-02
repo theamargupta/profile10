@@ -8,6 +8,7 @@ import {
   getCombinedBlogPosts,
 } from "@/lib/queries";
 import { ReadNext } from "@/components/dom/read-next";
+import { YouTubeEmbed } from "@/components/dom/youtube-embed";
 
 export const revalidate = 3600;
 
@@ -111,7 +112,15 @@ export default async function BlogPostPage({ params }: Props) {
           Back to Blog
         </Link>
 
-        {post.cover_image && (
+        {post.video_url ? (
+          <div className="mb-10 overflow-hidden rounded-3xl border border-[var(--color-surface-3)] shadow-[var(--shadow-glow)]">
+            <YouTubeEmbed
+              url={post.video_url}
+              title={`${post.title} — video`}
+              poster={post.cover_image}
+            />
+          </div>
+        ) : post.cover_image ? (
           <Image
             src={post.cover_image}
             alt={post.title}
@@ -120,7 +129,7 @@ export default async function BlogPostPage({ params }: Props) {
             priority
             className="mb-10 aspect-[16/7] w-full rounded-3xl border border-[var(--color-surface-3)] object-cover shadow-[var(--shadow-glow)]"
           />
-        )}
+        ) : null}
 
         <header>
           <h1

@@ -32,6 +32,7 @@ export type BlogPostEditorPost = {
   excerpt: string | null;
   content: string | null;
   cover_image: string | null;
+  video_url: string | null;
   published: boolean;
   reading_time_minutes: number | null;
   blog_post_tags?: {
@@ -144,6 +145,16 @@ export function BlogPostEditor(props: Props) {
           )}
         </div>
       )}
+
+      <label className="block space-y-2 text-sm">
+        <span className="text-foreground/80">Video URL (YouTube — optional hero video)</span>
+        <input
+          name="video_url"
+          placeholder="https://www.youtube.com/watch?v=..."
+          defaultValue={post?.video_url ?? ""}
+          className={inputClass}
+        />
+      </label>
 
       <label className="block space-y-2 text-sm">
         <span className="text-foreground/80">Tags (comma-separated, auto-created)</span>

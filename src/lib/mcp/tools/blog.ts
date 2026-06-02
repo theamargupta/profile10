@@ -71,6 +71,13 @@ const CreatePostArgs = {
   excerpt: z.string().max(400).optional(),
   content: z.string().min(1).describe("Markdown or HTML body of the post."),
   cover_image: z.string().url().optional(),
+  video_url: z
+    .string()
+    .url()
+    .optional()
+    .describe(
+      "Optional YouTube URL — rendered as a click-to-play hero video above the article body.",
+    ),
   published: z
     .boolean()
     .default(false)
@@ -90,6 +97,11 @@ const UpdatePostArgs = {
   excerpt: z.string().max(400).optional(),
   content: z.string().min(1).optional(),
   cover_image: z.string().url().optional(),
+  video_url: z
+    .string()
+    .url()
+    .optional()
+    .describe("Optional YouTube URL for a click-to-play hero video."),
   reading_time_minutes: z.number().int().min(1).optional(),
 };
 
@@ -192,6 +204,7 @@ export function registerBlogTools(server: McpServer) {
         excerpt: parsed.excerpt ?? null,
         content: parsed.content,
         cover_image: parsed.cover_image ?? null,
+        video_url: parsed.video_url ?? null,
         published: parsed.published,
         published_at: parsed.published ? new Date().toISOString() : null,
         reading_time_minutes: reading,

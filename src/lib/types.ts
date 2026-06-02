@@ -111,6 +111,7 @@ export interface BlogPost {
   excerpt: string | null;
   content: string | null;
   cover_image: string | null;
+  video_url: string | null;
   published: boolean;
   published_at: string | null;
   reading_time_minutes: number | null;

@@ -208,6 +208,7 @@ function autoBlogRowToPost(row: AutoBlogRow): BlogPost {
     excerpt: excerpt || null,
     content: mdToHtml(renderSource),
     cover_image: row.og_image_url ?? null,
+    video_url: null,
     published: true,
     published_at: row.published_at,
     reading_time_minutes: row.body_md
