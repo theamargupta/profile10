@@ -6,9 +6,11 @@ import { IoArrowBack } from "react-icons/io5";
 import {
   getCombinedBlogPostBySlug,
   getCombinedBlogPosts,
+  getProfile,
 } from "@/lib/queries";
 import { ReadNext } from "@/components/dom/read-next";
 import { YouTubeEmbed } from "@/components/dom/youtube-embed";
+import { AuthorBio } from "@/components/dom/author-bio";
 
 export const revalidate = 3600;
 
@@ -69,9 +71,10 @@ const proseClassName = `prose prose-invert prose-lg max-w-none
 
 export default async function BlogPostPage({ params }: Props) {
   const { slug } = await params;
-  const [post, allPosts] = await Promise.all([
+  const [post, allPosts, profile] = await Promise.all([
     getCombinedBlogPostBySlug(slug),
     getCombinedBlogPosts(),
+    getProfile(),
   ]);
 
   if (!post) notFound();
@@ -185,32 +188,7 @@ export default async function BlogPostPage({ params }: Props) {
             </p>
           )}
 
-          <footer className="mt-16 border-t border-[var(--color-surface-3)] pt-8">
-            <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex items-center gap-4">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--color-surface-2)] font-mono text-xs font-semibold text-[var(--color-accent-400)]">
-                  AG
-                </div>
-                <div>
-                  <p
-                    className="font-display font-semibold text-[var(--color-fg-0)]"
-                    style={{ fontSize: "var(--text-lg)" }}
-                  >
-                    Amar Gupta
-                  </p>
-                  <p className="text-sm text-[var(--color-fg-2)]">
-                    AI-powered full stack developer · building MCP servers & editorial web UX
-                  </p>
-                </div>
-              </div>
-              <Link
-                href="/blog"
-                className="inline-flex h-10 items-center justify-center rounded-full border border-[var(--color-surface-4)] px-5 font-mono text-[11px] uppercase tracking-[var(--tracking-wider)] text-[var(--color-fg-2)] transition-colors hover:border-[var(--color-accent-400)]/60 hover:text-[var(--color-accent-400)]"
-              >
-                More posts →
-              </Link>
-            </div>
-          </footer>
+          <AuthorBio profile={profile} />
 
           <ReadNext posts={readNextPosts} />
         </div>
