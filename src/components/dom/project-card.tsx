@@ -9,7 +9,7 @@ export function ProjectCard({ project }: { project: Project }) {
   return (
     <Link href={`/project/${project.id}`}>
       <div className="group h-full overflow-hidden rounded-3xl border border-[var(--color-surface-3)] bg-[var(--color-surface-1)]/60 backdrop-blur-xl transition-all duration-500 hover:border-[var(--color-accent-400)]/60">
-        <div className="overflow-hidden">
+        <div className="relative overflow-hidden">
           {project.demo_img ? (
             <Image
               src={project.demo_img}
@@ -27,6 +27,14 @@ export function ProjectCard({ project }: { project: Project }) {
                 {project.title}
               </span>
             </div>
+          )}
+          {project.video_url && (
+            <span className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-black/55 px-3 py-1 font-mono text-[11px] font-medium text-white backdrop-blur-sm">
+              <svg viewBox="0 0 24 24" className="h-3 w-3 fill-current" aria-hidden="true">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+              Demo
+            </span>
           )}
         </div>
         <div className="p-6">

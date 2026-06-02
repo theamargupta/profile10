@@ -12,6 +12,8 @@ export interface ProjectJson {
   title: string;
   description?: string | null;
   demo_img?: string | null;
+  /** Embeddable demo video link (YouTube watch/share/embed URL). */
+  video_url?: string | null;
   live_url?: string | null;
   repo_url?: string | null;
   architecture?: string | null;
@@ -44,6 +46,7 @@ export const PROJECT_JSON_TEMPLATE: ProjectJson = {
   title: "My Project",
   description: "A short description of the project.",
   demo_img: "https://example.com/image.png",
+  video_url: "https://www.youtube.com/watch?v=VIDEO_ID",
   live_url: "https://example.com",
   repo_url: "https://github.com/user/repo",
   architecture: "Next.js + Supabase + Tailwind",
@@ -77,7 +80,7 @@ function validateOne(raw: unknown, index: number): { errors: ValidationError[]; 
   }
 
   // ── optional strings ──
-  for (const key of ["id", "description", "demo_img", "live_url", "repo_url", "architecture"] as const) {
+  for (const key of ["id", "description", "demo_img", "video_url", "live_url", "repo_url", "architecture"] as const) {
     if (obj[key] !== undefined && obj[key] !== null && typeof obj[key] !== "string") {
       e(key, `Expected string or null, got ${typeof obj[key]}`);
     }
@@ -142,7 +145,7 @@ function validateOne(raw: unknown, index: number): { errors: ValidationError[]; 
 
   // ── warn about unknown keys ──
   const knownKeys = new Set([
-    "id", "title", "description", "demo_img", "live_url", "repo_url",
+    "id", "title", "description", "demo_img", "video_url", "live_url", "repo_url",
     "architecture", "featured", "sort_order", "tools", "features", "challenges",
   ]);
   for (const key of Object.keys(obj)) {
@@ -168,6 +171,7 @@ function validateOne(raw: unknown, index: number): { errors: ValidationError[]; 
     title,
     description: (obj.description as string) ?? null,
     demo_img: (obj.demo_img as string) ?? null,
+    video_url: (obj.video_url as string) ?? null,
     live_url: (obj.live_url as string) ?? null,
     repo_url: (obj.repo_url as string) ?? null,
     architecture: (obj.architecture as string) ?? null,

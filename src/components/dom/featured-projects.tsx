@@ -4,6 +4,7 @@ import { useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { SectionHeading } from "@/components/ui/section-heading";
+import { YouTubeEmbed } from "@/components/dom/youtube-embed";
 import type { Project } from "@/lib/types";
 import { iconMap } from "@/lib/icons";
 import gsap from "gsap";
@@ -77,7 +78,14 @@ function ProjectShowcase({
     >
       <div className={`${reversed ? "lg:order-2" : ""}`}>
         <div className="overflow-hidden rounded-3xl border border-[var(--color-surface-3)] bg-[var(--color-surface-1)]/60 backdrop-blur-xl transition-all duration-500 hover:border-[var(--color-accent-400)]/60">
-          {project.demo_img ? (
+          {project.video_url ? (
+            <YouTubeEmbed
+              url={project.video_url}
+              title={`${project.title} — demo`}
+              poster={project.demo_img}
+              autoplay
+            />
+          ) : project.demo_img ? (
             <Image
               src={project.demo_img}
               alt={project.title}

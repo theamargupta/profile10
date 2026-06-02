@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getProjectBySlug, getProjects } from "@/lib/queries";
 import { CaseStudyContent } from "@/components/dom/case-study-content";
+import { YouTubeEmbed } from "@/components/dom/youtube-embed";
 
 export async function generateMetadata({
   params,
@@ -113,7 +114,14 @@ export default async function ProjectCaseStudy({
           </div>
 
           <div className="mb-16 overflow-hidden rounded-3xl border border-[var(--color-surface-3)] bg-[var(--color-surface-1)]/60 backdrop-blur-xl">
-            {project.demo_img ? (
+            {project.video_url ? (
+              <YouTubeEmbed
+                url={project.video_url}
+                title={`${project.title} — demo`}
+                poster={project.demo_img}
+                autoplay
+              />
+            ) : project.demo_img ? (
               <Image
                 src={project.demo_img}
                 alt={project.title}

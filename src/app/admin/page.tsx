@@ -386,6 +386,10 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                         <span className="text-foreground/80">Architecture</span>
                         <textarea name="architecture" rows={2} placeholder="Architecture description" className={inputClass} />
                       </label>
+                      <label className="block space-y-2 text-sm">
+                        <span className="text-foreground/80">Demo Video URL (YouTube)</span>
+                        <input name="video_url" placeholder="https://www.youtube.com/watch?v=..." className={inputClass} />
+                      </label>
                       <div className="grid gap-3 md:grid-cols-2">
                         <label className="block space-y-2 text-sm">
                           <span className="text-foreground/80">Live URL</span>
@@ -465,6 +469,10 @@ export default async function AdminPage({ searchParams }: AdminPageProps) {
                     <label className="block space-y-2 text-sm">
                       <span className="text-foreground/75">Upload new image (overrides URL on save)</span>
                       <input type="file" name="demo_img_file" accept="image/*" className="w-full rounded-xl border border-dashed border-white/20 bg-black/20 px-4 py-3 text-sm text-foreground/80" />
+                    </label>
+                    <label className="block space-y-2 text-sm">
+                      <span className="text-foreground/80">Demo Video URL (YouTube)</span>
+                      <input name="video_url" defaultValue={project.video_url ?? ""} placeholder="https://www.youtube.com/watch?v=..." className={inputClass} />
                     </label>
                     <div className="grid gap-3 md:grid-cols-2">
                       <label className="block space-y-2 text-sm">

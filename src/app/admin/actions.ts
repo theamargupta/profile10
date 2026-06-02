@@ -131,6 +131,7 @@ export async function createProjectAction(formData: FormData) {
   const { error } = await supabase.from("projects").insert({
     id, title,
     description: toText(formData.get("description")),
+    video_url: toText(formData.get("video_url")),
     live_url: toText(formData.get("live_url")),
     repo_url: toText(formData.get("repo_url")),
     architecture: toText(formData.get("architecture")),
@@ -174,6 +175,7 @@ export async function createProjectFromJsonAction(formData: FormData) {
     const { error } = await supabase.from("projects").insert({
       id: project.id, title: project.title,
       description: project.description, demo_img: project.demo_img,
+      video_url: project.video_url,
       live_url: project.live_url, repo_url: project.repo_url,
       architecture: project.architecture,
       featured: project.featured ?? false, sort_order: project.sort_order ?? 0,
@@ -257,6 +259,7 @@ export async function updateProjectAction(formData: FormData) {
     title: toText(formData.get("title")) ?? "Untitled Project",
     description: toText(formData.get("description")),
     demo_img: demoImageUrl,
+    video_url: toText(formData.get("video_url")),
     live_url: toText(formData.get("live_url")),
     repo_url: toText(formData.get("repo_url")),
     architecture: toText(formData.get("architecture")),

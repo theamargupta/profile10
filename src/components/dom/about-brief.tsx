@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef } from "react";
+import Image from "next/image";
 import { SectionHeading } from "@/components/ui/section-heading";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -37,6 +38,26 @@ export function AboutBrief({ bioShort, howIWork }: AboutBriefProps) {
     <section ref={ref} className="py-28 md:py-40">
       <div className="mx-auto" style={{ maxWidth: "var(--container-max)", padding: "0 var(--gutter)" }}>
         <SectionHeading label="About" title="Get to Know Me" />
+        <div data-about-text className="mb-14 flex flex-col items-center text-center">
+          <div className="relative h-40 w-40 md:h-48 md:w-48">
+            <span className="absolute inset-0 rounded-full ring-2 ring-[var(--color-accent-400)]/40" />
+            <span
+              className="absolute -inset-3 rounded-full opacity-70 blur-2xl"
+              style={{ background: "radial-gradient(circle, rgba(61,75,255,0.30) 0%, rgba(5,5,7,0) 70%)" }}
+            />
+            <Image
+              src="/amar-gupta.png"
+              alt="Amar Gupta"
+              width={192}
+              height={192}
+              className="relative h-full w-full rounded-full object-cover"
+            />
+          </div>
+          <p className="mt-5 font-display text-xl font-semibold text-[var(--color-fg-0)]">Amar Gupta</p>
+          <p className="font-mono text-xs uppercase tracking-[var(--tracking-wider)] text-[var(--color-fg-2)]">
+            AI-Powered Full-Stack Developer · Delhi / Remote
+          </p>
+        </div>
         <div className="mx-auto grid max-w-5xl gap-16 lg:grid-cols-2">
           <div data-about-text className="rounded-3xl border border-[var(--color-surface-3)] bg-[var(--color-surface-1)]/60 p-8 backdrop-blur-xl md:p-10">
             <h3

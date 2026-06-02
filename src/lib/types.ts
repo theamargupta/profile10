@@ -51,6 +51,7 @@ export interface Project {
   title: string;
   description: string | null;
   demo_img: string | null;
+  video_url: string | null;
   live_url: string | null;
   repo_url: string | null;
   featured: boolean;
