@@ -10,6 +10,7 @@ import ShuffleLink from "@/components/ui/shuffle-link";
 const navLinks = [
   { href: "/", label: "Home" },
   { href: "/about", label: "About" },
+  { href: "/hire", label: "Hire" },
   { href: "/projects", label: "Projects" },
   { href: "/blog", label: "Blog" },
 ];
@@ -76,11 +77,11 @@ export function Navbar() {
         {/* CTA + Mobile toggle */}
         <div className="flex items-center gap-3">
           <Link
-            href="/#contact"
+            href="/hire"
             className="hidden h-11 items-center rounded-full border border-[var(--color-surface-4)] px-5 font-mono text-xs uppercase tracking-[var(--tracking-wider)] text-[var(--color-fg-0)] transition-colors duration-300 hover:border-[var(--color-accent-400)]/60 hover:bg-[var(--color-surface-2)] md:inline-flex"
             data-cursor="magnet"
           >
-            Start a Project
+            Work with me
           </Link>
 
           <button
@@ -121,11 +122,11 @@ export function Navbar() {
               CV
             </Link>
             <Link
-              href="/#contact"
+              href="/hire"
               onClick={() => setMobileOpen(false)}
               className="mt-2 flex h-14 w-full items-center justify-center rounded-full bg-[var(--color-accent-400)] font-medium text-[var(--color-surface-0)] transition-colors hover:bg-[var(--color-accent-300)]"
             >
-              Start a Project
+              Work with me
             </Link>
           </div>
         </div>
