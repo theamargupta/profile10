@@ -93,9 +93,39 @@ const jsonLd = {
       description:
         "Building AI-powered web applications. MCP Servers, LLM Integration, Workflow Automation. 7+ years experience.",
       image: "https://amargupta.tech/og.png",
+      knowsAbout: [
+        "Model Context Protocol (MCP)",
+        "MCP Server Development",
+        "AI Agents",
+        "LLM Integration",
+        "RAG Pipelines",
+        "Workflow Automation",
+        "Next.js",
+        "System Design",
+      ],
+      makesOffer: [
+        {
+          "@type": "Offer",
+          itemOffered: {
+            "@type": "Service",
+            name: "MCP Server Development",
+            description:
+              "Custom Model Context Protocol servers connecting AI assistants to your databases, APIs, and tools.",
+          },
+        },
+        {
+          "@type": "Offer",
+          itemOffered: {
+            "@type": "Service",
+            name: "AI Agents & Workflow Automation",
+            description:
+              "Tool-calling AI agents that take real actions in your product, with a human-in-the-loop confirm step.",
+          },
+        },
+      ],
       sameAs: [
         "https://github.com/theamargupta",
-        "https://www.linkedin.com/in/theamargupta",
+        "https://www.linkedin.com/in/amar-gupta-2684a1157/",
       ],
     },
   ],
