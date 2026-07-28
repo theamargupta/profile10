@@ -74,7 +74,7 @@ export default function OpengraphImage() {
             letterSpacing: '0.05em',
           }}
         >
-          MCP servers · LLM integration · workflow automation
+          React · Next.js · Vue 3 · Node.js · TypeScript · Supabase
         </div>
       </div>
     ),

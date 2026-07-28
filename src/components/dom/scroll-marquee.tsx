@@ -13,21 +13,21 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 gsap.registerPlugin(ScrollTrigger);
 
 const TOP = [
-  "AI-Powered",
-  "·",
   "Full Stack",
   "·",
-  "MCP Servers",
+  "TypeScript",
   "·",
-  "Automation",
+  "Supabase",
+  "·",
+  "Node.js",
   "·",
 ];
 const BOTTOM = [
   "Next.js",
   "·",
-  "LLM Integration",
-  "·",
   "System Design",
+  "·",
+  "Vue 3",
   "·",
   "React",
   "·",

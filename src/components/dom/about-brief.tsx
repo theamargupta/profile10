@@ -55,7 +55,7 @@ export function AboutBrief({ bioShort, howIWork }: AboutBriefProps) {
           </div>
           <p className="mt-5 font-display text-xl font-semibold text-[var(--color-fg-0)]">Amar Gupta</p>
           <p className="font-mono text-xs uppercase tracking-[var(--tracking-wider)] text-[var(--color-fg-2)]">
-            AI-Powered Full-Stack Developer · Delhi / Remote
+            Senior Full Stack Developer · Delhi / Remote
           </p>
         </div>
         <div className="mx-auto grid max-w-5xl gap-16 lg:grid-cols-2">
