@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og'
 import { THEME } from '@/lib/theme/colors'
 
-export const alt = 'Amar Gupta — AI-Powered Full Stack Developer'
+export const alt = 'Amar Gupta — Senior Full Stack Developer'
 export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
@@ -62,7 +62,7 @@ export default function OpengraphImage() {
               lineHeight: 1.2,
             }}
           >
-            AI-Powered Full Stack Developer
+            Senior Full Stack Developer
           </div>
         </div>
 

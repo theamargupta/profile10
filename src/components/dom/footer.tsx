@@ -14,7 +14,7 @@ export async function Footer() {
               <span className="text-[var(--color-accent-400)]">Amar</span> Gupta
             </Link>
             <p className="mt-1 font-mono text-xs text-[var(--color-fg-2)]">
-              AI-Powered Full Stack Developer
+              Senior Full Stack Developer
             </p>
           </div>
 

@@ -65,7 +65,7 @@ export function ContactSection({ email }: { email: string }) {
   return (
     <section id="contact" ref={ref} className="py-28 md:py-40">
       <div className="mx-auto" style={{ maxWidth: "var(--container-max)", padding: "0 var(--gutter)" }}>
-        <SectionHeading label="Get in Touch" title="Start a Project" />
+        <SectionHeading label="Get in Touch" title="Say hello" />
         <div
           data-contact-form
           className="mx-auto max-w-xl rounded-3xl border border-[var(--color-surface-3)] bg-[var(--color-surface-1)]/60 p-8 backdrop-blur-xl md:p-10"

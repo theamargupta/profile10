@@ -49,11 +49,12 @@ export default async function Home() {
   return (
     <>
       <Hero
-        headline={profile?.headline ?? "I build AI-powered web applications."}
+        headline={profile?.headline ?? "I build production web applications."}
         subtitle={
           profile?.subtitle ??
-          "MCP Servers · LLM Integration · Workflow Automation"
+          "React · Next.js · Vue 3 · Node.js · TypeScript · Supabase"
         }
+        description={profile?.bio_short ?? ""}
       />
       <ScrollMarquee />
       <ServicesGrid services={services} />

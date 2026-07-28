@@ -50,3 +50,4 @@ run-cursor/
 /blob-report/
 /playwright/.cache/
 /.playwright-mcp/
+.env*.local

@@ -49,7 +49,7 @@ export function ServicesGrid({ services }: { services: Service[] }) {
   return (
     <section ref={ref} className="py-28 md:py-40">
       <div className="mx-auto" style={{ maxWidth: "var(--container-max)", padding: "0 var(--gutter)" }}>
-        <SectionHeading label="What I Do" title="Services" />
+        <SectionHeading label="What I Do" title="What I build" />
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {services.map((service) => {
             const Icon = serviceIcons[service.icon ?? "code"];

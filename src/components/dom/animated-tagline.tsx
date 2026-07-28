@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 
 const ROTATING_TAGS = [
-  "MCP Servers · LLM Integration · Workflow Automation",
+  "React · Next.js · Vue 3 · Node.js · TypeScript",
   "Production-ready, not just prototypes.",
   "Backends that ship. Interfaces that feel alive.",
   "Built by engineers, not templates.",
@@ -31,7 +31,7 @@ function buildWords(text: string, accentWord?: string) {
 
 export function AnimatedTagline({
   primary,
-  accentWord = "AI-powered",
+  accentWord = "production",
   rotating = ROTATING_TAGS,
 }: AnimatedTaglineProps) {
   const headingRef = useRef<HTMLHeadingElement | null>(null);

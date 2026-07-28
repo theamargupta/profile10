@@ -35,16 +35,16 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Amar Gupta — AI-Powered Full Stack Developer",
+    default: "Amar Gupta — Senior Full Stack Developer",
     template: "%s | Amar Gupta",
   },
   description:
-    "AI-Powered Full Stack Developer & Technical Consultant. MCP Server Development, LLM Integration, Workflow Automation, System Design. 7+ years experience.",
+    "Senior Full Stack Developer with 7+ years building production web applications in React, Next.js, Vue 3, Node.js, TypeScript and Supabase.",
   metadataBase: new URL("https://amargupta.tech"),
   openGraph: {
-    title: "Amar Gupta — AI-Powered Full Stack Developer",
+    title: "Amar Gupta — Senior Full Stack Developer",
     description:
-      "Building AI-powered web applications. MCP Servers, LLM Integration, Workflow Automation.",
+      "Building production web applications with React, Next.js, Vue 3, Node.js and Supabase.",
     url: "https://amargupta.tech",
     siteName: "Amar Gupta",
     locale: "en_US",
@@ -52,9 +52,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Amar Gupta — AI-Powered Full Stack Developer",
+    title: "Amar Gupta — Senior Full Stack Developer",
     description:
-      "Building AI-powered web applications. MCP Servers, LLM Integration, Workflow Automation.",
+      "Building production web applications with React, Next.js, Vue 3, Node.js and Supabase.",
     creator: "@theamargupta",
     images: ["/opengraph-image"],
   },
@@ -80,7 +80,7 @@ const jsonLd = {
       url: "https://amargupta.tech",
       name: "Amar Gupta",
       description:
-        "AI-Powered Full Stack Developer & Technical Consultant. MCP Server Development, LLM Integration, Workflow Automation.",
+        "Senior Full Stack Developer. React, Next.js, Vue 3, Node.js, TypeScript, Supabase. 7+ years building production web applications.",
       inLanguage: "en-US",
       publisher: { "@id": "https://amargupta.tech/#person" },
     },
@@ -89,39 +89,19 @@ const jsonLd = {
       "@id": "https://amargupta.tech/#person",
       name: "Amar Gupta",
       url: "https://amargupta.tech",
-      jobTitle: "AI-Powered Full Stack Developer",
+      jobTitle: "Senior Full Stack Developer",
       description:
-        "Building AI-powered web applications. MCP Servers, LLM Integration, Workflow Automation. 7+ years experience.",
+        "Building production web applications with React, Next.js, Vue 3, Node.js and Supabase. 7+ years experience.",
       image: "https://amargupta.tech/og.png",
       knowsAbout: [
-        "Model Context Protocol (MCP)",
-        "MCP Server Development",
-        "AI Agents",
-        "LLM Integration",
-        "RAG Pipelines",
-        "Workflow Automation",
+        "React",
         "Next.js",
+        "Vue 3",
+        "Node.js",
+        "TypeScript",
+        "Supabase",
+        "PostgreSQL",
         "System Design",
-      ],
-      makesOffer: [
-        {
-          "@type": "Offer",
-          itemOffered: {
-            "@type": "Service",
-            name: "MCP Server Development",
-            description:
-              "Custom Model Context Protocol servers connecting AI assistants to your databases, APIs, and tools.",
-          },
-        },
-        {
-          "@type": "Offer",
-          itemOffered: {
-            "@type": "Service",
-            name: "AI Agents & Workflow Automation",
-            description:
-              "Tool-calling AI agents that take real actions in your product, with a human-in-the-loop confirm step.",
-          },
-        },
       ],
       sameAs: [
         "https://github.com/theamargupta",

@@ -12,7 +12,7 @@ import { ContactSection } from "@/components/dom/contact-section";
 export const metadata: Metadata = {
   title: "About",
   description:
-    "AI-Powered Full Stack Developer with 7+ years of experience. Specializing in MCP Servers, LLM Integration, System Design.",
+    "Senior Full Stack Developer with 7+ years of experience. React, Next.js, Vue 3, Node.js, TypeScript, Supabase and system design.",
   alternates: { canonical: "/about" },
 };
 

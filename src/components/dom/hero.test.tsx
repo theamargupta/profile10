@@ -10,27 +10,60 @@ vi.mock("next/dynamic", () => ({
   },
 }));
 
+const PROPS = {
+  headline: "I build production web applications.",
+  subtitle: "React · Next.js · Vue 3 · Node.js · TypeScript · Supabase",
+  description:
+    "I build production web applications end to end, from data modelling to the deployed interface.",
+};
+
 describe("Hero", () => {
   it("renders the main hero contract content", () => {
-    render(
-      <Hero
-        headline="I build AI-powered web applications."
-        subtitle="MCP Servers · LLM Integration · Workflow Automation"
-      />
-    );
+    render(<Hero {...PROPS} />);
 
     expect(
       screen.getByRole("heading", {
-        name: /I build\s*AI-powered\s*web applications\./i,
+        name: /I build\s*production\s*web applications\./i,
       })
     ).toBeInTheDocument();
 
-    expect(
-      screen.getByRole("link", { name: /start a project/i })
-    ).toHaveAttribute("href", "/#contact");
+    expect(screen.getByText(PROPS.description)).toBeInTheDocument();
 
-    expect(screen.getByText("MCP Servers")).toBeInTheDocument();
-    expect(screen.getByText("LLM Integration")).toBeInTheDocument();
-    expect(screen.getByText("Workflow Automation")).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: /view my work/i })
+    ).toHaveAttribute("href", "/projects");
+
+    expect(
+      screen.getByRole("link", { name: /get in touch/i })
+    ).toHaveAttribute("href", "/#contact");
+  });
+
+  it("renders each subtitle segment as a stack chip", () => {
+    render(<Hero {...PROPS} />);
+
+    for (const tag of ["React", "Next.js", "Vue 3", "Node.js", "TypeScript", "Supabase"]) {
+      expect(screen.getByText(tag)).toBeInTheDocument();
+    }
+  });
+
+  // The site markets Amar as an employed full-stack developer, not a freelancer.
+  // These strings are the ones that read as "hire me for a project" and must stay gone.
+  it("does not advertise freelance availability", () => {
+    render(<Hero {...PROPS} />);
+
+    expect(
+      screen.queryByText(/available for new projects/i)
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("link", { name: /start a project/i })
+    ).not.toBeInTheDocument();
+  });
+
+  it("falls back to an empty description without crashing", () => {
+    render(<Hero headline={PROPS.headline} subtitle={PROPS.subtitle} description="" />);
+
+    expect(
+      screen.getByRole("heading", { name: /I build\s*production\s*web applications\./i })
+    ).toBeInTheDocument();
   });
 });

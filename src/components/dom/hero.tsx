@@ -20,9 +20,11 @@ const HeroScene = dynamic(() => import("@/components/canvas/hero-scene"), {
 interface HeroProps {
   headline: string;
   subtitle: string;
+  /** Short bio paragraph under the headline. Sourced from the profile record. */
+  description: string;
 }
 
-export function Hero({ headline, subtitle }: HeroProps) {
+export function Hero({ headline, subtitle, description }: HeroProps) {
   const containerRef = useRef<HTMLElement>(null);
   const [mountScene, setMountScene] = useState(false);
 
@@ -111,24 +113,14 @@ export function Hero({ headline, subtitle }: HeroProps) {
         className="relative z-10 mx-auto w-full pb-24 pt-40"
         style={{ maxWidth: "var(--container-max)", padding: "10rem var(--gutter) 6rem" }}
       >
-        <div
-          data-hero-badge
-          className="mb-8 inline-flex items-center gap-2 rounded-full border border-[var(--color-surface-4)] bg-[var(--color-surface-1)]/40 px-3 py-1 font-mono text-xs text-[var(--color-fg-2)] backdrop-blur-sm"
-        >
-          <span className="h-1.5 w-1.5 rounded-full bg-[var(--color-success)] animate-pulse" />
-          Available for new projects
-        </div>
-
-        <AnimatedTagline primary={headline} accentWord="AI-powered" />
+        <AnimatedTagline primary={headline} accentWord="production" />
 
         <p
           data-hero-subtitle
           className="mt-10 max-w-2xl font-body text-[var(--color-fg-1)]"
           style={{ fontSize: "var(--text-lg)", lineHeight: "var(--leading-snug)" }}
         >
-          Full-stack developer specializing in MCP servers, LLM integration, and
-          workflow automation. Turning complex AI capabilities into
-          production-ready products.
+          {description}
         </p>
 
         <div data-hero-tags className="mt-8 flex flex-wrap gap-2">
@@ -143,8 +135,8 @@ export function Hero({ headline, subtitle }: HeroProps) {
         </div>
 
         <div data-hero-cta className="mt-12 flex flex-col gap-4 sm:flex-row">
-          <MagneticButton href="/#contact" variant="primary" size="md">
-            Start a Project
+          <MagneticButton href="/projects" variant="primary" size="md">
+            View My Work
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="ml-1">
               <path
                 d="M3 8h10m0 0L9 4m4 4L9 12"
@@ -155,8 +147,8 @@ export function Hero({ headline, subtitle }: HeroProps) {
               />
             </svg>
           </MagneticButton>
-          <MagneticButton href="/projects" variant="ghost" size="md">
-            View My Work
+          <MagneticButton href="/#contact" variant="ghost" size="md">
+            Get in touch
           </MagneticButton>
         </div>
       </div>

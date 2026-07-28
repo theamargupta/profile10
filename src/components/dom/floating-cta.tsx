@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * FloatingCta — Small floating "Start a project" chip that appears
+ * FloatingCta — Small floating "Get in touch" chip that appears
  * after scrolling past the hero and hides near the footer.
  */
 
@@ -36,7 +36,7 @@ export default function FloatingCta() {
       aria-hidden={!visible}
     >
       <span className="inline-block h-2 w-2 rounded-full bg-[var(--color-accent-400)]" />
-      Start a project
+      Get in touch
     </a>
   );
 }
