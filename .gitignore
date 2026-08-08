@@ -51,3 +51,6 @@ run-cursor/
 /playwright/.cache/
 /.playwright-mcp/
 .env*.local
+
+# Claude Code scratch (messages, local state)
+.claude/
