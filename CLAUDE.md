@@ -4,6 +4,10 @@
 
 > 📚 **Cross-repo technical reference:** the dense `file_path:line` corpus for this whole Setu repo-of-repos lives at [`Setu/docs/README.md`](/Volumes/maersk/amargupta/Documents/LatestProjects/PortfolioProject/Setu/docs/README.md). Open that index whenever you need code-level detail beyond this file — every linked sub-doc is line-cited so you can jump straight to source.
 
+@docs/DOC-MAP.md — version-pinned context7 IDs per library. Read it before touching any
+library API. **Zod here is v3, not v4** — do not carry an answer in from a sibling repo.
+`npm run doc-map:check` fails if a row has gone stale.
+
 ## Overview
 Personal portfolio + writing site. Next.js 16 frontend, heavy 3D/motion, Supabase as a lightweight content store (projects, writing, assets via Supabase Storage).
 
@@ -75,6 +79,25 @@ Source: `src/app/api/mcp/route.ts`, `src/lib/mcp/server.ts`, `src/lib/mcp/tools/
 - Respect `prefers-reduced-motion` everywhere.
 - Images: `next/image`. Remote hosts already whitelisted in `next.config.ts` — add to that list if you add a new host.
 - Supabase Storage URLs use the public bucket pattern configured in `next.config.ts`.
+
+## THE BUILD LOOP (every feature and every bugfix, in this order)
+
+The full rule lives in `~/.claude/CLAUDE.md` Rule 0 and loads every session. Bound
+to this repo's actual commands:
+
+1. **Docs first** — `@docs/DOC-MAP.md`, pinned to the installed version.
+   **Zod here is v3.** Never carry an answer in from `devfrendlmsv1` or `usstaffingagent`.
+2. **Research before patching, and before designing** — how did others do it, and
+   how did they TEST it. If a page 404s or is JS-rendered, open it in
+   Claude-in-Chrome; a failed fetch is not an empty web. *(Enforced: a failing
+   test denies edits until you look something up.)*
+3. **Spec** — `docs/specs/<feature>.md`. What it does, what it refuses to do, why.
+4. **Plan** — the files to touch and the steps, phased.
+5. **Tests first** — `npm test` (Vitest) for logic, `npm run test:e2e` (Playwright)
+   for any user-facing flow. Confirm red for the right reason before writing code.
+6. **Implement until green** — `npm run type-check` + `npm run lint` +
+   `npm run lint:colors` + `npm test` + `npm run test:e2e`, then commit.
+7. **Phase it** — small phases with checkpoints, executed inline.
 
 ## Rules
 - No `tailwind.config.*` — Tailwind v4.

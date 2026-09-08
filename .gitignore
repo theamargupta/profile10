@@ -53,4 +53,13 @@ run-cursor/
 .env*.local
 
 # Claude Code scratch (messages, local state)
-.claude/
+
+# .claude — ignore the scratch, KEEP the tooling.
+# .claude/agents, commands, hooks, rules and settings.json are tracked
+# deliberately and stay so — they are real work and cannot be recovered
+# from anywhere else if this repo is lost. Do not blanket-ignore .claude/.
+.claude/messages/
+.claude/tmp/
+.claude/worktrees/
+.claude/settings.local.json
+.claude/**/.DS_Store
