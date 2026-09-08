@@ -51,7 +51,12 @@ function main() {
     process.exit(1)
   }
 
-  const rows = map.split('\n').filter((l) => l.trim().startsWith('|'))
+  // Only rows at/after a "## The stack" heading count. A map may carry other
+  // tables (e.g. a "this repo is NOT like the others" comparison) whose cells
+  // name versions that are deliberately not this repo's.
+  const stackAt = map.indexOf('## The stack')
+  const scoped = stackAt === -1 ? map : map.slice(stackAt)
+  const rows = scoped.split('\n').filter((l) => l.trim().startsWith('|'))
   const stale = []
   const missing = []
   const ok = []
