@@ -92,10 +92,12 @@ to this repo's actual commands:
    Claude-in-Chrome; a failed fetch is not an empty web. *(Enforced: a failing
    test denies edits until you look something up.)*
 3. **Spec** — `docs/specs/<feature>.md`. What it does, what it refuses to do, why.
-4. **Plan** — the files to touch and the steps, **broken into phases**. Every
-   file the plan creates or extends stays under 200 lines (split first, and say
-   into what), and each phase is finished — green, clean, committed — before
-   the next starts. The plan names each checkpoint.
+4. **Plan** — the files to touch and the steps, **broken into phases**, as many
+   as the work needs (5, 10, 20 — the count is never the constraint). Every file
+   the plan creates or extends stays under 200 lines: that bounds each piece,
+   never the scope — split first, say into what, never shrink the feature to
+   fit. Each phase is finished — green, clean, committed — before the next
+   starts, and the plan names each checkpoint.
 5. **Tests first** — `npm test` (Vitest) for logic, `npm run test:e2e` (Playwright)
    for any user-facing flow. Confirm red for the right reason before writing code.
 6. **Implement until green** — `npm run type-check` + `npm run lint` +
