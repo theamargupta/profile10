@@ -11,11 +11,11 @@ const CAL_URL = "https://cal.com/amargupta.tech";
  */
 export function AuthorBio({ profile }: { profile: Profile | null }) {
   const name = profile?.name ?? "Amar Gupta";
-  const title = profile?.title ?? "Senior Full Stack Developer";
+  const title = profile?.title ?? "Senior Frontend Developer — AI & MCP";
   const bio =
     profile?.bio_short ??
     profile?.summary ??
-    "I build production web applications end to end — React, Next.js, Vue 3, Node.js and Supabase — with 7+ years in full-stack development.";
+    "I build production frontends in React, Next.js and TypeScript, and the AI and MCP tooling behind them — 7+ years of shipping web applications.";
   const location = profile?.location ?? "Delhi, India";
   const email = profile?.email ?? "theamargupta.tech@gmail.com";
   const website = (profile?.website ?? "amargupta.tech").replace(/^https?:\/\//, "");

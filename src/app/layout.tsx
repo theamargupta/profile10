@@ -35,16 +35,16 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Amar Gupta — Senior Full Stack Developer",
+    default: "Amar Gupta — Senior Frontend Developer — AI & MCP",
     template: "%s | Amar Gupta",
   },
   description:
-    "Senior Full Stack Developer with 7+ years building production web applications in React, Next.js, Vue 3, Node.js, TypeScript and Supabase.",
+    "Senior Frontend Developer with 7+ years building production web applications in React, Next.js and TypeScript, and the AI and MCP tooling behind them.",
   metadataBase: new URL("https://amargupta.tech"),
   openGraph: {
-    title: "Amar Gupta — Senior Full Stack Developer",
+    title: "Amar Gupta — Senior Frontend Developer — AI & MCP",
     description:
-      "Building production web applications with React, Next.js, Vue 3, Node.js and Supabase.",
+      "Frontend first: React, Next.js and TypeScript, with AI and MCP built in.",
     url: "https://amargupta.tech",
     siteName: "Amar Gupta",
     locale: "en_US",
@@ -52,9 +52,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Amar Gupta — Senior Full Stack Developer",
+    title: "Amar Gupta — Senior Frontend Developer — AI & MCP",
     description:
-      "Building production web applications with React, Next.js, Vue 3, Node.js and Supabase.",
+      "Frontend first: React, Next.js and TypeScript, with AI and MCP built in.",
     creator: "@theamargupta",
     images: ["/opengraph-image"],
   },
@@ -80,7 +80,7 @@ const jsonLd = {
       url: "https://amargupta.tech",
       name: "Amar Gupta",
       description:
-        "Senior Full Stack Developer. React, Next.js, Vue 3, Node.js, TypeScript, Supabase. 7+ years building production web applications.",
+        "Senior Frontend Developer — AI & MCP. React, Next.js, TypeScript, AI and MCP. 7+ years building production web applications.",
       inLanguage: "en-US",
       publisher: { "@id": "https://amargupta.tech/#person" },
     },
@@ -89,9 +89,9 @@ const jsonLd = {
       "@id": "https://amargupta.tech/#person",
       name: "Amar Gupta",
       url: "https://amargupta.tech",
-      jobTitle: "Senior Full Stack Developer",
+      jobTitle: "Senior Frontend Developer — AI & MCP",
       description:
-        "Building production web applications with React, Next.js, Vue 3, Node.js and Supabase. 7+ years experience.",
+        "Frontend first: React, Next.js and TypeScript, with AI and MCP built in. 7+ years experience.",
       image: "https://amargupta.tech/og.png",
       knowsAbout: [
         "React",
