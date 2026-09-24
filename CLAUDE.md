@@ -80,29 +80,17 @@ Source: `src/app/api/mcp/route.ts`, `src/lib/mcp/server.ts`, `src/lib/mcp/tools/
 - Images: `next/image`. Remote hosts already whitelisted in `next.config.ts` — add to that list if you add a new host.
 - Supabase Storage URLs use the public bucket pattern configured in `next.config.ts`.
 
-## THE BUILD LOOP (every feature and every bugfix, in this order)
+## The build loop — global Rule 0, not restated here
 
-The full rule lives in `~/.claude/CLAUDE.md` Rule 0 and loads every session. Bound
-to this repo's actual commands:
+The build loop is **Rule 0 in `~/.claude/CLAUDE.md`**, loaded in every session. **Do not copy its steps
+into this file** — a copy drifts from the rule it copies. Only what is true of THIS repo:
 
-1. **Docs first** — `@docs/DOC-MAP.md`, pinned to the installed version.
-   **Zod here is v3.** Never carry an answer in from `devfrendlmsv1` or `usstaffingagent`.
-2. **Research before patching, and before designing** — how did others do it, and
-   how did they TEST it. If a page 404s or is JS-rendered, open it in
-   Claude-in-Chrome; a failed fetch is not an empty web. *(Enforced: a failing
-   test denies edits until you look something up.)*
-3. **Spec** — `docs/specs/<feature>.md`. What it does, what it refuses to do, why.
-4. **Plan** — the files to touch and the steps, **broken into phases**, as many
-   as the work needs (5, 10, 20 — the count is never the constraint). Every file
-   the plan creates or extends stays under 200 lines: that bounds each piece,
-   never the scope — split first, say into what, never shrink the feature to
-   fit. Each phase is finished — green, clean, committed — before the next
-   starts, and the plan names each checkpoint.
-5. **Tests first** — `npm test` (Vitest) for logic, `npm run test:e2e` (Playwright)
-   for any user-facing flow. Confirm red for the right reason before writing code.
-6. **Implement until green** — `npm run type-check` + `npm run lint` +
-   `npm run lint:colors` + `npm test` + `npm run test:e2e`, then commit.
-7. **Phase it** — small phases with checkpoints, executed inline.
+- **Step 1:** `@docs/DOC-MAP.md`, pinned to the installed version. **Zod here is v3.** Never carry an
+  answer in from `devfrendlmsv1` or `usstaffingagent`.
+- **Spec:** `docs/specs/<feature>.md`.
+- **Tests:** `npm test` (Vitest) for logic, `npm run test:e2e` (Playwright) for any user-facing flow.
+- **Gate:** `npm run type-check` + `npm run lint` + `npm run lint:colors` + `npm test` +
+  `npm run test:e2e`, then commit.
 
 ## Rules
 - No `tailwind.config.*` — Tailwind v4.
