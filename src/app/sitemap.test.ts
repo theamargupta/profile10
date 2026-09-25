@@ -1,17 +1,34 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-const { getAllBlogSlugsWithDates, getAllProjectSlugs } = vi.hoisted(() => ({
+const { getAllBlogSlugsWithDates, getProjectsWithDates } = vi.hoisted(() => ({
   getAllBlogSlugsWithDates: vi.fn(),
-  getAllProjectSlugs: vi.fn(),
+  getProjectsWithDates: vi.fn(),
 }));
 
-vi.mock("@/lib/queries", () => ({ getAllBlogSlugsWithDates, getAllProjectSlugs }));
+vi.mock("@/lib/queries", () => ({ getAllBlogSlugsWithDates }));
+vi.mock("@/lib/feeds/project-dates", () => ({ getProjectsWithDates }));
 
 import sitemap, * as sitemapModule from "./sitemap";
 
+const BASE = "https://amargupta.tech";
+const lastmodOf = async () =>
+  new Map((await sitemap()).map((e) => [e.url, e.lastModified?.valueOf()]));
+
 beforeEach(() => {
   getAllBlogSlugsWithDates.mockReset();
-  getAllProjectSlugs.mockReset();
+  getProjectsWithDates.mockReset();
+  getAllBlogSlugsWithDates.mockResolvedValue([
+    { slug: "older", lastModified: "2026-09-20T08:00:00.000Z" },
+    { slug: "newest", lastModified: "2026-09-25T02:45:35.000Z" },
+  ]);
+  getProjectsWithDates.mockResolvedValue([
+    { id: "sathi", updatedAt: "2026-06-02T21:14:10.659Z" },
+    { id: "kamai", updatedAt: "2026-09-10T21:42:50.571Z" },
+  ]);
+});
+
+afterEach(() => {
+  vi.useRealTimers();
 });
 
 describe("sitemap route config", () => {
@@ -26,35 +43,44 @@ describe("sitemap route config", () => {
 });
 
 describe("sitemap()", () => {
-  it("lists each post with its real lastmod and dates /blog by the newest post", async () => {
-    getAllBlogSlugsWithDates.mockResolvedValue([
-      { slug: "older", lastModified: "2026-09-20T08:00:00.000Z" },
-      { slug: "newest", lastModified: "2026-09-25T02:45:35.000Z" },
-    ]);
-    getAllProjectSlugs.mockResolvedValue(["sathi"]);
-
-    const entries = await sitemap();
-    const byUrl = new Map(entries.map((e) => [e.url, e]));
-
-    expect(byUrl.get("https://amargupta.tech/blog/newest")?.lastModified).toEqual(
-      new Date("2026-09-25T02:45:35.000Z"),
-    );
-    expect(byUrl.get("https://amargupta.tech/blog")?.lastModified).toEqual(
-      new Date("2026-09-25T02:45:35.000Z"),
-    );
-    expect(byUrl.has("https://amargupta.tech/project/sathi")).toBe(true);
+  // Rendered per request, `new Date()` made every static and project lastmod
+  // read "now" on each crawl (seen live 2026-09-25): a signal Google ignores.
+  it("produces identical lastmods for two renders a second apart", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-09-25T14:00:00Z"));
+    const first = await lastmodOf();
+    vi.setSystemTime(new Date("2026-09-25T14:00:01Z"));
+    const second = await lastmodOf();
+    expect(second).toEqual(first);
   });
 
-  it("still returns the static routes when there are no posts or projects", async () => {
-    getAllBlogSlugsWithDates.mockResolvedValue([]);
-    getAllProjectSlugs.mockResolvedValue([]);
+  it("dates each post and each project by its own record", async () => {
+    const lastmod = await lastmodOf();
+    expect(lastmod.get(`${BASE}/blog/newest`)).toBe(Date.parse("2026-09-25T02:45:35.000Z"));
+    expect(lastmod.get(`${BASE}/project/sathi`)).toBe(Date.parse("2026-06-02T21:14:10.659Z"));
+  });
 
-    const urls = (await sitemap()).map((e) => e.url);
-    expect(urls).toEqual([
-      "https://amargupta.tech",
-      "https://amargupta.tech/about",
-      "https://amargupta.tech/projects",
-      "https://amargupta.tech/blog",
-    ]);
+  it("dates the index pages by the newest content they show", async () => {
+    const lastmod = await lastmodOf();
+    expect(lastmod.get(`${BASE}/blog`)).toBe(Date.parse("2026-09-25T02:45:35.000Z"));
+    expect(lastmod.get(`${BASE}/projects`)).toBe(Date.parse("2026-09-10T21:42:50.571Z"));
+    // The home page shows both posts and projects.
+    expect(lastmod.get(BASE)).toBe(Date.parse("2026-09-25T02:45:35.000Z"));
+  });
+
+  it("omits lastmod for /about, which no record dates", async () => {
+    const entries = await sitemap();
+    const about = entries.find((e) => e.url === `${BASE}/about`);
+    expect(about).toBeDefined();
+    expect(about).not.toHaveProperty("lastModified");
+  });
+
+  it("returns the static routes with no lastmod when there are no posts or projects", async () => {
+    getAllBlogSlugsWithDates.mockResolvedValue([]);
+    getProjectsWithDates.mockResolvedValue([]);
+
+    const entries = await sitemap();
+    expect(entries.map((e) => e.url)).toEqual([BASE, `${BASE}/about`, `${BASE}/projects`, `${BASE}/blog`]);
+    for (const e of entries) expect(e).not.toHaveProperty("lastModified");
   });
 });

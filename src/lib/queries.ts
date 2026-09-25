@@ -272,12 +272,6 @@ export async function getBlogTags(): Promise<BlogTag[]> {
   return data ?? [];
 }
 
-export async function getAllProjectSlugs(): Promise<string[]> {
-  const supabase = createStaticClient();
-  const { data } = await supabase.from("projects").select("id");
-  return data?.map((p) => p.id) ?? [];
-}
-
 export async function getTools(): Promise<Tool[]> {
   const supabase = await createClient();
   const { data } = await supabase.from("tools").select("*").order("name");
