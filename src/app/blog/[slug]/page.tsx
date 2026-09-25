@@ -33,14 +33,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       url: `https://amargupta.tech/blog/${slug}`,
       title: post.title,
       description: post.excerpt ?? undefined,
-      images: post.cover_image ? [post.cover_image] : [],
       publishedTime: post.published_at ?? undefined,
     },
     twitter: {
       card: "summary_large_image",
       title: post.title,
       description: post.excerpt ?? undefined,
-      images: post.cover_image ? [post.cover_image] : undefined,
     },
   };
 }
@@ -88,7 +86,8 @@ export default async function BlogPostPage({ params }: Props) {
     "@type": "Article",
     headline: post.title,
     description: post.excerpt ?? undefined,
-    image: post.cover_image ?? "https://amargupta.tech/opengraph-image",
+    // Share images come from ./opengraph-image.tsx and ./twitter-image.tsx.
+    image: post.cover_image ?? `https://amargupta.tech/blog/${slug}/opengraph-image`,
     datePublished: post.published_at ?? undefined,
     dateModified: post.published_at ?? undefined,
     author: { "@id": "https://amargupta.tech/#person" },

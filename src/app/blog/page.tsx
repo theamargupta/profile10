@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { sectionMetadata } from "@/lib/seo/section-metadata";
 import Link from "next/link";
 import { HiOutlinePencilSquare } from "react-icons/hi2";
 import { BlogCard } from "@/components/dom/blog-card";
@@ -6,12 +7,12 @@ import { getCombinedBlogPosts, getBlogTags } from "@/lib/queries";
 
 export const revalidate = 3600;
 
-export const metadata: Metadata = {
+export const metadata: Metadata = sectionMetadata({
+  path: "/blog",
   title: "Blog",
   description:
     "Thoughts on AI, MCP Servers, LLM Integration, System Design, and modern web development.",
-  alternates: { canonical: "/blog" },
-};
+});
 
 export default async function BlogPage() {
   const [posts, tags] = await Promise.all([getCombinedBlogPosts(), getBlogTags()]);

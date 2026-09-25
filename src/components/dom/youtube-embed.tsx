@@ -57,10 +57,9 @@ export function YouTubeEmbed({
     if (!autoplay) return;
     const el = containerRef.current;
     if (!el) return;
-    if (typeof IntersectionObserver === "undefined") {
-      setActive(true);
-      return;
-    }
+    // No "IntersectionObserver missing" fallback: every browser Next 16 supports
+    // (Chrome/Edge/Firefox 111+, Safari 16.4+) ships it, and the fallback's
+    // synchronous setState in this effect was a react-hooks lint error.
     const io = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {

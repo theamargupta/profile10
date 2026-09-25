@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
 import { THEME } from "@/lib/theme/colors";
+import { SITE_FEEDS, SITE_OPEN_GRAPH, SITE_TWITTER, SITE_URL } from "@/lib/seo/section-metadata";
 import "./globals.css";
 import "lenis/dist/lenis.css";
 import SmoothScrollProvider from "@/components/providers/smooth-scroll";
@@ -45,21 +46,19 @@ export const metadata: Metadata = {
     title: "Amar Gupta — Senior Frontend Developer — AI & MCP",
     description:
       "Frontend first: React, Next.js and TypeScript, with AI and MCP built in.",
-    url: "https://amargupta.tech",
-    siteName: "Amar Gupta",
-    locale: "en_US",
-    type: "website",
+    ...SITE_OPEN_GRAPH,
+    url: SITE_URL,
   },
   twitter: {
-    card: "summary_large_image",
+    ...SITE_TWITTER,
+    images: [...SITE_TWITTER.images],
     title: "Amar Gupta — Senior Frontend Developer — AI & MCP",
     description:
       "Frontend first: React, Next.js and TypeScript, with AI and MCP built in.",
-    creator: "@theamargupta",
-    images: ["/opengraph-image"],
   },
   alternates: {
     canonical: "/",
+    types: SITE_FEEDS,
   },
   robots: {
     index: true,

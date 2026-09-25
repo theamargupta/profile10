@@ -39,8 +39,10 @@ function CoverImage({ post, featured }: { post: BlogPost; featured: boolean }) {
 
 export function BlogCard({ post, variant = "default" }: BlogCardProps) {
   const featured = variant === "featured";
+  // min-w-0 + wrap-anywhere: a grid item sizes to its min-content, so one unbreakable
+  // token (a raw URL in an excerpt) widened every card and scrolled /blog on mobile.
   return (
-    <Link href={`/blog/${post.slug}`} className="group block">
+    <Link href={`/blog/${post.slug}`} className="group block min-w-0">
       <article
         className={`h-full overflow-hidden rounded-3xl border border-[var(--color-surface-3)] bg-[var(--color-surface-1)]/70 backdrop-blur-xl transition-colors duration-500 hover:border-[var(--color-accent-400)]/60 motion-reduce:transition-none ${
           featured ? "grid md:grid-cols-[0.92fr_1fr]" : ""
@@ -65,7 +67,7 @@ export function BlogCard({ post, variant = "default" }: BlogCardProps) {
           </p>
 
           <h2
-            className={`font-display font-semibold text-[var(--color-fg-0)] ${
+            className={`font-display font-semibold wrap-anywhere text-[var(--color-fg-0)] ${
               featured ? "mb-4" : "mb-3"
             }`}
             style={{
@@ -80,7 +82,7 @@ export function BlogCard({ post, variant = "default" }: BlogCardProps) {
 
           {post.excerpt && (
             <p
-              className="line-clamp-2 text-[var(--color-fg-1)]"
+              className="line-clamp-2 wrap-anywhere text-[var(--color-fg-1)]"
               style={{ fontSize: featured ? "var(--text-base)" : "var(--text-sm)" }}
             >
               {post.excerpt}
