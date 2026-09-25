@@ -1,49 +1,57 @@
 import type { MetadataRoute } from "next";
-import { getAllBlogSlugsWithDates, getAllProjectSlugs } from "@/lib/queries";
+import { SITE_URL as BASE } from "@/lib/feeds/site";
+import { getProjectsWithDates } from "@/lib/feeds/project-dates";
+import { getAllBlogSlugsWithDates } from "@/lib/queries";
 
-const BASE = "https://amargupta.tech";
+// Per request, never cached. `revalidate = 300` put the supabase fetches in the
+// Data Cache under an ISR page, and a new post missed the live sitemap for
+// 11 h (measured 2026-09-25). See docs/specs/sitemap-rss-llms.md.
+export const dynamic = "force-dynamic";
 
-export const revalidate = 300;
+// Every lastmod comes from a record, never from the request time: rendered per
+// request, `new Date()` read "now" on each crawl, and Google only honours
+// lastmod when it is "consistently and verifiably accurate".
+// Ref: https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap
+// No date known → no lastmod.
+const dated = (iso: string | null | undefined) => (iso ? { lastModified: new Date(iso) } : {});
+
+function newest(dates: (string | null)[]): string | null {
+  return dates.reduce<string | null>(
+    (max, d) => (d && (!max || Date.parse(d) > Date.parse(max)) ? d : max),
+    null,
+  );
+}
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [blogPosts, projectSlugs] = await Promise.all([
+  const [blogPosts, projects] = await Promise.all([
     getAllBlogSlugsWithDates(),
-    getAllProjectSlugs(),
+    getProjectsWithDates(),
   ]);
-  const now = new Date();
 
-  // Blog entries carry each post's REAL last-modified date (deduped at source).
-  // Do NOT use `now` here — Google ignores an all-identical build timestamp.
+  const newestPost = newest(blogPosts.map((p) => p.lastModified));
+  const newestProject = newest(projects.map((p) => p.updatedAt));
+
   const blogEntries: MetadataRoute.Sitemap = blogPosts.map((post) => ({
     url: `${BASE}/blog/${post.slug}`,
-    lastModified: new Date(post.lastModified),
+    ...dated(post.lastModified),
     changeFrequency: "weekly",
     priority: 0.6,
   }));
 
-  // The /blog index is as fresh as its newest post — a verifiable signal.
-  const blogIndexLastMod = blogPosts.length
-    ? blogPosts.reduce<Date>((max, p) => {
-        const d = new Date(p.lastModified);
-        return d > max ? d : max;
-      }, new Date(0))
-    : now;
-
-  // NOTE: static routes (/, /about, /projects) + project pages still use `now`.
-  // They're already indexed and low-volume, so the imperfect lastmod is
-  // harmless. A follow-up could source real updated_at for projects.
-  const projectEntries: MetadataRoute.Sitemap = projectSlugs.map((slug) => ({
-    url: `${BASE}/project/${slug}`,
-    lastModified: now,
+  const projectEntries: MetadataRoute.Sitemap = projects.map((project) => ({
+    url: `${BASE}/project/${project.id}`,
+    ...dated(project.updatedAt),
     changeFrequency: "monthly",
     priority: 0.7,
   }));
 
   return [
-    { url: BASE, lastModified: now, changeFrequency: "weekly", priority: 1 },
-    { url: `${BASE}/about`, lastModified: now, changeFrequency: "monthly", priority: 0.9 },
-    { url: `${BASE}/projects`, lastModified: now, changeFrequency: "weekly", priority: 0.8 },
-    { url: `${BASE}/blog`, lastModified: blogIndexLastMod, changeFrequency: "weekly", priority: 0.7 },
+    // The home page shows posts and featured projects: as fresh as the newest.
+    { url: BASE, ...dated(newest([newestPost, newestProject])), changeFrequency: "weekly", priority: 1 },
+    // No record dates /about (profile edits are not timestamped), so no lastmod.
+    { url: `${BASE}/about`, changeFrequency: "monthly", priority: 0.9 },
+    { url: `${BASE}/projects`, ...dated(newestProject), changeFrequency: "weekly", priority: 0.8 },
+    { url: `${BASE}/blog`, ...dated(newestPost), changeFrequency: "weekly", priority: 0.7 },
     ...projectEntries,
     ...blogEntries,
   ];

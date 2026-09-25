@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { createStaticClient } from "@/lib/supabase/static";
 import { mdToHtml } from "@/lib/markdown";
+import { plainExcerpt } from "@/lib/plain-excerpt";
 import type {
   Profile,
   Project,
@@ -192,11 +193,7 @@ type AutoBlogRow = {
 };
 
 function autoBlogRowToPost(row: AutoBlogRow): BlogPost {
-  const excerpt = (row.body_md ?? row.body_html ?? "")
-    .replace(/<[^>]+>/g, " ")
-    .replace(/\s+/g, " ")
-    .trim()
-    .slice(0, 240);
+  const excerpt = plainExcerpt(row.body_md ?? row.body_html);
   // body_md is the canonical markdown source written by the Auto-Blog routine.
   // body_html historically held either raw markdown or markdown wrapped in a
   // thin <article> tag — neither rendered correctly. Render from body_md.
@@ -251,7 +248,11 @@ export async function getAllAutoBlogSlugs(): Promise<string[]> {
 // Combined feed — manual posts and Auto-Blog posts, sorted by published_at desc.
 export async function getCombinedBlogPosts(): Promise<BlogPost[]> {
   const [manual, auto] = await Promise.all([getBlogPosts(), getAutoBlogPosts()]);
-  return [...manual, ...auto].sort((a, b) => {
+  // A slug can live in both tables (12 did on 2026-09-25, so /blog showed them
+  // twice). Manual wins, as in getCombinedBlogPostBySlug.
+  const manualSlugs = new Set(manual.map((p) => p.slug));
+  const autoOnly = auto.filter((p) => !manualSlugs.has(p.slug));
+  return [...manual, ...autoOnly].sort((a, b) => {
     const ad = a.published_at ?? a.created_at;
     const bd = b.published_at ?? b.created_at;
     if (!ad) return 1;
@@ -270,12 +271,6 @@ export async function getBlogTags(): Promise<BlogTag[]> {
   const supabase = await createClient();
   const { data } = await supabase.from("blog_tags").select("*").order("name");
   return data ?? [];
-}
-
-export async function getAllProjectSlugs(): Promise<string[]> {
-  const supabase = createStaticClient();
-  const { data } = await supabase.from("projects").select("id");
-  return data?.map((p) => p.id) ?? [];
 }
 
 export async function getTools(): Promise<Tool[]> {
