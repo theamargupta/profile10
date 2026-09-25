@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { sectionMetadata } from "@/lib/seo/section-metadata";
 import Image from "next/image";
 import {
   getProfile,
@@ -9,12 +10,12 @@ import { ExperienceTimeline } from "@/components/dom/experience-timeline";
 import { SkillsGrid } from "@/components/dom/skills-grid";
 import { ContactSection } from "@/components/dom/contact-section";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = sectionMetadata({
+  path: "/about",
   title: "About",
   description:
     "Senior Frontend Developer — AI & MCP, with 7+ years of experience. React, Next.js, TypeScript, AI and MCP.",
-  alternates: { canonical: "/about" },
-};
+});
 
 export default async function AboutPage() {
   const [profile, experiences, skills] = await Promise.all([

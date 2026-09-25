@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
+import { sectionMetadata } from "@/lib/seo/section-metadata";
 import { getProjects } from "@/lib/queries";
 import { ProjectsListing } from "@/components/dom/projects-listing";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = sectionMetadata({
+  path: "/projects",
   title: "Projects",
   description:
     "Featured projects including MCP servers, SaaS platforms, eCommerce solutions, and AI-integrated applications.",
-  alternates: { canonical: "/projects" },
-};
+});
 
 export default async function ProjectsPage() {
   const projects = await getProjects();
