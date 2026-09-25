@@ -1,3 +1,4 @@
+import { plainExcerpt } from "@/lib/plain-excerpt";
 import { createStaticClient } from "@/lib/supabase/static";
 
 // A published post as the feeds need it: no body, no rendering.
@@ -22,21 +23,6 @@ type AutoRow = {
   published_at: string | null;
 };
 
-const EXCERPT_MAX = 240;
-
-// Same idea as autoBlogRowToPost in lib/queries.ts, minus rendering: plain text
-// from markdown, capped. Duplicated on purpose (Rule 2: second occurrence).
-function excerptFromMarkdown(md: string | null): string | null {
-  if (!md) return null;
-  const text = md
-    .replace(/<[^>]+>/g, " ")
-    .replace(/!?\[([^\]]*)\]\([^)]*\)/g, "$1") // [text](url) and images → text
-    .replace(/[#*_`>]+/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-  return text ? text.slice(0, EXCERPT_MAX).trim() : null;
-}
-
 // Manual (blog_posts) wins on a slug conflict, like the sitemap. Newest first.
 export function mergeFeedPosts(manual: ManualRow[], auto: AutoRow[]): FeedPost[] {
   const bySlug = new Map<string, FeedPost>();
@@ -54,7 +40,7 @@ export function mergeFeedPosts(manual: ManualRow[], auto: AutoRow[]): FeedPost[]
     bySlug.set(row.slug, {
       slug: row.slug,
       title: row.title,
-      excerpt: excerptFromMarkdown(row.body_md),
+      excerpt: plainExcerpt(row.body_md),
       publishedAt: row.published_at,
     });
   }
