@@ -30,3 +30,14 @@ PostgREST reads per request cost nothing.
 
 - A retry, a shorter `revalidate`, or cache-busting to hide the lag. None of them removes the stacked cache.
 - A hand-written `public/llms.txt`: a file in `public/` wins over a route, and it goes stale by design.
+
+## Found while building it (2026-09-25)
+
+- **lastmod was "now" on every crawl.** Once the sitemap rendered per request, `new Date()` stamped `/`,
+  `/about`, `/projects` and every project with the request time. Every lastmod now comes from a record
+  (post date, project `updated_at`); `/about` has none, so it carries no lastmod.
+- **Excerpts carried raw markdown.** Auto-Blog excerpts were cut from `body_md` with only HTML stripped,
+  so 20 of 41 posts showed `[text](https://…)` on `/blog`, and the widest URL overflowed a mobile card by
+  13px. `lib/plain-excerpt.ts` makes plain text for the cards, the RSS descriptions and llms.txt alike.
+- **/blog listed 12 posts twice.** Those slugs exist in both `blog_posts` and `blog_published`;
+  `getCombinedBlogPosts` now keeps the manual one, as the by-slug lookup already did.
