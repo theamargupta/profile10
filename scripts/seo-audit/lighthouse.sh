@@ -24,7 +24,9 @@ for p in "${PATHS[@]}"; do
   for form in mobile desktop; do
     preset=()
     [ "$form" = desktop ] && preset=(--preset=desktop)
-    if ! npx -y "$LIGHTHOUSE" "$BASE$p" "${preset[@]}" --only-categories=seo,performance \
+    # ${a[@]+"${a[@]}"}: macOS ships bash 3.2, where "${a[@]}" on an empty array is an
+    # "unbound variable" error under set -u (fixed only in bash 4.4).
+    if ! npx -y "$LIGHTHOUSE" "$BASE$p" ${preset[@]+"${preset[@]}"} --only-categories=seo,performance \
       --output=json --output-path="$OUT/$(printf '%02d' "$i")-$form.json" \
       --chrome-flags="--headless=new" --quiet; then
       echo "lighthouse failed: $BASE$p ($form)" >&2
