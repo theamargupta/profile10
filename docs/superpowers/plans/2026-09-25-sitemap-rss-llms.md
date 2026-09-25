@@ -17,8 +17,7 @@ its files, message the leader rather than editing it.
   Handler that is cached by default"; how segment `revalidate` treats a supabase-js `fetch`; whether ISR
   regeneration is failing. State the hypothesis, try to DISPROVE it locally (`next build && next start`).
 - A test that fails today, then the fix in `src/app/sitemap.ts` (and `src/lib/queries.ts` only if needed).
-- Checkpoint: gate green, commit on your branch, message the leader with the SHA. **Push to main only after
-  the leader says yes** (a push deploys amargupta.tech). After deploy (SHA, Production filter): the live
+- Checkpoint: gate green, commit on your branch, message the leader with the SHA. **Push only your branch; the leader integrates into main and deploys** (a main push deploys amargupta.tech, and it goes out only on Amar's OK). After deploy (SHA, Production filter): the live
   sitemap contains the newest slug.
 
 ## Phase 2 — RSS feed
