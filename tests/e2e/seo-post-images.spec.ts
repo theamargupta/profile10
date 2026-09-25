@@ -12,7 +12,9 @@ function meta(html: string, key: string): string | null {
 // One post with a cover and one without, read off the live /blog cards.
 async function postsByCover(request: APIRequestContext) {
   const index = await (await request.get("/blog")).text();
-  const cards = [...index.matchAll(/<a class="group block" href="(\/blog\/[^"]+)">([\s\S]*?)<\/a>/g)];
+  // Match the card by its href, not its exact class list: the class list changed once
+  // (min-w-0) and silently turned this test into a skip.
+  const cards = [...index.matchAll(/<a class="[^"]*" href="(\/blog\/[a-z0-9-]+)">([\s\S]*?)<\/a>/g)];
   return {
     withCover: cards.find(([, , body]) => body.includes("<img"))?.[1],
     withoutCover: cards.find(([, , body]) => !body.includes("<img"))?.[1],
