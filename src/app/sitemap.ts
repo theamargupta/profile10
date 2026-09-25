@@ -1,7 +1,6 @@
 import type { MetadataRoute } from "next";
+import { SITE_URL as BASE } from "@/lib/feeds/site";
 import { getAllBlogSlugsWithDates, getAllProjectSlugs } from "@/lib/queries";
-
-const BASE = "https://amargupta.tech";
 
 // Per request, never cached. `revalidate = 300` put the supabase fetches in the
 // Data Cache under an ISR page, and a new post missed the live sitemap for
