@@ -3,7 +3,10 @@ import { getAllBlogSlugsWithDates, getAllProjectSlugs } from "@/lib/queries";
 
 const BASE = "https://amargupta.tech";
 
-export const revalidate = 300;
+// Per request, never cached. `revalidate = 300` put the supabase fetches in the
+// Data Cache under an ISR page, and a new post missed the live sitemap for
+// 11 h (measured 2026-09-25). See docs/specs/sitemap-rss-llms.md.
+export const dynamic = "force-dynamic";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [blogPosts, projectSlugs] = await Promise.all([
