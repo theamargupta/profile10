@@ -11,6 +11,7 @@ import {
 import { ReadNext } from "@/components/dom/read-next";
 import { YouTubeEmbed } from "@/components/dom/youtube-embed";
 import { AuthorBio } from "@/components/dom/author-bio";
+import { SITE_FEEDS } from "@/lib/seo/section-metadata";
 
 export const revalidate = 3600;
 
@@ -27,7 +28,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: post.title,
     description: post.excerpt ?? undefined,
-    alternates: { canonical: `/blog/${slug}` },
+    alternates: { canonical: `/blog/${slug}`, types: SITE_FEEDS },
     openGraph: {
       type: "article",
       url: `https://amargupta.tech/blog/${slug}`,

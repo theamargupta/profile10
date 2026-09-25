@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { getProjectBySlug, getProjects } from "@/lib/queries";
 import { CaseStudyContent } from "@/components/dom/case-study-content";
 import { YouTubeEmbed } from "@/components/dom/youtube-embed";
+import { SITE_FEEDS } from "@/lib/seo/section-metadata";
 
 export async function generateMetadata({
   params,
@@ -20,7 +21,7 @@ export async function generateMetadata({
   return {
     title: project.title,
     description: summary,
-    alternates: { canonical: `/project/${slug}` },
+    alternates: { canonical: `/project/${slug}`, types: SITE_FEEDS },
     openGraph: {
       type: "article",
       url: `https://amargupta.tech/project/${slug}`,
