@@ -31,6 +31,10 @@ export const SITE_TWITTER = {
   images: ["/opengraph-image"],
 } as const;
 
+// RSS autodiscovery (lane 1's /rss.xml). `alternates` is replaced whole by a page
+// that sets its own canonical, so each section repeats it.
+export const SITE_FEEDS = { "application/rss+xml": `${SITE_URL}/rss.xml` };
+
 type Section = { path: `/${string}`; title: string; description: string };
 
 export function sectionMetadata({ path, title, description }: Section): Metadata {
@@ -38,7 +42,7 @@ export function sectionMetadata({ path, title, description }: Section): Metadata
   return {
     title,
     description,
-    alternates: { canonical: path },
+    alternates: { canonical: path, types: SITE_FEEDS },
     openGraph: { ...SITE_OPEN_GRAPH, url: `${SITE_URL}${path}`, title: shareTitle, description, images: [SITE_OG_IMAGE] },
     twitter: { ...SITE_TWITTER, images: [...SITE_TWITTER.images], title: shareTitle, description },
   };

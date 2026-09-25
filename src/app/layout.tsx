@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
 import { THEME } from "@/lib/theme/colors";
-import { SITE_OPEN_GRAPH, SITE_TWITTER, SITE_URL } from "@/lib/seo/section-metadata";
+import { SITE_FEEDS, SITE_OPEN_GRAPH, SITE_TWITTER, SITE_URL } from "@/lib/seo/section-metadata";
 import "./globals.css";
 import "lenis/dist/lenis.css";
 import SmoothScrollProvider from "@/components/providers/smooth-scroll";
@@ -58,6 +58,7 @@ export const metadata: Metadata = {
   },
   alternates: {
     canonical: "/",
+    types: SITE_FEEDS,
   },
   robots: {
     index: true,
