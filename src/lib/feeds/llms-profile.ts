@@ -1,4 +1,4 @@
-import { SITE_HEADLINE, SITE_URL } from "./site";
+import { LINKEDIN_URL, SITE_HEADLINE, SITE_URL } from "./site";
 
 // The hand-written half of /llms.txt: who Amar is. Frontend first, matching the
 // site since a1ec730. The generated half (## Blog) is built in llms.ts.
@@ -11,7 +11,7 @@ export const LLMS_PROFILE_SECTIONS = `## Profile
 
 - [Site](${SITE_URL}): portfolio + blog
 - [GitHub](https://github.com/theamargupta)
-- [LinkedIn](https://www.linkedin.com/in/amar-gupta-2684a1157/)
+- [LinkedIn](${LINKEDIN_URL})
 - Email: theamargupta.tech@gmail.com
 
 ## What I build

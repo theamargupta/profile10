@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Space_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
 import { THEME } from "@/lib/theme/colors";
+import { LINKEDIN_URL } from "@/lib/feeds/site";
 import { SITE_FEEDS, SITE_OPEN_GRAPH, SITE_TWITTER, SITE_URL } from "@/lib/seo/section-metadata";
 import "./globals.css";
 import "lenis/dist/lenis.css";
@@ -104,7 +105,7 @@ const jsonLd = {
       ],
       sameAs: [
         "https://github.com/theamargupta",
-        "https://www.linkedin.com/in/amar-gupta-2684a1157/",
+        LINKEDIN_URL,
       ],
     },
   ],
