@@ -19,8 +19,8 @@ export const dynamic = "force-dynamic";
  *   2. Legacy static bearer `AMARGUPTA_MCP_BEARER` — for direct paste-token
  *      configs that predate the OAuth flow.
  *
- * MCP clients negotiate over Streamable HTTP (POST + SSE GET). The transport
- * is constructed per request; the server is wired stateless.
+ * MCP clients negotiate over Streamable HTTP (POST only; GET answers 405).
+ * The transport is constructed per request; the server is wired stateless.
  */
 
 type AuthResult =
@@ -110,38 +110,35 @@ export async function POST(req: Request): Promise<Response> {
   });
 }
 
-export async function GET(req: Request): Promise<Response> {
-  const origin = new URL(req.url).origin;
-  const resourceMetadataUrl = buildResourceMetadataUrl(origin);
-
-  const accept = req.headers.get("accept") ?? "";
-  if (!accept.includes("text/event-stream")) {
-    // Discovery probes hit GET without SSE Accept. Returning 401 with
-    // resource_metadata in WWW-Authenticate triggers the correct
-    // RFC 9728 discovery flow on MCP clients.
-    return new NextResponse(null, {
-      status: 401,
-      headers: {
-        Allow: "POST",
-        "WWW-Authenticate": `Bearer realm="amargupta-tech-mcp", resource_metadata="${resourceMetadataUrl}"`,
+/**
+ * GET answers 405 (ADMIN-76, global Rule 11). The MCP spec allows exactly two
+ * answers: "The server MUST either return Content-Type: text/event-stream in
+ * response to this HTTP GET, or else return HTTP 405 Method Not Allowed,
+ * indicating that the server does not offer an SSE stream at this endpoint."
+ * (modelcontextprotocol.io/specification/2025-06-18/basic/transports).
+ * The transport here is stateless, so an SSE GET opened a stream that never
+ * ended and held a function for up to 300 s. The installed SDK client
+ * (1.29.0, `_startOrAuthSse`) returns quietly on 405 and does not retry.
+ * Discovery stays on `/.well-known/*` plus the 401 an unauthenticated POST
+ * returns.
+ */
+export async function GET(): Promise<Response> {
+  return NextResponse.json(
+    {
+      jsonrpc: "2.0",
+      error: {
+        code: -32000,
+        message: "Method not allowed: this MCP endpoint offers no SSE stream; use POST.",
       },
-    });
-  }
-
-  const auth = await authenticate(req);
-  if (!auth.ok) return unauthorized(auth.reason, resourceMetadataUrl);
-
-  const server = createAmarguptaTechMcpServer();
-  const transport = new WebStandardStreamableHTTPServerTransport({
-    sessionIdGenerator: undefined,
-    enableJsonResponse: true,
-  });
-  await server.connect(transport);
-  return transport.handleRequest(req);
+      id: null,
+    },
+    { status: 405, headers: { Allow: "POST" } },
+  );
 }
 
+/** Liveness probe: 200, no body, no auth, no stream. */
 export async function HEAD(): Promise<Response> {
-  return new Response(null, { status: 405, headers: { Allow: "POST" } });
+  return new Response(null, { status: 200 });
 }
 
 export async function DELETE(): Promise<Response> {
