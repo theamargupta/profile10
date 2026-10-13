@@ -18,6 +18,13 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  /**
+   * The Vercel build skips the TypeScript step; scripts/deploy/build-in-container.sh runs `tsc --noEmit` before
+   * `vercel build` (which sets VERCEL=1), and a local `next build` still type-checks. Next 16.2.3 docs
+   * (next-config-js/typescript.md): "If disabled, be sure you are running type checks as part of your build or
+   * deploy process, otherwise this can be very dangerous." Spec: docs/specs/manual-prod-deploy.md
+   */
+  typescript: { ignoreBuildErrors: process.env.VERCEL === "1" },
   images: {
     remotePatterns: [
       {

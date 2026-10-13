@@ -32,6 +32,7 @@ unlabelled pin means it matches.
 | @supabase/ssr 0.10.2 | `/supabase/ssr` | `createServerClient` cookies in App Router | Not yet. Note this is 0.10.2 — a third distinct version across the three repos. |
 | Tailwind 4.2.2 | `/tailwindlabs/tailwindcss.com` | v4 upgrade guide — CSS-first `@theme`, no config file | Every v3 answer online is wrong here. |
 | @modelcontextprotocol/sdk 1.29.0 | resolve before first use | Server transport + tool registration | Not yet. |
+| Vercel CLI 62.7.0 (in the build container) · 53.0.1 (on the Mac, deploys) · Colima 0.10.3 | `/vercel/vercel` · no context7 ID (official Colima docs) | Build Output API "Known limitations": native binaries build on Linux x64; `vercel build --standalone` then `deploy --prebuilt`. Colima VZ + Rosetta for the linux/amd64 VM | sharp is native here; a bare Mac build ships arm64 functions. A Sensitive `NEXT_PUBLIC_*` pulls empty and a Mac build inlines `''` (admin, 2026-10-14). `docs/specs/manual-prod-deploy.md` |
 
 ## Known-stale pointer — fix or delete
 

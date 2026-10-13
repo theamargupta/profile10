@@ -42,7 +42,7 @@ AMARGUPTA_MCP_BEARER=...   # shared secret for /api/mcp; see MCP section
 ```
 
 ## MCP
-Streamable HTTP MCP at `/api/mcp` (POST + optional SSE GET). Two auth paths, either works:
+Streamable HTTP MCP at `/api/mcp` (POST only; GET answers 405 + `Allow: POST`, HEAD 200 — global Rule 11, ADMIN-76). Two auth paths, either works:
 
 1. **OAuth 2.1 + DCR (RFC 7591)** — for Claude.ai / Cursor / ChatGPT connector flows. Discovery at `/.well-known/oauth-protected-resource/api/mcp`. `/oauth/{register,authorize,token,revoke}` mirror the setu-nextjs pattern. The `mcp_oauth_*` tables are SHARED with setu-nextjs in Supabase project `avcnoywxnkajfuobftmr` — `validateResource` enforces resource binding so tokens don't cross apps. Single-operator gate: `/oauth/authorize` only mints tokens for `AMARGUPTA_OPERATOR_EMAIL` (default `theamargupta.tech@gmail.com`) after Supabase sign-in via `/admin`.
 2. **Legacy static bearer** — `AMARGUPTA_MCP_BEARER` env var; paste the value into the client's `Authorization: Bearer …` header. Kept for back-compat with the original config below.
@@ -93,6 +93,12 @@ into this file** — a copy drifts from the rule it copies. Only what is true of
   `npm run test:e2e`, then commit.
 
 ## Rules
+- **Deploy is manual since 2026-10-14: a push to ANY branch does NOT deploy.** `vercel.json` has
+  `git.deploymentEnabled: false`, and the Vercel build skips TypeScript (`next.config.ts`, only when `VERCEL=1`).
+  Production ships with `bash scripts/deploy-prod.sh` from a clean checkout at a SHA on `origin/main`: it builds in a
+  linux/amd64 container on the Mac (Colima profile `vercel-build`, shared with admin, one deploy at a time), runs
+  `tsc --noEmit` there, deploys `--prebuilt`, and exits 0 only on `READY <sha>`. Lanes never run it. Spec:
+  `docs/specs/manual-prod-deploy.md`.
 - No `tailwind.config.*` — Tailwind v4.
 - Service-role Supabase key stays server-only. Never import into a client component.
 - Never commit `.env*` files.
