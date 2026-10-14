@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { revalidatePublicPages } from "@/lib/revalidate-public-pages";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { validateProjectJson } from "@/app/admin/project-json-schema";
@@ -115,6 +116,7 @@ export async function updateProfileAction(formData: FormData) {
   revalidatePath("/");
   revalidatePath("/about");
   revalidatePath("/admin");
+  revalidatePublicPages();
   redirect(adminUrl({ tab: "profile", success: "Profile updated" }));
 }
 
@@ -143,6 +145,7 @@ export async function createProjectAction(formData: FormData) {
   revalidatePath("/");
   revalidatePath("/projects");
   revalidatePath("/admin");
+  revalidatePublicPages();
   redirect(adminUrl({ tab: "projects", success: "Project created" }));
 }
 
@@ -181,6 +184,9 @@ export async function createProjectFromJsonAction(formData: FormData) {
       featured: project.featured ?? false, sort_order: project.sort_order ?? 0,
     });
     if (error) redirect(adminUrl({ tab: "projects", error: `Project "${project.title}": ${error.message}` }));
+    // This project is public now. A later step of the import can still redirect
+    // with an error, so revalidate here rather than only at the end.
+    revalidatePublicPages();
 
     if (project.tools && project.tools.length > 0) {
       const toolRows: { project_id: string; tool_id: string; sort_order: number }[] = [];
@@ -224,6 +230,7 @@ export async function createProjectFromJsonAction(formData: FormData) {
   revalidatePath("/");
   revalidatePath("/projects");
   revalidatePath("/admin");
+  revalidatePublicPages();
   const msg = created.length === 1 ? `Project "${created[0]}" created from JSON` : `${created.length} projects created from JSON`;
   redirect(adminUrl({ tab: "projects", success: msg }));
 }
@@ -274,6 +281,7 @@ export async function updateProjectAction(formData: FormData) {
   revalidatePath("/projects");
   revalidatePath(`/project/${id}`);
   revalidatePath("/admin");
+  revalidatePublicPages();
   redirect(adminUrl({ tab: "projects", success: "Project updated" }));
 }
 
@@ -288,6 +296,7 @@ export async function deleteProjectAction(formData: FormData) {
   revalidatePath("/");
   revalidatePath("/projects");
   revalidatePath("/admin");
+  revalidatePublicPages();
   redirect(adminUrl({ tab: "projects", success: "Project deleted" }));
 }
 
@@ -307,6 +316,7 @@ export async function createProjectFeatureAction(formData: FormData) {
 
   revalidatePath(`/project/${projectId}`);
   revalidatePath("/admin");
+  revalidatePublicPages();
   redirect(adminUrl({ tab: "projects", success: "Feature added" }));
 }
 
@@ -319,6 +329,7 @@ export async function deleteProjectFeatureAction(formData: FormData) {
   if (error) redirect(adminUrl({ tab: "projects", error: error.message }));
 
   revalidatePath("/admin");
+  revalidatePublicPages();
   redirect(adminUrl({ tab: "projects", success: "Feature removed" }));
 }
 
@@ -339,6 +350,7 @@ export async function createProjectChallengeAction(formData: FormData) {
 
   revalidatePath(`/project/${projectId}`);
   revalidatePath("/admin");
+  revalidatePublicPages();
   redirect(adminUrl({ tab: "projects", success: "Challenge added" }));
 }
 
@@ -351,6 +363,7 @@ export async function deleteProjectChallengeAction(formData: FormData) {
   if (error) redirect(adminUrl({ tab: "projects", error: error.message }));
 
   revalidatePath("/admin");
+  revalidatePublicPages();
   redirect(adminUrl({ tab: "projects", success: "Challenge removed" }));
 }
 
@@ -370,6 +383,7 @@ export async function addProjectToolAction(formData: FormData) {
 
   revalidatePath(`/project/${projectId}`);
   revalidatePath("/admin");
+  revalidatePublicPages();
   redirect(adminUrl({ tab: "projects", success: "Tool linked" }));
 }
 
@@ -384,6 +398,7 @@ export async function removeProjectToolAction(formData: FormData) {
 
   revalidatePath(`/project/${projectId}`);
   revalidatePath("/admin");
+  revalidatePublicPages();
   redirect(adminUrl({ tab: "projects", success: "Tool unlinked" }));
 }
 
@@ -402,6 +417,7 @@ export async function createServiceAction(formData: FormData) {
 
   revalidatePath("/");
   revalidatePath("/admin");
+  revalidatePublicPages();
   redirect(adminUrl({ tab: "services", success: "Service created" }));
 }
 
@@ -420,6 +436,7 @@ export async function updateServiceAction(formData: FormData) {
 
   revalidatePath("/");
   revalidatePath("/admin");
+  revalidatePublicPages();
   redirect(adminUrl({ tab: "services", success: "Service updated" }));
 }
 
@@ -433,6 +450,7 @@ export async function deleteServiceAction(formData: FormData) {
 
   revalidatePath("/");
   revalidatePath("/admin");
+  revalidatePublicPages();
   redirect(adminUrl({ tab: "services", success: "Service deleted" }));
 }
 
@@ -456,6 +474,7 @@ export async function createExperienceAction(formData: FormData) {
   revalidatePath("/");
   revalidatePath("/about");
   revalidatePath("/admin");
+  revalidatePublicPages();
   redirect(adminUrl({ tab: "experience", success: "Experience created" }));
 }
 
@@ -479,6 +498,7 @@ export async function updateExperienceAction(formData: FormData) {
   revalidatePath("/");
   revalidatePath("/about");
   revalidatePath("/admin");
+  revalidatePublicPages();
   redirect(adminUrl({ tab: "experience", success: "Experience updated" }));
 }
 
@@ -493,6 +513,7 @@ export async function deleteExperienceAction(formData: FormData) {
   revalidatePath("/");
   revalidatePath("/about");
   revalidatePath("/admin");
+  revalidatePublicPages();
   redirect(adminUrl({ tab: "experience", success: "Experience deleted" }));
 }
 
@@ -511,6 +532,7 @@ export async function createSkillCategoryAction(formData: FormData) {
   revalidatePath("/");
   revalidatePath("/about");
   revalidatePath("/admin");
+  revalidatePublicPages();
   redirect(adminUrl({ tab: "skills", success: "Skill category created" }));
 }
 
@@ -529,6 +551,7 @@ export async function updateSkillCategoryAction(formData: FormData) {
   revalidatePath("/");
   revalidatePath("/about");
   revalidatePath("/admin");
+  revalidatePublicPages();
   redirect(adminUrl({ tab: "skills", success: "Skill category updated" }));
 }
 
@@ -543,6 +566,7 @@ export async function deleteSkillCategoryAction(formData: FormData) {
   revalidatePath("/");
   revalidatePath("/about");
   revalidatePath("/admin");
+  revalidatePublicPages();
   redirect(adminUrl({ tab: "skills", success: "Skill category deleted" }));
 }
 
@@ -563,6 +587,7 @@ export async function createSocialAction(formData: FormData) {
   revalidatePath("/");
   revalidatePath("/about");
   revalidatePath("/admin");
+  revalidatePublicPages();
   redirect(adminUrl({ tab: "socials", success: "Social created" }));
 }
 
@@ -583,6 +608,7 @@ export async function updateSocialAction(formData: FormData) {
   revalidatePath("/");
   revalidatePath("/about");
   revalidatePath("/admin");
+  revalidatePublicPages();
   redirect(adminUrl({ tab: "socials", success: "Social updated" }));
 }
 
@@ -597,6 +623,7 @@ export async function deleteSocialAction(formData: FormData) {
   revalidatePath("/");
   revalidatePath("/about");
   revalidatePath("/admin");
+  revalidatePublicPages();
   redirect(adminUrl({ tab: "socials", success: "Social deleted" }));
 }
 
@@ -705,6 +732,9 @@ export async function createBlogPostAction(formData: FormData) {
     published_at: toBoolean(formData.get("published")) ? new Date().toISOString() : null,
   }).select("id").single();
   if (error) redirect(adminUrl({ tab: "blog", error: `Create blog post "${title}": ${error.message}` }));
+  // The post is public now. The tag sync below can still redirect with an
+  // error, so revalidate here rather than only at the end.
+  revalidatePublicPages();
 
   const tagNames = parseTagList(formData.get("tags"));
   if (tagNames.length > 0) {
@@ -714,6 +744,7 @@ export async function createBlogPostAction(formData: FormData) {
 
   revalidatePath("/blog");
   revalidatePath("/admin");
+  revalidatePublicPages();
   redirect(adminUrl({ tab: "blog", success: "Blog post created" }));
 }
 
@@ -736,6 +767,9 @@ export async function updateBlogPostAction(formData: FormData) {
     published_at: published ? new Date().toISOString() : null,
   }).eq("id", id);
   if (error) redirect(adminUrl({ tab: "blog", error: `Update blog post "${id}": ${error.message}` }));
+  // The post is public now. The tag sync below can still redirect with an
+  // error, so revalidate here rather than only at the end.
+  revalidatePublicPages();
 
   const tagError = await syncBlogPostTagsAction(supabase, id, parseTagList(formData.get("tags")));
   if (tagError) redirect(adminUrl({ tab: "blog", error: tagError }));
@@ -743,6 +777,7 @@ export async function updateBlogPostAction(formData: FormData) {
   revalidatePath("/blog");
   revalidatePath(`/blog/${slug}`);
   revalidatePath("/admin");
+  revalidatePublicPages();
   redirect(adminUrl({ tab: "blog", success: "Blog post updated" }));
 }
 
@@ -756,6 +791,7 @@ export async function deleteBlogPostAction(formData: FormData) {
 
   revalidatePath("/blog");
   revalidatePath("/admin");
+  revalidatePublicPages();
   redirect(adminUrl({ tab: "blog", success: "Blog post deleted" }));
 }
 
@@ -772,6 +808,7 @@ export async function createBlogTagAction(formData: FormData) {
 
   revalidatePath("/blog");
   revalidatePath("/admin");
+  revalidatePublicPages();
   redirect(adminUrl({ tab: "blog", success: "Blog tag created" }));
 }
 
@@ -788,6 +825,7 @@ export async function updateBlogTagAction(formData: FormData) {
 
   revalidatePath("/blog");
   revalidatePath("/admin");
+  revalidatePublicPages();
   redirect(adminUrl({ tab: "blog", success: "Blog tag updated" }));
 }
 
@@ -801,6 +839,7 @@ export async function deleteBlogTagAction(formData: FormData) {
 
   revalidatePath("/blog");
   revalidatePath("/admin");
+  revalidatePublicPages();
   redirect(adminUrl({ tab: "blog", success: "Blog tag deleted" }));
 }
 
@@ -817,6 +856,7 @@ export async function addBlogPostTagAction(formData: FormData) {
 
   revalidatePath("/blog");
   revalidatePath("/admin");
+  revalidatePublicPages();
   redirect(adminUrl({ tab: "blog", success: "Tag assigned" }));
 }
 
@@ -831,6 +871,7 @@ export async function removeBlogPostTagAction(formData: FormData) {
 
   revalidatePath("/blog");
   revalidatePath("/admin");
+  revalidatePublicPages();
   redirect(adminUrl({ tab: "blog", success: "Tag removed" }));
 }
 
@@ -853,6 +894,7 @@ export async function createToolAction(formData: FormData) {
 
   revalidatePath("/");
   revalidatePath("/admin");
+  revalidatePublicPages();
   redirect(adminUrl({ tab: "tools", success: "Tool created" }));
 }
 
@@ -870,6 +912,7 @@ export async function updateToolAction(formData: FormData) {
 
   revalidatePath("/");
   revalidatePath("/admin");
+  revalidatePublicPages();
   redirect(adminUrl({ tab: "tools", success: "Tool updated" }));
 }
 
@@ -883,6 +926,7 @@ export async function deleteToolAction(formData: FormData) {
 
   revalidatePath("/");
   revalidatePath("/admin");
+  revalidatePublicPages();
   redirect(adminUrl({ tab: "tools", success: "Tool deleted" }));
 }
 

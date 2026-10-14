@@ -2,8 +2,8 @@ import { describe, expect, it, vi } from "vitest";
 
 // The /blog card excerpt for Auto-Blog posts comes from getAutoBlogPosts.
 const { order } = vi.hoisted(() => ({ order: vi.fn() }));
-vi.mock("@/lib/supabase/server", () => ({
-  createClient: async () => ({ from: () => ({ select: () => ({ order }) }) }),
+vi.mock("@/lib/supabase/static", () => ({
+  createStaticClient: () => ({ from: () => ({ select: () => ({ order }) }) }),
 }));
 
 import { getAutoBlogPosts } from "./queries";

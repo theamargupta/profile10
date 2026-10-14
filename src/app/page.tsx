@@ -33,6 +33,12 @@ const ContactSection = dynamic(() =>
   }))
 );
 
+// Recent writing includes Auto-Blog posts, which Swayam writes from another app
+// and which never call our revalidatePath. So the home page re-renders at most
+// hourly, the same as /blog. An Auto-Blog post can take up to 1 h to appear here.
+// Spec: docs/specs/public-pages-cdn-cache.md
+export const revalidate = 3600;
+
 export default async function Home() {
   const [profile, projects, services, experiences, skills, blogPosts] =
     await Promise.all([

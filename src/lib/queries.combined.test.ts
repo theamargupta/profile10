@@ -17,8 +17,8 @@ const { rows } = vi.hoisted(() => ({
   } as Record<string, unknown[]>,
 }));
 
-vi.mock("@/lib/supabase/server", () => ({
-  createClient: async () => ({
+vi.mock("@/lib/supabase/static", () => ({
+  createStaticClient: () => ({
     from: (table: string) => {
       const result = { data: rows[table] ?? [] };
       const chain = { select: () => chain, eq: () => chain, order: async () => result };

@@ -2,6 +2,7 @@ import "server-only";
 import { z } from "zod";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
+import { revalidatePublicPages } from "@/lib/revalidate-public-pages";
 
 /**
  * Author tools for the manual blog_posts table on amargupta.tech.
@@ -215,6 +216,8 @@ export function registerBlogTools(server: McpServer) {
         .select("id, slug, published, published_at")
         .single();
       if (error) return errText(`create failed: ${error.message}`);
+      // A draft is not on any public page; a published post is on /, /blog and in ReadNext.
+      if (parsed.published) revalidatePublicPages();
       return okJson({
         id: data.id,
         slug: data.slug,
@@ -261,6 +264,7 @@ export function registerBlogTools(server: McpServer) {
         .select("id, slug, published")
         .single();
       if (error) return errText(`update failed: ${error.message}`);
+      revalidatePublicPages();
       return okJson({ id: data.id, slug: data.slug, updated: true });
     },
   );
@@ -270,7 +274,7 @@ export function registerBlogTools(server: McpServer) {
     {
       description: [
         "Toggle a post's publish state. Stamps published_at on publish; clears it on unpublish.",
-        "On publish, the post appears on amargupta.tech/blog within seconds (route is force-dynamic).",
+        "On publish or unpublish, every public page is revalidated: amargupta.tech/blog and the post re-render on their next visit.",
       ].join("\n"),
       inputSchema: PublishPostArgs,
     },
@@ -289,6 +293,7 @@ export function registerBlogTools(server: McpServer) {
         .select("id, slug, published, published_at")
         .single();
       if (error) return errText(`publish toggle failed: ${error.message}`);
+      revalidatePublicPages();
       return okJson({
         id: data.id,
         slug: data.slug,
@@ -354,6 +359,8 @@ export function registerBlogTools(server: McpServer) {
           .select("id, slug");
         if (insErr) return errText(`tag create failed: ${insErr.message}`);
         createdTags = ins ?? [];
+        // New tags are public now (/blog lists them), even if the link below fails.
+        revalidatePublicPages();
       }
       const allTags = [
         ...((existingTags ?? []) as Array<{ id: string; slug: string }>),
@@ -368,6 +375,7 @@ export function registerBlogTools(server: McpServer) {
         .from("blog_post_tags")
         .upsert(linkRows, { onConflict: "post_id,tag_id" });
       if (linkErr) return errText(`link insert failed: ${linkErr.message}`);
+      revalidatePublicPages();
       return okJson({
         post_id: parsed.post_id,
         attached: allTags.map((t) => t.slug),

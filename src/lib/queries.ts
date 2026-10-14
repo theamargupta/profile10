@@ -1,4 +1,7 @@
-import { createClient } from "@/lib/supabase/server";
+// Public reads only, all through the cookie-free anon client. The cookie client
+// (supabase/server.ts) awaits cookies(), which makes every route that renders a
+// query here dynamic, so the CDN never caches it. Reads that need the signed-in
+// user go in admin-queries.ts. Spec: docs/specs/public-pages-cdn-cache.md
 import { createStaticClient } from "@/lib/supabase/static";
 import { mdToHtml } from "@/lib/markdown";
 import { plainExcerpt } from "@/lib/plain-excerpt";
@@ -12,17 +15,16 @@ import type {
   Social,
   BlogPost,
   BlogTag,
-  ContactSubmission,
 } from "@/lib/types";
 
 export async function getProfile(): Promise<Profile | null> {
-  const supabase = await createClient();
+  const supabase = createStaticClient();
   const { data } = await supabase.from("profiles").select("*").single();
   return data;
 }
 
 export async function getProjects(): Promise<Project[]> {
-  const supabase = await createClient();
+  const supabase = createStaticClient();
   const { data } = await supabase
     .from("projects")
     .select(
@@ -33,7 +35,7 @@ export async function getProjects(): Promise<Project[]> {
 }
 
 export async function getFeaturedProjects(): Promise<Project[]> {
-  const supabase = await createClient();
+  const supabase = createStaticClient();
   const { data } = await supabase
     .from("projects")
     .select(
@@ -47,7 +49,7 @@ export async function getFeaturedProjects(): Promise<Project[]> {
 export async function getProjectBySlug(
   slug: string
 ): Promise<Project | null> {
-  const supabase = await createClient();
+  const supabase = createStaticClient();
   const { data } = await supabase
     .from("projects")
     .select(
@@ -59,7 +61,7 @@ export async function getProjectBySlug(
 }
 
 export async function getExperiences(): Promise<Experience[]> {
-  const supabase = await createClient();
+  const supabase = createStaticClient();
   const { data } = await supabase
     .from("experiences")
     .select("*")
@@ -68,7 +70,7 @@ export async function getExperiences(): Promise<Experience[]> {
 }
 
 export async function getSkillCategories(): Promise<SkillCategory[]> {
-  const supabase = await createClient();
+  const supabase = createStaticClient();
   const { data } = await supabase
     .from("skill_categories")
     .select("*")
@@ -77,7 +79,7 @@ export async function getSkillCategories(): Promise<SkillCategory[]> {
 }
 
 export async function getServices(): Promise<Service[]> {
-  const supabase = await createClient();
+  const supabase = createStaticClient();
   const { data } = await supabase
     .from("services")
     .select("*")
@@ -86,7 +88,7 @@ export async function getServices(): Promise<Service[]> {
 }
 
 export async function getSocials(): Promise<Social[]> {
-  const supabase = await createClient();
+  const supabase = createStaticClient();
   const { data } = await supabase
     .from("socials")
     .select("*")
@@ -99,7 +101,7 @@ function renderManualPost<T extends { content: string | null }>(row: T): T {
 }
 
 export async function getBlogPosts(): Promise<BlogPost[]> {
-  const supabase = await createClient();
+  const supabase = createStaticClient();
   const { data } = await supabase
     .from("blog_posts")
     .select("*, blog_post_tags(blog_tags(*))")
@@ -111,7 +113,7 @@ export async function getBlogPosts(): Promise<BlogPost[]> {
 export async function getBlogPostBySlug(
   slug: string
 ): Promise<BlogPost | null> {
-  const supabase = await createClient();
+  const supabase = createStaticClient();
   const { data } = await supabase
     .from("blog_posts")
     .select("*, blog_post_tags(blog_tags(*))")
@@ -217,7 +219,7 @@ function autoBlogRowToPost(row: AutoBlogRow): BlogPost {
 }
 
 export async function getAutoBlogPosts(): Promise<BlogPost[]> {
-  const supabase = await createClient();
+  const supabase = createStaticClient();
   const { data } = await supabase
     .from("blog_published")
     .select(
@@ -228,7 +230,7 @@ export async function getAutoBlogPosts(): Promise<BlogPost[]> {
 }
 
 export async function getAutoBlogPostBySlug(slug: string): Promise<BlogPost | null> {
-  const supabase = await createClient();
+  const supabase = createStaticClient();
   const { data } = await supabase
     .from("blog_published")
     .select(
@@ -268,22 +270,13 @@ export async function getCombinedBlogPostBySlug(slug: string): Promise<BlogPost 
 }
 
 export async function getBlogTags(): Promise<BlogTag[]> {
-  const supabase = await createClient();
+  const supabase = createStaticClient();
   const { data } = await supabase.from("blog_tags").select("*").order("name");
   return data ?? [];
 }
 
 export async function getTools(): Promise<Tool[]> {
-  const supabase = await createClient();
+  const supabase = createStaticClient();
   const { data } = await supabase.from("tools").select("*").order("name");
-  return data ?? [];
-}
-
-export async function getContactSubmissions(): Promise<ContactSubmission[]> {
-  const supabase = await createClient();
-  const { data } = await supabase
-    .from("contact_submissions")
-    .select("*")
-    .order("created_at", { ascending: false });
   return data ?? [];
 }

@@ -7,8 +7,8 @@ import {
   getSkillCategories,
   getSocials,
   getTools,
-  getContactSubmissions,
 } from "@/lib/queries";
+import { getContactSubmissions } from "@/lib/admin-queries";
 import {
   loginAction,
   createBlogTagAction,
