@@ -7,6 +7,13 @@ import { CaseStudyContent } from "@/components/dom/case-study-content";
 import { YouTubeEmbed } from "@/components/dom/youtube-embed";
 import { SITE_FEEDS } from "@/lib/seo/section-metadata";
 
+// Each project renders on its first visit and is then cached until an admin
+// write revalidates it. An empty array is what makes this ISR and not dynamic
+// (Next 16.2 generate-static-params.md). Spec: docs/specs/public-pages-cdn-cache.md
+export async function generateStaticParams() {
+  return [];
+}
+
 export async function generateMetadata({
   params,
 }: {

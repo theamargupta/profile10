@@ -37,6 +37,17 @@ applies. `src/lib/supabase/static.ts` (`createStaticClient`, no cookies, the sam
 Spec (NEW file, does not exist yet): `docs/specs/public-pages-cdn-cache.md`, a short one with the cause, the fix, the revalidate contract, and what
 stays dynamic.
 
+## Deviations, approved by the leader 2026-10-14 (lane 6)
+
+1. **Revalidation is site-wide.** Admin and MCP writes call `revalidatePublicPages()` =
+   `revalidatePath('/', 'layout')`, not per-path `/blog` + `/blog/<slug>`. Socials (footer), profile (AuthorBio),
+   ReadNext and deleted posts/projects would otherwise stay cached. It runs only after a successful write, and
+   tests cover both paths.
+2. **`getContactSubmissions` moved to `src/lib/admin-queries.ts`.** It needs the session, so `queries.ts`
+   imports no cookie client at all.
+3. **`generateStaticParams() { return [] }` on `/blog/[slug]` and `/project/[slug]`**, without which both stay ƒ.
+   **`revalidate = 3600` on `/`**, because Auto-Blog posts never call our revalidate: they take up to 1 h to show.
+
 ## Leader-only (never the lane)
 
 Push, then the manual deploy (`DEPLOY_SKIP_DOMAIN=1 bash scripts/deploy-prod.sh`, `vercel curl`, promote). Step 8:

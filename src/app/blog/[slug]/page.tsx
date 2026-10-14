@@ -15,6 +15,15 @@ import { SITE_FEEDS } from "@/lib/seo/section-metadata";
 
 export const revalidate = 3600;
 
+// Each post renders on its first visit and is then cached (ISR). Without
+// generateStaticParams the route stays dynamic. Next 16.2
+// generate-static-params.md: "It is mandatory to return an array from
+// `generateStaticParams`, as failing to do so will result in the route being
+// dynamically rendered." Spec: docs/specs/public-pages-cdn-cache.md
+export async function generateStaticParams() {
+  return [];
+}
+
 type Props = {
   params: Promise<{ slug: string }>;
 };
