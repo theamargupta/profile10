@@ -91,6 +91,11 @@ into this file** — a copy drifts from the rule it copies. Only what is true of
 - **Tests:** `npm test` (Vitest) for logic, `npm run test:e2e` (Playwright) for any user-facing flow.
 - **Gate:** `npm run type-check` + `npm run lint` + `npm run lint:colors` + `npm test` +
   `npm run test:e2e`, then commit.
+- **One deploy per milestone** (global Rule 0 step 7; Amar, 2026-10-20: *"sab cheezein ek baar mein complete ho
+  jaayein, tab hum usko production ke liye build karein"*): a phase is proven locally (the gate + local E2E with the
+  creds already saved for this repo) and merged into the milestone branch, never pushed or deployed alone. When
+  every phase is done: one push, one `bash scripts/deploy-prod.sh` (push does not deploy: `vercel.json`
+  `git.deploymentEnabled: false`), then the production check.
 
 ## Rules
 - **Deploy is manual since 2026-10-14: a push to ANY branch does NOT deploy.** `vercel.json` has
