@@ -48,6 +48,12 @@ const nextConfig: NextConfig = {
         source: "/:path*",
         headers: securityHeaders,
       },
+      {
+        // Freelance plan pages are private to their lead (docs/specs/freelance-plan-pages.md). The page also
+        // sets <meta name="robots">; robots.txt must NOT disallow /plans/, or Google never reads either.
+        source: "/plans/:path*",
+        headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }],
+      },
     ];
   },
 };

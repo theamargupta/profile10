@@ -61,7 +61,7 @@ describe("upsertPlan", () => {
   });
   it("throws with context when the database fails", async () => {
     state.result = { data: null, error: { message: "boom" } };
-    await expect(upsertPlan(TOKEN, PLAN, NOW)).rejects.toThrow(/plan_upsert.*boom/s);
+    await expect(upsertPlan(TOKEN, PLAN, NOW)).rejects.toThrow(/plan_upsert[\s\S]*boom/);
   });
   it("refuses a bad token or plan before touching the database", async () => {
     await expect(upsertPlan("short", PLAN, NOW)).rejects.toThrow();
@@ -82,7 +82,7 @@ describe("unpublishPlan", () => {
   });
   it("throws with context when the database fails", async () => {
     state.result = { data: null, error: { message: "boom" } };
-    await expect(unpublishPlan(TOKEN)).rejects.toThrow(/plan_unpublish.*boom/s);
+    await expect(unpublishPlan(TOKEN)).rejects.toThrow(/plan_unpublish[\s\S]*boom/);
   });
 });
 
