@@ -83,4 +83,11 @@ describe("sitemap()", () => {
     expect(entries.map((e) => e.url)).toEqual([BASE, `${BASE}/about`, `${BASE}/projects`, `${BASE}/blog`]);
     for (const e of entries) expect(e).not.toHaveProperty("lastModified");
   });
+
+  // Plan pages are noindex and private to their lead (docs/specs/freelance-plan-pages.md): a sitemap
+  // entry would invite a crawl and advertise every token.
+  it("never lists a /plans/ page", async () => {
+    const urls = (await sitemap()).map((e) => e.url);
+    expect(urls.filter((u) => u.includes("/plans"))).toEqual([]);
+  });
 });
