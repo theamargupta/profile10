@@ -1,6 +1,7 @@
 import "server-only";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { registerBlogTools } from "./tools/blog";
+import { registerPlanTools } from "./tools/plans";
 import { buildLogEntry, logToolCall } from "./telemetry";
 
 const SERVER_NAME = "amargupta-tech";
@@ -10,7 +11,7 @@ const SERVER_VERSION = "0.1.0";
  * MCP server factory for amargupta.tech. Stateless — a new server is
  * constructed per /api/mcp request.
  *
- * Current surface (7 tools):
+ * Current surface (9 tools):
  *   - blog_list_posts
  *   - blog_get_post
  *   - blog_create_post
@@ -18,6 +19,8 @@ const SERVER_VERSION = "0.1.0";
  *   - blog_publish_post
  *   - blog_list_tags
  *   - blog_attach_tags_to_post
+ *   - plan_upsert
+ *   - plan_unpublish
  *
  * Every tool registration is wrapped with telemetry — fire-and-forget
  * inserts into public.mcp_tool_calls. Twin of the sutra/setu-nextjs wraps
@@ -64,5 +67,6 @@ export function createAmarguptaTechMcpServer(): McpServer {
   }) as McpServer["registerTool"];
 
   registerBlogTools(server);
+  registerPlanTools(server);
   return server;
 }
