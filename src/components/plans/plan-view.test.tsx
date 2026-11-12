@@ -47,3 +47,22 @@ describe("PlanView", () => {
     expect(screen.getByText(evil.summary)).toBeInTheDocument();
   });
 });
+
+describe("PlanView with a demo (admin plan 2026-11-12-freelance-demos P1)", () => {
+  it("renders the demo under the sections only when the plan has one", async () => {
+    const { DEMO_HONESTY_EN } = await import("@/lib/plans/plan-copy");
+    const demo = {
+      title: "Demo", prepared_for: "your post", summary: "s", assumptions: ["a"],
+      scenes: [
+        { kind: "flow" as const, heading: "Flow", caption: "c", steps: [{ label: "One" }, { label: "Two" }] },
+        { kind: "table" as const, heading: "Table", caption: "c", columns: ["a", "b"], rows: [["1", "2"]] },
+      ],
+    };
+    const { unmount } = render(<PlanView plan={PLAN} />);
+    expect(screen.queryByText(DEMO_HONESTY_EN)).toBeNull();
+    unmount();
+    render(<PlanView plan={{ ...PLAN, demo }} />);
+    expect(screen.getByText(DEMO_HONESTY_EN)).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "Flow" })).toBeTruthy();
+  });
+});

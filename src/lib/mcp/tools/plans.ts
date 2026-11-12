@@ -22,7 +22,7 @@ function errText(message: string) {
 // (`plan.title`), which the SDK's own input error would bury.
 const UpsertArgs = {
   token: z.string().describe("16-64 characters of A-Z a-z 0-9 _ -. Unguessable; it is the page's only secret."),
-  plan: z.unknown().describe("The plan: { title, prepared_for, summary, sections: [{ heading, paragraphs?, bullets? }] }. Plain text only."),
+  plan: z.unknown().describe("The plan: { title, prepared_for, summary, sections: [{ heading, paragraphs?, bullets? }], demo? } — demo: { title, prepared_for, summary, scenes: 2-5 of chat|table|flow|form|dashboard|code, assumptions } (lib/plans/demo-schema.ts). Plain text only."),
 };
 const UnpublishArgs = { token: z.string() };
 

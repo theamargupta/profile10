@@ -6,3 +6,7 @@
 export const PLAN_HONESTY_HI = "Plan hai, bana hua product nahi";
 export const PLAN_HONESTY_EN = "This is a plan, not a finished product";
 export const PLAN_PRICE_RANGE = "$300–600";
+
+/** The demo strip (admin plan 2026-11-12-freelance-demos P1; spec "What a demo is"): printed above every scene. */
+export const DEMO_HONESTY_HI = "Demo hai, bana hua product nahi";
+export const DEMO_HONESTY_EN = "Demo made for your post. Not a finished product. Sample data, not your data.";

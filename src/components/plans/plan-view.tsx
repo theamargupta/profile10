@@ -1,5 +1,6 @@
 import type { Plan } from "@/lib/plans/plan-schema";
 import { PLAN_HONESTY_EN, PLAN_HONESTY_HI, PLAN_PRICE_RANGE } from "@/lib/plans/plan-copy";
+import { DemoView } from "@/components/plans/demo/demo-view";
 
 /**
  * The one template every freelance plan page is rendered through (docs/specs/freelance-plan-pages.md).
@@ -59,6 +60,8 @@ export function PlanView({ plan }: { plan: Plan }) {
             </section>
           ))}
         </div>
+
+        {plan.demo && <DemoView demo={plan.demo} />}
 
         <footer className="mt-16 border-t border-[var(--color-surface-3)] pt-6 text-[var(--color-fg-1)]">
           <p>

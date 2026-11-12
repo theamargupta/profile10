@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { DemoSchema } from "@/lib/plans/demo-schema";
 
 /**
  * Shape of a freelance plan page (docs/specs/freelance-plan-pages.md).
@@ -30,6 +31,8 @@ export const PlanSchema = z
     prepared_for: z.string().min(1).max(120),
     summary: z.string().min(1).max(600),
     sections: z.array(SectionSchema).min(1).max(8),
+    // Admin plan 2026-11-12-freelance-demos P1: a fit-80+ lead's page carries a demo; old plans have none.
+    demo: DemoSchema.optional(),
   })
   .strict();
 
