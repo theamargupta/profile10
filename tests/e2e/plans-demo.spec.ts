@@ -49,18 +49,19 @@ test.describe("plan page with a demo", () => {
     const res = await page.goto(`/plans/${token}`);
     expect(res?.status()).toBe(200);
     expect(res?.headers()["x-robots-tag"] ?? "").toContain("noindex");
-    const strip = page.getByText("Demo made for your post. Not a finished product. Sample data, not your data.");
+    const demoRegion = page.getByRole("region", { name: "Demo" });
+    const strip = demoRegion.getByText("Demo made for your post. Not a finished product. Sample data, not your data.");
     for (const [i, scene] of demo.scenes.entries()) {
-      await expect(page.getByRole("heading", { name: scene.heading })).toBeVisible();
+      await expect(demoRegion.getByRole("heading", { name: scene.heading, exact: true })).toBeVisible();
       await expect(strip).toBeVisible();
       if (scene.kind === "form") {
         const requests: string[] = [];
         page.on("request", (r) => requests.push(r.url()));
-        await page.getByRole("button", { name: scene.submit_label as string }).click();
-        await expect(page.getByRole("status")).toHaveText(scene.result as string);
+        await demoRegion.getByRole("button", { name: scene.submit_label as string, exact: true }).click();
+        await expect(demoRegion.getByRole("status")).toHaveText(scene.result as string);
         expect(requests).toEqual([]);
       }
-      if (i < demo.scenes.length - 1) await page.getByRole("button", { name: "Next" }).click();
+      if (i < demo.scenes.length - 1) await demoRegion.getByRole("button", { name: "Next", exact: true }).click();
     }
   });
 
