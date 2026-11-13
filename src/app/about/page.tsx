@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { sectionMetadata } from "@/lib/seo/section-metadata";
 import Image from "next/image";
+import { resolveAvatarSrc } from "@/lib/avatar-src";
 import {
   getProfile,
   getExperiences,
@@ -24,6 +25,8 @@ export default async function AboutPage() {
     getSkillCategories(),
   ]);
 
+  const avatarSrc = resolveAvatarSrc(profile?.avatar_url);
+
   return (
     <>
       <section className="pt-40 pb-20">
@@ -31,10 +34,10 @@ export default async function AboutPage() {
           <div className="grid items-center gap-16 lg:grid-cols-5">
             <div className="lg:col-span-2">
               <div className="overflow-hidden rounded-3xl border border-[var(--color-surface-3)] bg-[var(--color-surface-1)]/60 backdrop-blur-xl">
-                {profile?.avatar_url ? (
+                {avatarSrc ? (
                   <Image
-                    src={profile.avatar_url}
-                    alt={profile.name}
+                    src={avatarSrc}
+                    alt={profile?.name ?? "Amar Gupta"}
                     width={480}
                     height={600}
                     className="w-full object-cover"

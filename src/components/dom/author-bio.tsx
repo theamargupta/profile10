@@ -1,5 +1,6 @@
 import Image from "next/image";
 import type { Profile } from "@/lib/types";
+import { resolveAvatarSrc } from "@/lib/avatar-src";
 
 // Fixed booking link (kept here so every article's CTA stays in sync).
 const CAL_URL = "https://cal.com/amargupta.tech";
@@ -19,7 +20,7 @@ export function AuthorBio({ profile }: { profile: Profile | null }) {
   const location = profile?.location ?? "Delhi, India";
   const email = profile?.email ?? "theamargupta.tech@gmail.com";
   const website = (profile?.website ?? "amargupta.tech").replace(/^https?:\/\//, "");
-  const avatar = profile?.avatar_url || "/amar-gupta.png";
+  const avatar = resolveAvatarSrc(profile?.avatar_url) || "/amar-gupta.png";
   const availableFor = profile?.available_for;
 
   return (
